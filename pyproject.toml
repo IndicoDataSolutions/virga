@@ -6,9 +6,13 @@ authors = ["thearchitector <elias.gabriel@indico.io>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+click = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+
+[tool.poetry.scripts]
+virga = "virga.cli.application:virga"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
