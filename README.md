@@ -1,2 +1,3 @@
 # virga
-Indico Sidecar Template Generator
+
+Templated adaptable sidecar app generation
