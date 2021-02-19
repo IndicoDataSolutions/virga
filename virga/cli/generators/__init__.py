@@ -1,1 +1,1 @@
-from .project import ProjectGenerator
+from .structure import StructureGenerator
