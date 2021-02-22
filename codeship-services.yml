@@ -1,0 +1,15 @@
+virga:
+  build:
+    dockerfile: Dockerfile
+  container_name: virga
+  volumes:
+    - .:/virga
+  encrypted_env_file: codeship.env
+  cached: true
+  default_cache_branch: main
+  dockercfg_service: gcr-dockercfg
+
+gcr-dockercfg:
+  image: indicoio/gcr-dockercfg
+  add_docker: true
+  encrypted_env_file: codeship.env
