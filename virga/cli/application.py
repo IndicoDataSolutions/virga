@@ -30,6 +30,7 @@ def new(ctx: click.Context, app_path, **kwargs):
     """
     Create a new project called APP_NAME using provided template options.
     """
+    print(app_path)
     # santize the requested app name to ensure no overwrites
     if os.path.exists(app_path):
         # if its a file, always reject (ignore --force option)

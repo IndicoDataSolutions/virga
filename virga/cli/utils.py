@@ -1,4 +1,5 @@
 import os
+from typing import Union
 import click
 from subprocess import run, PIPE, CalledProcessError
 from contextlib import contextmanager
@@ -7,12 +8,15 @@ from fileinput import FileInput
 from string import Template
 
 
-def get_path(*segments: str):
+Path = Union[str, os.PathLike]
+
+
+def get_path(*segments: Path) -> str:
     """
     Resolve the given path segments into an absolute real path. Symlinks are
     resolved to their targets during the process.
     """
-    return os.path.realpath(os.path.join(*segments))
+    return str(os.path.realpath(os.path.join(*segments)))
 
 
 _templates_dir = get_path(os.path.dirname(__file__), "templates")
@@ -67,11 +71,12 @@ def in_directory(path):
         os.chdir(curdir)
 
 
-def resolve_template(file: str, **variables):
+def resolve_template(file: Path, **variables) -> str:
     """
-    Copies a source file to a destination. If the source file is a template, the
-    provided variables are used as placeholders and values with which to substitute.
-    If a placeholder has no found value, it is skipped.
+    Resolves the provided template using the provided variables as placeholders
+    and their values. If a placeholder has no found value, it is skipped.
+
+    If file ends in `.template`, the extension is removed.
     """
     if len(variables):
         # avoid the memory overhead of reading the entire template by streaming the
@@ -82,14 +87,18 @@ def resolve_template(file: str, **variables):
             # print the line to stdout, which gets captured and written to the file
             print(template.safe_substitute(variables), end="")
 
-    if file.endswith(".template"):
-        shutil.move(file, file[:-9])
+    filepath = get_path(file)
+    if filepath.endswith(".template"):
+        shutil.move(filepath, filepath[:-9])
+        filepath = filepath[:-9]
+
+    return filepath
 
 
-def copy_template(src: str, dest: str, **variables):
+def copy_template(src: Path, dest: Path, **variables) -> str:
     """
     Copies a source file to a destination, then resolves the templated destination
     file by passing the provided variables to `resolve_template`.
     """
     shutil.copy2(src, dest)
-    resolve_template(dest, **variables)
+    return resolve_template(dest, **variables)
