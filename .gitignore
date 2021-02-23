@@ -1,6 +1,8 @@
 # caches
 __pycache__
 .pytest_cache
+tmp
 
 # environment
 codeship.aes
+.env

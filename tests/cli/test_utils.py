@@ -27,7 +27,10 @@ def mock_abort():
 
 
 def test_run_command(monkeypatch, tmpdir):
-    run_command("touch", tmpdir.join("file0.txt"))
+    tempfile = tmpdir.join("file0.txt")
+
+    run_command("touch", tempfile)
+    assert os.path.exists(tempfile)
 
     monkeypatch.setattr(click, "get_current_context", mock_abort)
     with pytest.raises(UsageError):
@@ -36,7 +39,8 @@ def test_run_command(monkeypatch, tmpdir):
     with pytest.raises(UsageError):
         run_command("ls" "doesnt-exists")  # failed command, runtime error
 
-    run_command("rm", tmpdir.join("file0.txt"))
+    run_command("rm", tempfile)
+    assert not os.path.exists(tempfile)
 
 
 def test_directory(tmp_path):

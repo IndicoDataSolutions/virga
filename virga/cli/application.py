@@ -59,6 +59,8 @@ def new(ctx: click.Context, app_path, **kwargs):
     # completed. this is to ensure a clean file directory in case something fails
     # somewhere
     with tempfile.TemporaryDirectory() as project_dir:
+        project_dir = project_dir.join("tmp")
+
         try:
             # basic boilerplate generation
             StructureGenerator.generate(ctx, app_name, project_dir)

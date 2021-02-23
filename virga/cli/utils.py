@@ -89,8 +89,7 @@ def resolve_template(file: Path, **variables) -> str:
 
     filepath = get_path(file)
     if filepath.endswith(".template"):
-        shutil.move(filepath, filepath[:-9])
-        filepath = filepath[:-9]
+        filepath = shutil.move(filepath, filepath[:-9])
 
     return filepath
 
