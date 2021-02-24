@@ -52,7 +52,7 @@ def test_directory(tmp_path):
     assert curdir == os.getcwd()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def mock_template():
     return os.path.join(os.path.dirname(__file__), "templates/mockfile.txt.template")
 
