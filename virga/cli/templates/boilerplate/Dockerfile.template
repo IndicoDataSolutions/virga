@@ -1,13 +1,13 @@
 FROM python:3.7-slim-buster
 
-ENV APP_NAME virga
+ENV APP_NAME $app_name
 ENV POETRY_HOME=/etc/poetry
 
 RUN apt update && \
     apt install -y curl
 
-COPY . /virga
-WORKDIR /virga
+COPY . /$app_name
+WORKDIR /$app_name
 
 # app dependencies
 RUN pip3 install --upgrade pip && \
