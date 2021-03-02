@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3"
 services:
   noct-db:
     image: postgres:9.6.3
@@ -18,7 +18,7 @@ services:
       NOCT_BYPASS_APP_ACCESS: "True"
     ports:
       - 5401:5000
-    links:
+    depends_on:
       - noct-db
   virga:
     image: gcr.io/new-indico/virga:development
@@ -29,7 +29,7 @@ services:
       ATMOSPHERE_AUTH_COOKIE_DOMAIN: "${ATMOSPHERE_AUTH_COOKIE_DOMAIN}"
     volumes:
       - .:/virga
-    links:
+    depends_on:
       - noct
 
 volumes:

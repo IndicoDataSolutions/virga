@@ -18,4 +18,4 @@ RUN pip3 install --upgrade pip && \
 
 ENV PATH = "${PATH}:/etc/poetry/bin"
 
-ENTRYPOINT [ "/virga/scripts/entrypoint.sh" ]
+CMD [ "/virga/scripts/entrypoint.sh" ]
