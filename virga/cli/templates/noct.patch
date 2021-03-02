@@ -1,0 +1,24 @@
+--- app.py	2021-02-26 14:56:30.449272461 -0500
++++ app.py	2021-03-01 13:29:24.458313683 -0500
+@@ -2,7 +2,8 @@
+ 
+ from fastapi import FastAPI, Depends
+ from .settings import Settings
+-
++from virga.types import User
++from virga.requests.noct import get_current_user
+ 
+ app = FastAPI()
+ 
+@@ -12,6 +13,11 @@
+     return Settings()
+ 
+ 
++@app.get("/user_info")
++async def get_user(current_user: User = Depends(get_current_user)):
++    return {"message": f"Hello, {current_user.name}!"}
++
++
+ @app.get("/")
+ async def read_root(settings: Settings = Depends(get_settings)):
+     return {settings.app_name: "Hello World!"}

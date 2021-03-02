@@ -25,6 +25,7 @@ class StructureGenerator(Generator):
         with in_directory(project_dir):
             shutil.move("boilerplate", app_name)
             resolve_template("Dockerfile.template", app_name=app_name)
+            resolve_template(f"{app_name}/settings.py.template", app_name=app_name)
 
             # 2] initialize the poetry project and install expected dependencies
             click.secho("  2] Initializing Poetry project...", fg="magenta", bold=True)
