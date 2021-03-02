@@ -1,5 +1,6 @@
 from click.testing import CliRunner
 import os
+import pytest
 
 from virga.cli.application import virga
 
@@ -28,13 +29,7 @@ def test_virga_new_bad_file():
 
 
 # nested non-existent directories
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
 @pytest.mark.flaky(reruns=1)
-=======
->>>>>>> ee500ccdcb48ee4a48393c6c1596eca6f2168aff
->>>>>>> Stashed changes
 def test_virga_new_good_nested():
     runner = CliRunner()
 
@@ -52,13 +47,7 @@ def test_virga_new_good_nested():
 
 
 # single non-existent directory
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
 @pytest.mark.flaky(reruns=1)
-=======
->>>>>>> ee500ccdcb48ee4a48393c6c1596eca6f2168aff
->>>>>>> Stashed changes
 def test_virga_new_good_direct():
     runner = CliRunner()
 
