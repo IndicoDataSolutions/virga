@@ -3,4 +3,4 @@
   steps:
     - name: Testing
       service: virga
-      command: "pytest -sv -n auto tests"
+      command: "pytest -vv -n auto tests"

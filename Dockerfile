@@ -4,7 +4,7 @@ ENV APP_NAME virga
 ENV POETRY_HOME=/etc/poetry
 
 RUN apt update && \
-    apt install -y curl
+    apt install -y curl vim
 
 COPY . /virga
 WORKDIR /virga
@@ -18,4 +18,4 @@ RUN pip3 install --upgrade pip && \
 
 ENV PATH = "${PATH}:/etc/poetry/bin"
 
-CMD "bash"
+ENTRYPOINT [ "/virga/scripts/entrypoint.sh" ]

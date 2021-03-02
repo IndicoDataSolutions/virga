@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  noct-db:
+    image: postgres:9.6.3
+    environment:
+      POSTGRES_DB: indico
+      POSTGRES_USER: indico
+      POSTGRES_PASSWORD: development
+    volumes:
+      - noct_data:/var/lib/postgresql/data
+  noct:
+    image: gcr.io/new-indico/noct:development
+    environment:
+      ATMOSPHERE_TOKEN_SECRET: "${ATMOSPHERE_TOKEN_SECRET}"
+      ATMOSPHERE_COOKIE_SECRET: "${ATMOSPHERE_COOKIE_SECRET}"
+      ATMOSPHERE_AUTH_COOKIE_DOMAIN: "${ATMOSPHERE_AUTH_COOKIE_DOMAIN}"
+      NOCT_BYPASS_CONFIRMATION: "True"
+      NOCT_BYPASS_APP_ACCESS: "True"
+    ports:
+      - 5401:5000
+    links:
+      - noct-db
+  virga:
+    image: gcr.io/new-indico/virga:development
+    build: .
+    environment:
+      ATMOSPHERE_TOKEN_SECRET: "${ATMOSPHERE_TOKEN_SECRET}"
+      ATMOSPHERE_COOKIE_SECRET: "${ATMOSPHERE_COOKIE_SECRET}"
+      ATMOSPHERE_AUTH_COOKIE_DOMAIN: "${ATMOSPHERE_AUTH_COOKIE_DOMAIN}"
+    volumes:
+      - .:/virga
+    links:
+      - noct
+
+volumes:
+  noct_data:
