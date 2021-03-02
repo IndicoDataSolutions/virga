@@ -70,8 +70,8 @@ def new(ctx: click.Context, app_path, **kwargs):
             # basic boilerplate generation
             StructureGenerator.generate(ctx, app_name, project_dir)
 
-            # if kwargs["auth"]:
-            #     NoctAuthGenerator.generate(ctx, app_name, project_dir)
+            if kwargs["auth"]:
+                NoctAuthGenerator.generate(ctx, app_name, project_dir)
 
             # move the full project to the desired location
             shutil.move(project_dir, app_path)

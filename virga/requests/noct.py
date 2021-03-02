@@ -1,9 +1,8 @@
 import os
-import secrets
 import requests
 from jose import JWTError, jwt
 from typing import Optional
-from fastapi import Response, Cookie, Header
+from fastapi import Response, Cookie
 
 from virga.errors import LoginRequiredException, ExpiredTokenException
 from .secure_cookies import read_secure_cookie, write_secure_cookie
@@ -13,7 +12,9 @@ from virga.types import User
 _NOCT_SERVICE_LOCATION = os.getenv("NOCT_HOST", "http://noct:5000")
 _NOCT_JWT_ALGORITHM = os.getenv("NOCT_TOKEN_ALGORITHM", "HS256")
 _NOCT_JWT_SECRET = os.getenv("ATMOSPHERE_TOKEN_SECRET", "atmospheretokensecret")
-_NOCT_COOKIE_DOMAIN = os.getenv("ATMOSPHERE_AUTH_COOKIE_DOMAIN", ".indico.domains")
+_NOCT_COOKIE_DOMAIN = os.getenv(
+    "ATMOSPHERE_AUTH_COOKIE_DOMAIN", ".indico.domains"
+).split(",")[0]
 
 
 def _refresh_token(refresh_token):
@@ -23,7 +24,7 @@ def _refresh_token(refresh_token):
         f"{_NOCT_SERVICE_LOCATION}/users/refresh_token",
         headers={
             "Authorization": f"Bearer {refresh_token}",
-            "Host": f"virga{_NOCT_COOKIE_DOMAIN}",
+            "Host": f"virga.{_NOCT_COOKIE_DOMAIN}",
         },
     )
 
@@ -34,7 +35,7 @@ def _refresh_token(refresh_token):
 
 
 def _get_token_data(token):
-    scopes = set([f"indico:{s}" for s in (["base"])])
+    scopes = set([f"indico:{s}" for s in (["base", "app_access"])])
     try:
         payload = jwt.decode(
             token,
