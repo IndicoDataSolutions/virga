@@ -3,7 +3,7 @@ import requests
 import random, string
 import uuid
 
-from virga.requests.noct import _NOCT_SERVICE_LOCATION, _NOCT_COOKIE_DOMAIN
+from virga.plugins.noct import NOCT_URL, VALID_DOMAIN
 
 
 def _rng_password():
@@ -21,14 +21,14 @@ def mock_user():
     id = str(uuid.uuid4()).replace("-", "")
     password = _rng_password()
     req = requests.post(
-        f"{_NOCT_SERVICE_LOCATION}/users/register",
+        f"{NOCT_URL}/users/register",
         data={
             "name": "Mock User",
             "email": f"mockuser{id}@indico.io",
             "password": password,
             "accept_terms": "y",
         },
-        headers={"Host": f"virga.{_NOCT_COOKIE_DOMAIN}"},
+        headers={"Host": f"virga.{VALID_DOMAIN}"},
     )
 
     return {"password": password, **req.json()["user"]}
@@ -37,9 +37,9 @@ def mock_user():
 @pytest.fixture(scope="session")
 def mock_tokens(mock_user):
     req = requests.post(
-        f"{_NOCT_SERVICE_LOCATION}/users/authenticate",
+        f"{NOCT_URL}/users/authenticate",
         data={"email": mock_user["email"], "password": mock_user["password"]},
-        headers={"Host": f"virga.{_NOCT_COOKIE_DOMAIN}"},
+        headers={"Host": f"virga.{VALID_DOMAIN}"},
     )
 
     return (

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>GraphiQL</title>
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="origin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden
+    }
+
+    #graphiql {
+      height: 100vh
+    }
+  </style>
+  <link href="//cdn.jsdelivr.net/npm/graphiql@0.11.11/graphiql.css" rel="stylesheet" />
+  <script src="//cdn.jsdelivr.net/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+  <script src="//cdn.jsdelivr.net/fetch/0.9.0/fetch.min.js"></script>
+  <script src="//cdn.jsdelivr.net/react/15.4.2/react.min.js"></script>
+  <script src="//cdn.jsdelivr.net/react/15.4.2/react-dom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/graphiql@0.11.11/graphiql.min.js"></script>
+</head>
+
+<body>
+  <div id="graphiql">Loading...</div>
+  <script>
+    var parameters = {}; window.location.search.substr(1).split("&").forEach(function (a) { var b = a.indexOf("="); 0 <= b && (parameters[decodeURIComponent(a.slice(0, b))] = decodeURIComponent(a.slice(b + 1))) }); function locationQuery(a) { return "?" + Object.keys(a).filter(function (b) { return !!a[b] }).map(function (b) { return encodeURIComponent(b) + "=" + encodeURIComponent(a[b]) }).join("&") } var graphqlParamNames = { query: !0, variables: !0, operationName: !0 }, otherParams = {}, k; for (k in parameters) parameters.hasOwnProperty(k) && !0 !== graphqlParamNames[k] && (otherParams[k] = parameters[k]); var fetchURL = locationQuery(otherParams); function graphQLFetcher(a) { return fetch(fetchURL, { method: "post", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify(a), credentials: "include" }).then(function (b) { return b.json() }) } function onEditQuery(a) { parameters.query = a; updateURL() } function onEditVariables(a) { parameters.variables = a; updateURL() } function onEditOperationName(a) { parameters.operationName = a; updateURL() } function updateURL() { history.replaceState(null, null, locationQuery(parameters)) } ReactDOM.render(React.createElement(GraphiQL, { fetcher: graphQLFetcher }), document.getElementById("graphiql"));
+  </script>
+</body>
+
+</html>

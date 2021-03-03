@@ -12,6 +12,8 @@ python-jose = {extras = ["cryptography"], version = "^3.2.0"}
 requests = "^2.25.1"
 fastapi = "^0.63.0"
 patch = "^1.16"
+graphene = "^2.1.8"
+orjson = "^3.5.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

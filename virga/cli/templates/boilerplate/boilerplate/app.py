@@ -2,7 +2,7 @@ from functools import lru_cache
 from fastapi import FastAPI, Depends
 
 # from virga.types import User
-# from virga.requests.noct import get_current_user
+# from virga.plugins.noct import get_current_user
 
 from .settings import Settings
 

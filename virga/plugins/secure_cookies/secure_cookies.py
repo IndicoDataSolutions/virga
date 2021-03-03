@@ -1,5 +1,4 @@
 import os
-import secrets
 import time
 import hmac
 import hashlib
@@ -125,4 +124,3 @@ def write_secure_cookie(name: str, value: str) -> str:
     Generates a version 2 secure cookie to mimic one encoded by Atmosphere/Tornado.
     """
     return _encode_signed_value_v2(name, utf8_bytes(value)).decode("utf-8")
-
