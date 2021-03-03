@@ -6,9 +6,6 @@ import tempfile
 from .generators import StructureGenerator, NoctAuthGenerator
 
 
-_GENERATORS = []
-
-
 @click.group()
 @click.version_option()
 def virga():

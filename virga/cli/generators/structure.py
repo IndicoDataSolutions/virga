@@ -3,6 +3,7 @@ import shutil
 
 from .base import Generator
 from ..utils import (
+    _print_step,
     get_path,
     _templates_dir,
     run_command,
@@ -18,7 +19,7 @@ class StructureGenerator(Generator):
         Generate project base files given the the provided APP_NAME.
         """
         # 1] copy template repostitory to the provided project directory
-        click.secho("  1] Copying base sidecar template...", fg="magenta", bold=True)
+        _print_step("Copying base sidecar template...")
 
         shutil.copytree(get_path(_templates_dir, "boilerplate"), project_dir)
 
@@ -28,7 +29,7 @@ class StructureGenerator(Generator):
             resolve_template(f"{app_name}/settings.py.template", app_name=app_name)
 
             # 2] initialize the poetry project and install expected dependencies
-            click.secho("  2] Initializing Poetry project...", fg="magenta", bold=True)
+            _print_step("Initializing Poetry project...")
 
             resolve_template("pyproject.toml", app_name=app_name)
             run_command("poetry install")
