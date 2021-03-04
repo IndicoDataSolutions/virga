@@ -3,7 +3,7 @@ import click
 import os
 import tempfile
 
-from .generators import StructureGenerator, NoctAuthGenerator
+from .generators import StructureGenerator, NoctAuthGenerator, GraphQLGenerator
 
 
 @click.group()
@@ -25,6 +25,11 @@ def virga():
     "--auth/--no-auth",
     default=False,
     help="Adds connection middleware to support Noct authentication.",
+)
+@click.option(
+    "--graphql/--no-graphql",
+    default=False,
+    help="Adds basic GraphQL support through Graphene.",
 )
 @click.argument("app_path", type=click.Path(writable=True, resolve_path=True))
 @click.pass_context
@@ -67,8 +72,13 @@ def new(ctx: click.Context, app_path, **kwargs):
             # basic boilerplate generation
             StructureGenerator.generate(ctx, app_name, project_dir)
 
+            # noct integration
             if kwargs["auth"]:
                 NoctAuthGenerator.generate(ctx, app_name, project_dir)
+
+            # graphql integration
+            if kwargs["graphql"]:
+                GraphQLGenerator.generate(ctx, app_name, project_dir)
 
             # move the full project to the desired location
             shutil.move(project_dir, app_path)

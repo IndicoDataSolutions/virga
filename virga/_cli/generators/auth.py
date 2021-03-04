@@ -13,19 +13,20 @@ class NoctAuthGenerator(Generator):
         """
         Patch the generated base structure to add examples for Noct authentication.
         """
-        # 3] copy the noct app patch to the project directory and apply it
-        _print_step("Adding Noct middleware...")
-
-        shutil.copy2(
-            get_path(_templates_dir, "noct.patch"), get_path(project_dir, app_name)
-        )
+        # copy the noct app patch to the project directory and apply it
+        _print_step("Adding Noct route dependencies...")
 
         with in_directory(project_dir):
             with in_directory(app_name):
+                shutil.copy2(get_path(_templates_dir, "noct.patch"), "noct.patch")
                 pset = patch.fromfile("noct.patch")
 
-                if pset.apply():
-                    os.remove("noct.patch")
+                if not pset.apply():
+                    raise Exception("Malformed Noct patch. This is a bug :(")
+
+                os.remove("noct.patch")
 
             # TODO: uncomment when available on pypi
             # run_command("poetry add indico-virga")
+            run_command("poetry add requests python-jose[cryptography]")
+
