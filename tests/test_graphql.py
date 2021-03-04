@@ -15,31 +15,26 @@ class MockLoaderClient:
 
 class MockQuery(ObjectType):
     hello = String(name=String(default_value="Stranger"))
-
-    def resolve_hello(self, info, name):
-        return "Hello " + name
-
-
-class MockLoaderClientQuery(ObjectType):
     goodbye = String(name=String(default_value="Stranger"))
 
+    def resolve_hello(self, info, name):
+        assert info.context["request"]
+        return "Hello " + name
+
     def resolve_goodbye(self, info, name):
-        client = info.context.get("get_client")(MockLoaderClient, name)
-        client2 = info.context.get("get_client")(MockLoaderClient, "banana")
+        client = info.context["get_client"](MockLoaderClient, name)
+        client2 = info.context["get_client"](MockLoaderClient, "banana")
         assert client is client2
 
         return "Goodbye " + client.name
 
 
-class Query(MockQuery, MockLoaderClientQuery):
-    pass
-
-
 def get_schema(request: Request):
-    return Schema(query=Query)
+    assert request
+    return Schema(query=MockQuery)
 
 
-app.add_route("/static", GraphQLRoute(schema=Schema(query=Query)))
+app.add_route("/static", GraphQLRoute(schema=Schema(query=MockQuery)))
 app.add_route("/dynamic", GraphQLRoute(schema=get_schema))
 
 

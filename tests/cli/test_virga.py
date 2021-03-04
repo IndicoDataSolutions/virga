@@ -2,7 +2,7 @@ from click.testing import CliRunner
 import os
 import pytest
 
-from virga.cli.application import virga
+from virga._cli.application import virga
 
 
 # non-empty app path

@@ -4,7 +4,7 @@ import pytest
 import click
 import shutil
 
-from virga.cli.utils import (
+from virga._cli.utils import (
     get_path,
     run_command,
     in_directory,

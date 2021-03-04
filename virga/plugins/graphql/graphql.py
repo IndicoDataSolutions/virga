@@ -17,6 +17,7 @@ from fastapi import (
 from fastapi.responses import HTMLResponse, ORJSONResponse, PlainTextResponse
 
 
+# TODO: add token authentication
 class GraphQLRoute:
     def __init__(
         self, schema: Union[graphene.Schema, Callable[[Request], graphene.Schema]]
