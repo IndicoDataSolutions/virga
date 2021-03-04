@@ -1,3 +1,4 @@
+import pytest
 from fastapi import FastAPI, Depends
 from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
@@ -20,15 +21,8 @@ async def get_user(current_user: User = Depends(get_current_user)):
     return {"msg": f"Hello, {current_user.name}"}
 
 
-def test_get_user_auth(mock_user, mock_tokens):
-    auth_token, _ = mock_tokens
-    response = client.get("/", cookies={"auth_token": auth_token})
-    assert response.status_code == 200
-    assert response.json() == {"msg": f"Hello, {mock_user['name']}"}
-
-
-def test_get_user_refresh(mock_user, mock_tokens):
-    _, refresh_token = mock_tokens
+@pytest.fixture(scope="session")
+def expired_token(mock_user):
     expired_token = write_secure_cookie(
         "auth_token",
         jwt.encode(
@@ -44,11 +38,24 @@ def test_get_user_refresh(mock_user, mock_tokens):
             algorithm=_NOCT_JWT_ALGORITHM,
         ),
     )
+    return expired_token
 
-    # expired token, no refresh
+
+def test_get_user_auth(mock_user, mock_tokens):
+    auth_token, _, _, _ = mock_tokens
+    response = client.get("/", cookies={"auth_token": auth_token})
+    assert response.status_code == 200
+    assert response.json() == {"msg": f"Hello, {mock_user['name']}"}
+
+
+def test_get_user_expired_token(expired_token):
     response = client.get("/", cookies={"auth_token": expired_token})
     assert response.status_code == 401
     assert response.json() == {"detail": "Login is required to access this route"}
+
+
+def test_get_user_refresh(expired_token, mock_user, mock_tokens):
+    _, refresh_token, _, _ = mock_tokens
 
     # expired token, valid refresh
     response = client.get(

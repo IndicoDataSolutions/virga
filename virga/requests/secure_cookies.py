@@ -5,6 +5,7 @@ import hmac
 import hashlib
 import base64
 from typing import Optional, Union, Tuple
+from http.cookies import _unquote as _unquote_cookie
 
 #
 # Copyright 2009 Facebook
@@ -112,6 +113,9 @@ def read_secure_cookie(name: str, value: str, max_age_days: int = 31) -> Optiona
     """
     Decodes a version 2 secure cookie encoded by Atmosphere/Tornado.
     """
+    # Cookies may or may not be quoted per RFC 6265
+    # https://tools.ietf.org/html/rfc6265#section-4.1.1
+    value = _unquote_cookie(value)
     decoded = _decode_signed_value_v2(name, utf8_bytes(value), max_age_days)
     return decoded.decode("utf-8") if isinstance(decoded, bytes) else decoded
 

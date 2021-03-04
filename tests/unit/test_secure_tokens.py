@@ -6,6 +6,16 @@ import hmac
 from virga.requests import write_secure_cookie, read_secure_cookie
 
 
+@pytest.mark.integration
+def test_tornado_tokens(mock_tokens):
+    auth_e, refresh_e, auth, refresh, = mock_tokens
+    decoded = read_secure_cookie("auth_token", auth_e)
+    assert decoded == auth
+
+    decoded = read_secure_cookie("refresh_token", refresh_e)
+    assert decoded == refresh
+
+
 def test_coding_identity():
     rng = str(uuid.uuid4())
     encoded = write_secure_cookie("random-test-cookie", rng)

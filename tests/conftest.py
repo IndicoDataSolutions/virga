@@ -42,4 +42,9 @@ def mock_tokens(mock_user):
         headers={"Host": f"virga.{_NOCT_COOKIE_DOMAIN}"},
     )
 
-    return req.cookies["auth_token"], req.cookies["refresh_token"]
+    return (
+        req.cookies["auth_token"],
+        req.cookies["refresh_token"],
+        req.json()["auth_token"],
+        req.json()["refresh_token"],
+    )
