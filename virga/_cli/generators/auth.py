@@ -28,5 +28,4 @@ class NoctAuthGenerator(Generator):
 
             # TODO: uncomment when available on pypi
             # run_command("poetry add indico-virga")
-            run_command("poetry add requests python-jose[cryptography]")
 

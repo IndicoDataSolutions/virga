@@ -9,6 +9,10 @@ python = "^3.7"
 click = "^7.1.2"
 colorama = "^0.4.4"
 patch = "^1.16"
+requests = "^2.25.1"
+python-jose = {extras = ["cryptography"], version = "^3.2.0"}
+graphene = "^2.1.8"
+orjson = "^3.5.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
