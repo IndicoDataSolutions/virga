@@ -1,6 +1,5 @@
 - type: serial
   dockercfg_service: gcr-dockercfg
   steps:
-    - name: Testing
-      service: virga
-      command: "pytest -sv -n auto tests"
+    - service: virga-test
+      command: "pytest -vv -n auto tests"

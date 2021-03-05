@@ -15,4 +15,3 @@ class Generator(ABC):
     def generate(ctx: Context, *args: Any, **kwargs: Any):
         """ Run any generator-specific code. """
         pass
-

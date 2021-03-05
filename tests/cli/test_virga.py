@@ -1,5 +1,6 @@
 from click.testing import CliRunner
 import os
+import pytest
 
 from virga.cli.application import virga
 
@@ -28,6 +29,7 @@ def test_virga_new_bad_file():
 
 
 # nested non-existent directories
+@pytest.mark.flaky(reruns=1)
 def test_virga_new_good_nested():
     runner = CliRunner()
 
@@ -45,6 +47,7 @@ def test_virga_new_good_nested():
 
 
 # single non-existent directory
+@pytest.mark.flaky(reruns=1)
 def test_virga_new_good_direct():
     runner = CliRunner()
 
@@ -57,3 +60,14 @@ def test_virga_new_good_direct():
         assert os.path.isfile("new-project/pyproject.toml")
         assert os.path.isfile("new-project/poetry.lock")
         assert os.path.isfile("new-project/Dockerfile")
+
+
+# noct authentication
+@pytest.mark.flaky(reruns=1)
+def test_virga_new_good_noct():
+    runner = CliRunner()
+
+    with runner.isolated_filesystem():
+        result = runner.invoke(virga, ["new", "new-project", "--auth"])
+        assert result.exit_code == 0
+        assert result.output.find("Virga application generation complete!") > -1

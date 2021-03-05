@@ -8,6 +8,7 @@ authors = []
 python = "^3.7"
 fastapi = "^0.63.0"
 indico-client = "^4.5.0"
+uvicorn = "^0.13.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

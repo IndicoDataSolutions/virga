@@ -3,10 +3,7 @@ import click
 import os
 import tempfile
 
-from .generators import StructureGenerator
-
-
-_GENERATORS = []
+from .generators import StructureGenerator, NoctAuthGenerator
 
 
 @click.group()
@@ -23,6 +20,11 @@ def virga():
     "--force",
     is_flag=True,
     help=f"({click.style('dangerous', fg='red')}) Force app generation even the given project directory is not empty.",
+)
+@click.option(
+    "--auth/--no-auth",
+    default=False,
+    help="Adds connection middleware to support Noct authentication.",
 )
 @click.argument("app_path", type=click.Path(writable=True, resolve_path=True))
 @click.pass_context
@@ -59,11 +61,14 @@ def new(ctx: click.Context, app_path, **kwargs):
     # completed. this is to ensure a clean file directory in case something fails
     # somewhere
     with tempfile.TemporaryDirectory() as project_dir:
-        project_dir = project_dir.join("tmp")
+        project_dir = os.path.join(project_dir, "tmp")
 
         try:
             # basic boilerplate generation
             StructureGenerator.generate(ctx, app_name, project_dir)
+
+            if kwargs["auth"]:
+                NoctAuthGenerator.generate(ctx, app_name, project_dir)
 
             # move the full project to the desired location
             shutil.move(project_dir, app_path)

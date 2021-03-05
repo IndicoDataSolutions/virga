@@ -20,6 +20,13 @@ def get_path(*segments: Path) -> str:
 
 
 _templates_dir = get_path(os.path.dirname(__file__), "templates")
+_step = 1
+
+
+def _print_step(msg: str):
+    global _step
+    click.secho(f"  {_step}] {msg}", fg="magenta", bold=True)
+    _step += 1
 
 
 def run_command(command: str, *args: str):
