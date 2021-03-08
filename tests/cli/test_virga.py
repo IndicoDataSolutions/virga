@@ -1,6 +1,7 @@
 from click.testing import CliRunner
 import os
 import pytest
+from itertools import combinations
 
 from virga._cli.application import virga
 
@@ -62,12 +63,22 @@ def test_virga_new_good_direct():
         assert os.path.isfile("new-project/Dockerfile")
 
 
-# noct authentication
+cli_args = ["--auth", "--graphql"]
+
+
+@pytest.mark.parametrize(
+    "opts",
+    [
+        pytest.param(args, id=",".join(args).replace("--", ""))
+        for n in range(len(cli_args))
+        for args in combinations(cli_args, n + 1)
+    ],
+)
 @pytest.mark.flaky(reruns=1)
-def test_virga_new_good_noct():
+def test_virga_new_good_opts(opts):
     runner = CliRunner()
 
     with runner.isolated_filesystem():
-        result = runner.invoke(virga, ["new", "new-project", "--auth"])
+        result = runner.invoke(virga, ["new", "new-project", *opts])
         assert result.exit_code == 0
         assert result.output.find("Virga application generation complete!") > -1
