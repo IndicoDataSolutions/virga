@@ -24,7 +24,7 @@ class GraphQLGenerator(Generator):
 
         with in_directory(project_dir):
             with in_directory(app_name):
-                shutil.copy2(get_path(_templates_dir, "graphql/query.py"), "query.py")
+                shutil.copy2(get_path(_templates_dir, "graphql/gql.py"), "gql.py")
                 shutil.copy2(
                     get_path(_templates_dir, "graphql/graphql.patch"), "graphql.patch"
                 )

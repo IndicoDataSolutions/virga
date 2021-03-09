@@ -19,11 +19,15 @@ class MockQuery(ObjectType):
 
     def resolve_hello(self, info, name):
         assert info.context["request"]
+        loader = info.context["get_loader"](MockLoaderClient, name)
+        loader2 = info.context["get_loader"](MockLoaderClient, "coco")
+        assert loader is loader2
+
         return "Hello " + name
 
     def resolve_goodbye(self, info, name):
         client = info.context["get_client"](MockLoaderClient, name)
-        client2 = info.context["get_client"](MockLoaderClient, "banana")
+        client2 = info.context["get_client"](MockLoaderClient, "helado")
         assert client is client2
 
         return "Goodbye " + client.name

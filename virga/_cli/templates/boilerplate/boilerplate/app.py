@@ -6,7 +6,7 @@ from fastapi import FastAPI, Depends
 
 # from graphene import Schema
 # from virga.plugins.graphql import GraphQLRoute
-# from .query import RootQuery
+# from .gql import RootQuery
 
 from .settings import Settings
 
@@ -30,5 +30,8 @@ async def read_root(settings: Settings = Depends(get_settings)):
 
 
 # # Mounts a Graphene executor with schema to '/graphql'. POST requests to
-# # the route get executed as queries, while GET requests will render GraphiQL.
+# # the route get executed while GET requests will render GraphiQL.
+# # GraphQLRoute accepts any Graphene Schema object.
+# #
+# # Read more: https://docs.graphene-python.org/en/stable/types/schema/
 # app.add_route("/graphql", GraphQLRoute(schema=Schema(query=RootQuery)))
