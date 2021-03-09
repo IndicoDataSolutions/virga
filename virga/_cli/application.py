@@ -8,6 +8,7 @@ from .generators import (
     NoctAuthGenerator,
     GraphQLGenerator,
     WebUIGenerator,
+    DatabaseGenerator,
 )
 
 
@@ -36,8 +37,11 @@ def virga():
     default=False,
     help="Adds basic GraphQL support through Graphene.",
 )
+@click.option("--webui/--no-webui", default=False, help="Adds basic web app template.")
 @click.option(
-    "--webui/--no-webui", default=False, help="Adds basic web app template.",
+    "--database/--no-database",
+    default=False,
+    help="Adds Alembic and SQLALchemy with postgresql+asyncpg.",
 )
 @click.argument("app_path", type=click.Path(writable=True, resolve_path=True))
 @click.pass_context
@@ -91,6 +95,10 @@ def new(ctx: click.Context, app_path, **kwargs):
             # graphql integration
             if kwargs["graphql"]:
                 GraphQLGenerator.generate(ctx, app_name, project_dir)
+
+            # database setup
+            if kwargs["database"]:
+                DatabaseGenerator.generate(ctx, app_name, project_dir)
 
             # move the full project to the desired location
             shutil.move(project_dir, app_path)
