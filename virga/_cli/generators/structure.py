@@ -24,12 +24,17 @@ class StructureGenerator(Generator):
         shutil.copytree(get_path(_templates_dir, "boilerplate"), project_dir)
 
         with in_directory(project_dir):
-            shutil.move("boilerplate", app_name)
-            resolve_template("Dockerfile.template", app_name=app_name)
-            resolve_template(f"{app_name}/settings.py.template", app_name=app_name)
+            resolve_template("docker-compose.yaml.template", app_name=app_name)
 
-            # 2] initialize the poetry project and install expected dependencies
-            _print_step("Initializing Poetry project...")
+            with in_directory("api"):
+                shutil.move("boilerplate", app_name)
+                resolve_template(f"{app_name}/settings.py.template", app_name=app_name)
 
-            resolve_template("pyproject.toml", app_name=app_name)
-            run_command("poetry install")
+                resolve_template("Dockerfile.template", app_name=app_name)
+                resolve_template("scripts/dev-server.sh.template", app_name=app_name)
+
+                # 2] initialize the poetry project and install expected dependencies
+                _print_step("Initializing Poetry project...")
+
+                resolve_template("pyproject.toml", app_name=app_name)
+                run_command("poetry install")

@@ -6,7 +6,7 @@ from contextlib import contextmanager
 import shutil
 from fileinput import FileInput
 from string import Template
-
+import patch
 
 Path = Union[str, os.PathLike]
 
@@ -108,3 +108,12 @@ def copy_template(src: Path, dest: Path, **variables) -> str:
     """
     shutil.copy2(src, dest)
     return resolve_template(dest, **variables)
+
+
+def apply_patch(patchfile: str):
+    pset = patch.fromfile(patchfile)
+
+    if not pset.apply():
+        raise Exception("Malformed patch. This is a bug :(")
+
+    os.remove(patchfile)

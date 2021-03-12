@@ -2,4 +2,4 @@
   dockercfg_service: gcr-dockercfg
   steps:
     - service: virga-test
-      command: "pytest -vv -n auto tests"
+      command: "pytest -vv tests"

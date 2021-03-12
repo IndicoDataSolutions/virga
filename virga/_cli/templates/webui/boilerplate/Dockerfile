@@ -6,6 +6,7 @@ RUN apt update && \
 COPY . /mini-strat
 WORKDIR /mini-strat
 
+# install nodejs packages and create a self-signed cert for https
 RUN yarn install && \
     npx mkcert create-ca && \
     npx mkcert create-cert --key snowpack.key --cert snowpack.crt --domains app.indico.local

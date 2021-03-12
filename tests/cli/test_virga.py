@@ -42,9 +42,9 @@ def test_virga_new_good_nested():
         assert os.path.isdir("foo")
         assert os.path.isdir("foo/bar")
         assert os.path.isdir("foo/bar/new-project")
-        assert os.path.isfile("foo/bar/new-project/pyproject.toml")
-        assert os.path.isfile("foo/bar/new-project/poetry.lock")
-        assert os.path.isfile("foo/bar/new-project/Dockerfile")
+        assert os.path.isfile("foo/bar/new-project/api/pyproject.toml")
+        assert os.path.isfile("foo/bar/new-project/api/poetry.lock")
+        assert os.path.isfile("foo/bar/new-project/api/Dockerfile")
 
 
 # single non-existent directory
@@ -58,12 +58,12 @@ def test_virga_new_good_direct():
         assert result.output.find("Virga application generation complete!") > -1
 
         assert os.path.isdir("new-project")
-        assert os.path.isfile("new-project/pyproject.toml")
-        assert os.path.isfile("new-project/poetry.lock")
-        assert os.path.isfile("new-project/Dockerfile")
+        assert os.path.isfile("new-project/api/pyproject.toml")
+        assert os.path.isfile("new-project/api/poetry.lock")
+        assert os.path.isfile("new-project/api/Dockerfile")
 
 
-cli_args = ["--auth", "--graphql"]
+cli_args = ["--auth", "--graphql", "--webui"]
 
 
 @pytest.mark.parametrize(

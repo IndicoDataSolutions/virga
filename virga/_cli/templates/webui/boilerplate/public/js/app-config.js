@@ -1,4 +1,4 @@
-;(function () {
+; (function () {
   window.indico = {
     features: {
       inactivityTimeout: false,
@@ -11,10 +11,7 @@
     appURLs: {
       AuthURL: 'https://dev.indico.io/auth',
       DocsURL: 'https://indico.io/docs',
-      HelpURL: 'https://indico.io/docs',
-      FogURL: 'https://dev.indico.io/graph',
-      CycloneURL: 'https://dev.indico.io/datasets',
-      StorageURL: 'https://dev.indico.io/storage',
+      HelpURL: 'https://indico.io/docs'
     },
   }
 })()

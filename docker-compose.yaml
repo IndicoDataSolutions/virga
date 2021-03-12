@@ -1,7 +1,7 @@
 version: "3"
 services:
   noct-db:
-    image: postgres:9.6.3
+    image: image: postgres:9.6-alpine
     environment:
       POSTGRES_DB: indico
       POSTGRES_USER: indico
@@ -20,6 +20,7 @@ services:
       - 5401:5000
     depends_on:
       - noct-db
+
   virga:
     image: gcr.io/new-indico/virga:development
     build: .

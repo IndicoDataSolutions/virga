@@ -1,0 +1,14 @@
+--- docker-compose.yaml
++++ docker-compose.yaml
+@@ -35,4 +35,4 @@
+-  # webui:
+-  #   build: webui
+-  #   volumes:
+-  #     - ./webui:/new_project-webui
++  webui:
++    build: webui
++    volumes:
++      - ./webui:/new_project-webui
+@@ -48,1 +48,1 @@
+-      # - webui
++      - webui
