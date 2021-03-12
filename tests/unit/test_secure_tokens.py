@@ -3,7 +3,7 @@ import pytest
 import uuid
 import hmac
 
-from virga.requests import write_secure_cookie, read_secure_cookie
+from virga.plugins.secure_cookies import write_secure_cookie, read_secure_cookie
 
 
 @pytest.mark.integration
@@ -42,7 +42,7 @@ def test_decoding_tampered(monkeypatch):
             raise Exception("MOCK")
 
     monkeypatch.setattr(
-        "virga.requests.secure_cookies.hmac.compare_digest", comp_digest
+        "virga.plugins.secure_cookies.secure_cookies.hmac.compare_digest", comp_digest
     )
     encoded = write_secure_cookie("random-test-cookie", str(uuid.uuid4()))
 

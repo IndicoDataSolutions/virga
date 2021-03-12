@@ -4,9 +4,9 @@ from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
 from jose import jwt
 
-from virga.requests import write_secure_cookie
+from virga.plugins.secure_cookies import write_secure_cookie
 from virga.types import User
-from virga.requests.noct import (
+from virga.plugins.noct.noct import (
     get_current_user,
     _NOCT_JWT_SECRET,
     _NOCT_JWT_ALGORITHM,

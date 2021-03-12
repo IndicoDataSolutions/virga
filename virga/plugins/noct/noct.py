@@ -5,7 +5,7 @@ from typing import Optional
 from fastapi import Response, Cookie
 
 from virga.errors import LoginRequiredException, ExpiredTokenException
-from .secure_cookies import read_secure_cookie, write_secure_cookie
+from virga.plugins.secure_cookies import read_secure_cookie, write_secure_cookie
 from virga.types import User
 
 
@@ -74,7 +74,7 @@ def get_current_user(
 ) -> User:
     """
     Handle and process a Noct session JWT stored in an atmosphere secure cookie.
-    Expired tokens are requested for refresh
+    Expired tokens are requested for refresh.
     """
     if not auth_token and not refresh_token:
         raise LoginRequiredException()
