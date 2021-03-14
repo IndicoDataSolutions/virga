@@ -1,0 +1,8 @@
+.DS_Store
+build/
+node_modules/
+
+snowpack.key
+snowpack.crt
+ca.crt
+ca.key

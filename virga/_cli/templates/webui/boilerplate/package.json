@@ -1,0 +1,29 @@
+{
+  "name": "snowpack-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "snowpack dev",
+    "build": "snowpack build"
+  },
+  "dependencies": {
+    "@indico-data/permafrost": "^0.0.3",
+    "@indico-data/utils": "^0.0.3",
+    "immer": "^8.0.1",
+    "lodash": "^4.17.21",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-router-dom": "5.1.2",
+    "styled-components": "5.2.1",
+    "zustand": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/react": "*",
+    "@types/react-dom": "17.0.1",
+    "@types/react-router-dom": "5.1.5",
+    "@types/styled-components": "5.1.7",
+    "snowpack": "3.0.13",
+    "typescript": "4.2.2"
+  }
+}
