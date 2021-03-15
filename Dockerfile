@@ -20,4 +20,4 @@ RUN pip3 install --upgrade pip && \
 
 ENV PATH = "${PATH}:/etc/poetry/bin"
 
-CMD [ "/virga/scripts/entrypoint.sh" ]
+CMD [ "tail", "-f", "/dev/null" ]
