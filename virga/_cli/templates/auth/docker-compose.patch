@@ -1,6 +1,6 @@
 --- docker-compose.yaml
 +++ docker-compose.yaml
-@@ -3,20 +3,20 @@
+@@ -3,21 +3,21 @@
 -  # noct-db:
 -  #   image: postgres:9.6-alpine
 -  #   environment:
@@ -14,7 +14,8 @@
 -  #   environment:
 -  #     ATMOSPHERE_TOKEN_SECRET: atmospheretokensecret
 -  #     ATMOSPHERE_COOKIE_SECRET: atmospherecookiesecret
--  #     ATMOSPHERE_AUTH_COOKIE_DOMAIN: .indico.local
+-  #     ATMOSPHERE_AUTH_COOKIE_DOMAIN: indico.local
+-  #     NOCT_UI_FRONTEND_URL: https://app.indico.local
 -  #     NOCT_BYPASS_CONFIRMATION: "True"
 -  #     NOCT_BYPASS_APP_ACCESS: "True"
 -  #   expose:
@@ -34,14 +35,15 @@
 +    environment:
 +      ATMOSPHERE_TOKEN_SECRET: atmospheretokensecret
 +      ATMOSPHERE_COOKIE_SECRET: atmospherecookiesecret
-+      ATMOSPHERE_AUTH_COOKIE_DOMAIN: .indico.local
++      ATMOSPHERE_AUTH_COOKIE_DOMAIN: indico.local
++      NOCT_UI_FRONTEND_URL: https://app.indico.local
 +      NOCT_BYPASS_CONFIRMATION: "True"
 +      NOCT_BYPASS_APP_ACCESS: "True"
 +    expose:
 +      - "5000"
 +    depends_on:
 +      - noct-db
-@@ -32,2 +32,2 @@
+@@ -33,2 +33,2 @@
 -    # depends_on:
 -    #   - noct
 +    depends_on:

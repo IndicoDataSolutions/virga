@@ -19,7 +19,14 @@ git clone git@github.com:IndicoDataSolutions/virga.git
 cd virga && poetry install
 ```
 
-### Testing
+### Authenticating with GCloud
+
+1. Download the `gcr` service account key file from an Indico admin.
+2. Download the Google Cloud SDK (<https://cloud.google.com/sdk/docs/install>).
+3. Authenticate with the provided service account key: `gcloud auth activate-service-account --key-file=/path/to/key.json`.
+4. Configure Docker to run with GCR: `gcloud auth configure-docker`.
+
+### Generating an app
 
 You can create a new project by running `virga new test_app --webui --graphql --auth`. This command will generate the new project with the given flags. General command usage is available with `virga --help`.
 

@@ -6,8 +6,8 @@ from typing import Optional
 # https://git.io/Jtj8E
 class User(BaseModel):
     id: str
-    name: str
     email: str
+    name: Optional[str] = None
     scopes: Optional[list] = None
 
     def __init__(self, **data):

@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "virga"
 version = "0.1.0"
-description = "Templated adaptable sidecar app generation"
+description = "Templated adaptable sidecar app generation."
 authors = ["thearchitector <elias.gabriel@indico.io>"]
 
 [tool.poetry.dependencies]

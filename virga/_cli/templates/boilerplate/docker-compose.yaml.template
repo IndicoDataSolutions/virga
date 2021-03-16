@@ -13,7 +13,8 @@ services:
   #   environment:
   #     ATMOSPHERE_TOKEN_SECRET: atmospheretokensecret
   #     ATMOSPHERE_COOKIE_SECRET: atmospherecookiesecret
-  #     ATMOSPHERE_AUTH_COOKIE_DOMAIN: .indico.local
+  #     ATMOSPHERE_AUTH_COOKIE_DOMAIN: indico.local
+  #     NOCT_UI_FRONTEND_URL: https://app.indico.local
   #     NOCT_BYPASS_CONFIRMATION: "True"
   #     NOCT_BYPASS_APP_ACCESS: "True"
   #   expose:
@@ -26,7 +27,7 @@ services:
     environment:
       ATMOSPHERE_TOKEN_SECRET: atmospheretokensecret
       ATMOSPHERE_COOKIE_SECRET: atmospherecookiesecret
-      ATMOSPHERE_AUTH_COOKIE_DOMAIN: .indico.local
+      ATMOSPHERE_AUTH_COOKIE_DOMAIN: indico.local
     volumes:
       - ./api:/$app_name-api
     # depends_on:

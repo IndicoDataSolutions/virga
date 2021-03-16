@@ -12,9 +12,9 @@ from virga.types import User
 _NOCT_SERVICE_LOCATION = os.getenv("NOCT_HOST", "http://noct:5000")
 _NOCT_JWT_ALGORITHM = os.getenv("NOCT_TOKEN_ALGORITHM", "HS256")
 _NOCT_JWT_SECRET = os.getenv("ATMOSPHERE_TOKEN_SECRET", "atmospheretokensecret")
-_NOCT_COOKIE_DOMAIN = os.getenv(
-    "ATMOSPHERE_AUTH_COOKIE_DOMAIN", ".indico.domains"
-).split(",")[0]
+_NOCT_COOKIE_DOMAIN = os.getenv("ATMOSPHERE_AUTH_COOKIE_DOMAIN", "indico.local").split(
+    ","
+)[0]
 
 
 def _refresh_token(refresh_token):
@@ -64,7 +64,7 @@ def _get_current_user(token=None, cookie=None):
     user_id = token_data.get("user_id")
 
     if user_id:
-        return User.parse_obj(token_data)
+        return User(**token_data)
 
 
 def get_current_user(

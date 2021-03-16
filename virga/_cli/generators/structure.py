@@ -38,3 +38,11 @@ class StructureGenerator(Generator):
 
                 resolve_template("pyproject.toml", app_name=app_name)
                 run_command("poetry install")
+
+                # TODO: remove once public
+                run_command(
+                    "git clone",
+                    "--branch=elias/webui",
+                    "git@github.com:IndicoDataSolutions/virga.git",
+                )
+                run_command("poetry add ./virga")
