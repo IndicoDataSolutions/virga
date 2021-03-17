@@ -1,5 +1,6 @@
 import click
 import shutil
+import os
 
 from .base import Generator
 from ..utils import (
@@ -39,10 +40,15 @@ class StructureGenerator(Generator):
                 resolve_template("pyproject.toml", app_name=app_name)
                 run_command("poetry install")
 
-                # TODO: remove once public
+                # TODO: remove once accessibility is determined
+                token = os.getenv("GITHUB_ACCESS_TOKEN", "")
                 run_command(
                     "git clone",
                     "--branch=elias/webui",
-                    "git@github.com:IndicoDataSolutions/virga.git",
+                    "--depth=1",
+                    "--no-tags",
+                    f"https://{token}@github.com/IndicoDataSolutions/virga.git",
+                    "lib/virga",
                 )
-                run_command("poetry add ./virga")
+                run_command("rm -rf .git")
+                run_command("poetry add ./lib/virga")

@@ -3,7 +3,7 @@ FROM python:3.7-slim-buster
 ENV APP_NAME=virga POETRY_HOME=/etc/poetry
 
 RUN apt update && \
-    apt install -y curl vim && \
+    apt install -y curl vim git && \
     curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
     apt install -y nodejs && \
     npm install -g yarn

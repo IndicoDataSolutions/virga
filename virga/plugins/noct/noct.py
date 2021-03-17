@@ -15,6 +15,8 @@ _NOCT_JWT_SECRET = os.getenv("ATMOSPHERE_TOKEN_SECRET", "atmospheretokensecret")
 _NOCT_COOKIE_DOMAIN = os.getenv("ATMOSPHERE_AUTH_COOKIE_DOMAIN", "indico.local").split(
     ","
 )[0]
+if _NOCT_COOKIE_DOMAIN.startswith("."):
+    _NOCT_COOKIE_DOMAIN = _NOCT_COOKIE_DOMAIN[1:]
 
 
 def _refresh_token(refresh_token):
