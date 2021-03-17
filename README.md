@@ -38,7 +38,19 @@ You'll be able to access the UI at `https://app.indico.local`. You can verify no
 >
 > In order for the hostname DNS resolution to succeed, `./run.sh` spawns a [DNS Proxy Server](https://mageddo.github.io/dns-proxy-server/latest/en/), which allows the container hostnames to resolve on the host machine without knowing the container IPs. Due to proxy restrictions, some existing services might not function correctly (namly, `gcloud` and `indico-deployment` actions may fail).
 
-### Authenticated Routes
+### Creating a user
+
+As of now, the UI does not support creating users. In order to create a user and access authenticated routes, you must create one manually through the CLI. Noct is responsible for handling users, and there is a convinence script placed within its container's working directory. To create an admin user:
+
+```sh
+$ docker exec -it new_project_noct_1 bash
+$ python3 alembic/migrations/setup_user_access.py EMAIL_ADDRESS
+setup_user_access.py:20: UserWarning: User with email EMAIL_ADDRESS not found, creating...
+  warnings.warn("User with email {} not found, creating...".format(email))
+Confirm Password for EMAIL_ADDRESS: 
+```
+
+### Authenticated routes
 
 For now, all routes are unauthenticated unless explicily required. Authentication and request for the current user can be added to a route via FastAPI's [Dependency Injection](https://fastapi.tiangolo.com/tutorial/dependencies/?h=depends) system. In general, adding
 
