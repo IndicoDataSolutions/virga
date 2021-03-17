@@ -2,54 +2,43 @@
 
 Templated adaptable sidecar app generation.
 
-## Prerequisites
-
-Virga is a [Poetry](https://python-poetry.org/) project, meaning it uses Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/):
-
-```sh
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-```
-
-## Environment
-
-To setup the project, install Poetry dependencies by cloning the repo and running `poetry install` in the project directory:
-
-```sh
-git clone git@github.com:IndicoDataSolutions/virga.git
-cd virga && poetry install
-```
+## Usage
 
 ### Authenticating with GCloud
+
+Projects generated with `--auth` require GCR access to download and run the Noct service, Indico's platform-wide authentication server. To setup GCR access on your machine:
 
 1. Download the `gcr` service account key file from an Indico admin.
 2. Download the Google Cloud SDK (<https://cloud.google.com/sdk/docs/install>).
 3. Authenticate with the provided service account key: `gcloud auth activate-service-account --key-file=/path/to/key.json`.
 4. Configure Docker to run with GCR: `gcloud auth configure-docker`.
 
-## Generating an app
+### Generating an app
 
-> **For now, Virga is not publically released. To run Virga commands, you must clone this repo and run `poetry install`, then `poetry shell`. All commands must be run from within `poetry shell` or via `poetry run CMD`.**
+**_For now, Virga is not publically released. To run Virga commands, you must clone this repo and run `poetry install`, then `poetry shell`. All commands must be run from within `poetry shell` or via `poetry run`. See the [development section](#development) for more information._**
 
-You can create a new project by running `virga new test_app --webui --graphql --auth`. This command will generate the new project with the given flags. General command usage is available with `virga --help`.
+You can create a new project by running `virga new new_app --webui --graphql --auth`. This command will generate the new project with the given flags. General command usage is available with `virga new --help`.
 
-To test the generated project:
+> Note: To avoid GitHub HTTPS authentication every time a project is generated, set the `GITHUB_ACCESS_TOKEN` to a valid GitHub access token.
+
+---
+
+To launch the generated project:
 
 ```sh
-cd test_app
+cd new_app
 ./run.sh
 ```
 
-You'll be able to access the UI at `https://app.indico.local`. You can verify noct is running by going to `https://app.indico.local/auth/api/ping`. The templated FastAPI application is mounted to `https://app.indico.local/api`, but it will fail if there are missing python dependencies (if Virga is inaccessible by PyPi, for example).
+You'll be able to access the UI at `https://app.indico.local`. You can verify noct is running by going to `https://app.indico.local/auth/api/ping`. The templated FastAPI application is mounted to `https://app.indico.local/api`.
 
-To test the FastAPI app, omit the `--graphql --auth` flags during generation, and return to `https://app.indico.local/api`. A JSON message should be displayed reading `"Hello World!"`.
-
-> _**NOTE:**_
+> Note:
 >
 > `./run.sh` is a convience script for spawning the project inside several Docker containers managed by Docker Compose. Depending on the flags used to generate the application, different services will be created.
 >
 > In order for the hostname DNS resolution to succeed, `./run.sh` spawns a [DNS Proxy Server](https://mageddo.github.io/dns-proxy-server/latest/en/), which allows the container hostnames to resolve on the host machine without knowing the container IPs. Due to proxy restrictions, some existing services might not function correctly (namly, `gcloud` and `indico-deployment` actions may fail).
 
-## Authenticated Routes
+### Authenticated Routes
 
 For now, all routes are unauthenticated unless explicily required. Authentication and request for the current user can be added to a route via FastAPI's [Dependency Injection](https://fastapi.tiangolo.com/tutorial/dependencies/?h=depends) system. In general, adding
 
@@ -76,7 +65,17 @@ async def read_root():
     return {"msg": "Hello World!"}
 ```
 
-## Docker Compose
+## Development
+
+Virga is a [Poetry](https://python-poetry.org/) project, meaning it uses Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/). To setup the project, install Poetry dependencies by cloning the repo and running `poetry install` in the project directory. Combined, those command will look like the followin:
+
+```sh
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+git clone git@github.com:IndicoDataSolutions/virga.git
+cd virga && poetry install
+```
+
+### Docker Compose
 
 Virga comes with a `docker-compose` file to make testing easier. Simply `docker-compose up --build`. The Docker setup contains a development version of Noct running an PostgreSQL 9.6.x server running on Alpine, reachable at `http://noct:5000` and `http://noct-db:5432` respectivly.
 
