@@ -30,7 +30,6 @@ def test_virga_new_bad_file():
 
 
 # nested non-existent directories
-@pytest.mark.flaky(reruns=1)
 def test_virga_new_good_nested():
     runner = CliRunner()
 
@@ -48,7 +47,6 @@ def test_virga_new_good_nested():
 
 
 # single non-existent directory
-@pytest.mark.flaky(reruns=1)
 def test_virga_new_good_direct():
     runner = CliRunner()
 
@@ -74,7 +72,6 @@ cli_args = ["--auth", "--graphql", "--webui"]
         for args in combinations(cli_args, n + 1)
     ],
 )
-@pytest.mark.flaky(reruns=1)
 def test_virga_new_good_opts(opts):
     runner = CliRunner()
 

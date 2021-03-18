@@ -12,9 +12,9 @@ from virga.types import User
 _NOCT_SERVICE_LOCATION = os.getenv("NOCT_HOST", "http://noct:5000")
 _NOCT_JWT_ALGORITHM = os.getenv("NOCT_TOKEN_ALGORITHM", "HS256")
 _NOCT_JWT_SECRET = os.getenv("ATMOSPHERE_TOKEN_SECRET", "atmospheretokensecret")
-_NOCT_COOKIE_DOMAIN = os.getenv("ATMOSPHERE_AUTH_COOKIE_DOMAIN", "indico.local").split(
-    ","
-)[0]
+_NOCT_COOKIE_DOMAIN = os.getenv(
+    "ATMOSPHERE_AUTH_COOKIE_DOMAIN", ".indico.domains"
+).split(",")[0]
 if _NOCT_COOKIE_DOMAIN.startswith("."):
     _NOCT_COOKIE_DOMAIN = _NOCT_COOKIE_DOMAIN[1:]
 

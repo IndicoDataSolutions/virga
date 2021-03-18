@@ -1,5 +1,3 @@
-- type: serial
-  dockercfg_service: gcr-dockercfg
-  steps:
-    - service: virga-test
-      command: "pytest -vv tests"
+- service: virga-test
+  name: pytest
+  command: /virga/scripts/run_tests.sh
