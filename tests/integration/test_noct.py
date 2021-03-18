@@ -31,7 +31,7 @@ def expired_token(mock_user):
                 "user_id": mock_user["id"],
                 "user_name": mock_user["name"],
                 "user_email": mock_user["email"],
-                "aud": ["indico:base"],
+                "aud": ["indico:base", "indico:app_access"],
                 "exp": datetime.utcnow() - timedelta(minutes=1),
             },
             _NOCT_JWT_SECRET,

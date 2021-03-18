@@ -15,6 +15,8 @@ _NOCT_JWT_SECRET = os.getenv("ATMOSPHERE_TOKEN_SECRET", "atmospheretokensecret")
 _NOCT_COOKIE_DOMAIN = os.getenv(
     "ATMOSPHERE_AUTH_COOKIE_DOMAIN", ".indico.domains"
 ).split(",")[0]
+if _NOCT_COOKIE_DOMAIN.startswith("."):
+    _NOCT_COOKIE_DOMAIN = _NOCT_COOKIE_DOMAIN[1:]
 
 
 def _refresh_token(refresh_token):
@@ -64,7 +66,7 @@ def _get_current_user(token=None, cookie=None):
     user_id = token_data.get("user_id")
 
     if user_id:
-        return User.parse_obj(token_data)
+        return User(**token_data)
 
 
 def get_current_user(

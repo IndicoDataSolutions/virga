@@ -1,11 +1,10 @@
 import click
 import shutil
-import patch
-import os
 
 from .base import Generator
 from ..utils import (
     _print_step,
+    apply_patch,
     get_path,
     _templates_dir,
     run_command,
@@ -22,18 +21,16 @@ class GraphQLGenerator(Generator):
         # copy the graphql patch to the project directory and apply it
         _print_step("Adding base GraphQL support and schema...")
 
-        with in_directory(project_dir):
+        with in_directory(get_path(project_dir, "api")):
             with in_directory(app_name):
                 shutil.copy2(get_path(_templates_dir, "graphql/gql.py"), "gql.py")
+
+                _print_step("Patching existing code...")
+
                 shutil.copy2(
                     get_path(_templates_dir, "graphql/graphql.patch"), "graphql.patch"
                 )
-                pset = patch.fromfile("graphql.patch")
-
-                if not pset.apply():
-                    raise Exception("Malformed GraphQL patch. This is a bug :(")
-
-                os.remove("graphql.patch")
+                apply_patch("graphql.patch")
 
             # TODO: uncomment when available on pypi
             # run_command("poetry add indico-virga")

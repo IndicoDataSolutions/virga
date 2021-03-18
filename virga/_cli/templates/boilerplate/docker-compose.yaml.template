@@ -1,0 +1,52 @@
+version: "3"
+services:
+  # noct-db:
+  #   image: postgres:9.6-alpine
+  #   environment:
+  #     POSTGRES_DB: indico
+  #     POSTGRES_USER: indico
+  #     POSTGRES_PASSWORD: development
+  #   volumes:
+  #     - noct_data:/var/lib/postgresql/data
+  # noct:
+  #   image: gcr.io/new-indico/noct:development
+  #   environment:
+  #     ATMOSPHERE_TOKEN_SECRET: atmospheretokensecret
+  #     ATMOSPHERE_COOKIE_SECRET: atmospherecookiesecret
+  #     ATMOSPHERE_AUTH_COOKIE_DOMAIN: indico.local
+  #     NOCT_UI_FRONTEND_URL: https://app.indico.local
+  #     NOCT_BYPASS_CONFIRMATION: "True"
+  #     NOCT_BYPASS_APP_ACCESS: "True"
+  #   expose:
+  #     - "5000"
+  #   depends_on:
+  #     - noct-db
+
+  api:
+    build: api
+    environment:
+      ATMOSPHERE_TOKEN_SECRET: atmospheretokensecret
+      ATMOSPHERE_COOKIE_SECRET: atmospherecookiesecret
+      ATMOSPHERE_AUTH_COOKIE_DOMAIN: indico.local
+    volumes:
+      - ./api:/$app_name-api
+    # depends_on:
+    #   - noct
+
+  # webui:
+  #   build: webui
+  #   volumes:
+  #     - ./webui:/$app_name-webui
+
+  app:
+    build: nginx
+    hostname: app.indico.local
+    expose:
+      - "80"
+      - "443"
+    depends_on:
+      - api
+      # - webui
+
+volumes:
+  noct_data:

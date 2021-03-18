@@ -1,0 +1,9 @@
+--- nginx/app-indico-local.conf
++++ nginx/app-indico-local.conf
+@@ -17,3 +17,3 @@
+-	#location / {
+-	#	proxy_pass https://webui;
+-	#}
++	location / {
++		proxy_pass https://webui;
++	}

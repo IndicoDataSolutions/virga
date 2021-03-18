@@ -1,7 +1,7 @@
 version: "3"
 services:
   noct-db:
-    image: postgres:9.6.3
+    image: postgres:9.6-alpine
     environment:
       POSTGRES_DB: indico
       POSTGRES_USER: indico
@@ -11,22 +11,25 @@ services:
   noct:
     image: gcr.io/new-indico/noct:development
     environment:
-      ATMOSPHERE_TOKEN_SECRET: "${ATMOSPHERE_TOKEN_SECRET}"
-      ATMOSPHERE_COOKIE_SECRET: "${ATMOSPHERE_COOKIE_SECRET}"
-      ATMOSPHERE_AUTH_COOKIE_DOMAIN: "${ATMOSPHERE_AUTH_COOKIE_DOMAIN}"
+      ATMOSPHERE_TOKEN_SECRET: atmospheretokensecret
+      ATMOSPHERE_COOKIE_SECRET: atmospherecookiesecret
+      ATMOSPHERE_AUTH_COOKIE_DOMAIN: .indico.local
+      NOCT_UI_FRONTEND_URL: https://noct.indico.local
       NOCT_BYPASS_CONFIRMATION: "True"
       NOCT_BYPASS_APP_ACCESS: "True"
     ports:
       - 5401:5000
     depends_on:
       - noct-db
+
   virga:
     image: gcr.io/new-indico/virga:development
     build: .
     environment:
-      ATMOSPHERE_TOKEN_SECRET: "${ATMOSPHERE_TOKEN_SECRET}"
-      ATMOSPHERE_COOKIE_SECRET: "${ATMOSPHERE_COOKIE_SECRET}"
-      ATMOSPHERE_AUTH_COOKIE_DOMAIN: "${ATMOSPHERE_AUTH_COOKIE_DOMAIN}"
+      ATMOSPHERE_TOKEN_SECRET: atmospheretokensecret
+      ATMOSPHERE_COOKIE_SECRET: atmospherecookiesecret
+      ATMOSPHERE_AUTH_COOKIE_DOMAIN: .indico.local
+      GITHUB_ACCESS_TOKEN: "${GITHUB_ACCESS_TOKEN}"
     volumes:
       - .:/virga
     depends_on:

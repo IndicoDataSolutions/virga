@@ -3,7 +3,12 @@ import click
 import os
 import tempfile
 
-from .generators import StructureGenerator, NoctAuthGenerator, GraphQLGenerator
+from .generators import (
+    StructureGenerator,
+    NoctAuthGenerator,
+    GraphQLGenerator,
+    WebUIGenerator,
+)
 
 
 @click.group()
@@ -30,6 +35,9 @@ def virga():
     "--graphql/--no-graphql",
     default=False,
     help="Adds basic GraphQL support through Graphene.",
+)
+@click.option(
+    "--webui/--no-webui", default=False, help="Adds basic web app template.",
 )
 @click.argument("app_path", type=click.Path(writable=True, resolve_path=True))
 @click.pass_context
@@ -71,6 +79,10 @@ def new(ctx: click.Context, app_path, **kwargs):
         try:
             # basic boilerplate generation
             StructureGenerator.generate(ctx, app_name, project_dir)
+
+            # webapp generation
+            if kwargs["webui"]:
+                WebUIGenerator.generate(ctx, app_name, project_dir)
 
             # noct integration
             if kwargs["auth"]:
