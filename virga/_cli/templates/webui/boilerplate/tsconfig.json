@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+      "module": "ESNext",
+      "target": "ESNext",
+      "strict": false,
+      "allowJs": true,
+      "checkJs": false,
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "jsx": "preserve",
+      "noEmit": true,
+      "typeRoots": [
+          "node_modules/@types",
+          "types"
+      ],
+      "baseUrl": ".",
+      "paths": {
+          "root/*": ["./src/app/*"],
+          "Auth/*": ["./src/app/modules/auth/*"],
+          "User/*": ["./src/app/modules/user/*"]
+      }
+  },
+  "include": [
+      "src",
+      "types"
+  ]
+}

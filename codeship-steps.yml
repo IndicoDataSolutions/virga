@@ -1,0 +1,3 @@
+- service: virga-test
+  name: pytest
+  command: /virga/scripts/run_tests.sh

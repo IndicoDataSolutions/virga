@@ -1,0 +1,32 @@
+virga-test:
+  build: .
+  encrypted_env_file: codeship.env
+  volumes:
+    - .:/virga
+  depends_on:
+    - noct
+  dockercfg_service: gcr-dockercfg
+  cached: True
+
+noct:
+  image: gcr.io/new-indico/noct:development
+  environment:
+    NOCT_BYPASS_CONFIRMATION: True
+    NOCT_BYPASS_APP_ACCESS: True
+  depends_on:
+    - noct-db
+  dockercfg_service: gcr-dockercfg
+  cached: True
+noct-db:
+  image: postgres:9.6-alpine
+  environment:
+    POSTGRES_DB: indico
+    POSTGRES_USER: indico
+    POSTGRES_PASSWORD: development
+  cached: True
+
+gcr-dockercfg:
+  image: indicoio/gcr-dockercfg
+  add_docker: true
+  encrypted_env_file: codeship.env
+  cached: True
