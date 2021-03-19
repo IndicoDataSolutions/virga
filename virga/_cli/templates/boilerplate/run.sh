@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# enables host access of the nginx app via the container hostname.
-# https://mageddo.github.io/dns-proxy-server/latest/en/
+# enables host access of the nginx app via the container hostname
+# https://github.com/dvddarias/docker-hoster
 if ! docker ps | grep -q dns-proxy; then
-    docker run --detach --rm --name dns-proxy -p 5380:5380 \
-        -v /opt/dns-proxy-server/conf:/app/conf \
-        -v /var/run/docker.sock:/var/run/docker.sock \
-        -v /etc/resolv.conf:/etc/resolv.conf \
-        defreitas/dns-proxy-server > /dev/null
+    echo "Spawning DNS proxy server for container hostname resolution..."
+    docker run --rm -d --name dns-proxy \
+        -v /var/run/docker.sock:/tmp/docker.sock \
+        -v /etc/hosts:/tmp/hosts \
+        dvdarias/docker-hoster
 fi
 
 docker-compose up --force-recreate --build --remove-orphans

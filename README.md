@@ -15,7 +15,7 @@ Projects generated with `--auth` require GCR access to download and run the Noct
 
 ### Generating an app
 
-**_For now, Virga is not publically released. To run Virga commands, you must clone this repo and run `poetry install`, then `poetry shell`. All commands must be run from within `poetry shell` or via `poetry run`. See the [development section](#development) for more information._**
+**For now, Virga is not publically released. To run Virga commands, you must clone this repo and run `poetry install`, then `poetry shell`. All commands must be run from within `poetry shell` or via `poetry run`. See the [development section](#development) for more information.**
 
 You can create a new project by running `virga new new_app --webui --graphql --auth`. This command will generate the new project with the given flags. General command usage is available with `virga new --help`.
 
@@ -36,7 +36,7 @@ You'll be able to access the UI at `https://app.indico.local`. You can verify no
 >
 > `./run.sh` is a convience script for spawning the project inside several Docker containers managed by Docker Compose. Depending on the flags used to generate the application, different services will be created.
 >
-> In order for the hostname DNS resolution to succeed, `./run.sh` spawns a [DNS Proxy Server](https://mageddo.github.io/dns-proxy-server/latest/en/), which allows the container hostnames to resolve on the host machine without knowing the container IPs. Due to proxy restrictions, some existing services might not function correctly (namly, `gcloud` and `indico-deployment` actions may fail).
+> In order for the hostname DNS resolution to succeed, `./run.sh` spawns a [DNS proxy server](https://github.com/dvddarias/docker-hoster), which allows the container hostnames to resolve on the host machine without knowing the container IPs. This shouldn't cause any complications since it simply appends and removes entries from your `/etc/hosts` file, but if problems occur, only run the service while testing your generated application.
 
 ### Creating a user
 
