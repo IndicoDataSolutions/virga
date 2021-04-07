@@ -111,9 +111,25 @@ def copy_template(src: Path, dest: Path, **variables) -> str:
 
 
 def apply_patch(patchfile: str):
-    pset = patch.fromfile(patchfile)
+    """
+    Loads, applies, then deletes the given unified patch file, throwing an error
+    if something goes wrong.
+    """
+    try:
+        pset = patch.fromfile(patchfile)
 
-    if not pset.apply():
-        raise Exception("Malformed patch. This is a bug :(")
+        if not pset or not pset.apply():
+            raise Exception("Malformed patch. This is a bug :(")
+    except Exception:
+        raise
+    finally:
+        os.remove(patchfile)
 
-    os.remove(patchfile)
+
+def run_patch(src: str, dest: str):
+    """
+    Copies the provided patch file to the destination, then applies the patch
+    using `apply_patch`.
+    """
+    shutil.copy2(src, dest)
+    apply_patch(dest)

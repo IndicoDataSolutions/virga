@@ -44,6 +44,7 @@ class StructureGenerator(Generator):
                 token = os.getenv("GITHUB_ACCESS_TOKEN", "")
                 run_command(
                     "git clone",
+                    "--branch=elias/database",
                     "--depth=1",
                     "--no-tags",
                     f"https://{token}@github.com/IndicoDataSolutions/virga.git",

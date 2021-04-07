@@ -4,11 +4,11 @@ import shutil
 from .base import Generator
 from ..utils import (
     _print_step,
-    apply_patch,
     get_path,
     _templates_dir,
     run_command,
     in_directory,
+    run_patch,
 )
 
 
@@ -27,10 +27,9 @@ class GraphQLGenerator(Generator):
 
                 _print_step("Patching existing code...")
 
-                shutil.copy2(
+                run_patch(
                     get_path(_templates_dir, "graphql/graphql.patch"), "graphql.patch"
                 )
-                apply_patch("graphql.patch")
 
             # TODO: uncomment when available on pypi
             # run_command("poetry add indico-virga")

@@ -1,6 +1,5 @@
 import click
 import shutil
-import os
 
 from .base import Generator
 from ..utils import (
@@ -10,6 +9,7 @@ from ..utils import (
     run_command,
     in_directory,
     resolve_template,
+    run_patch,
 )
 
 
@@ -22,7 +22,7 @@ class DatabaseGenerator(Generator):
         # copy the basic alembic structure to the project directory
         _print_step("Creating basic Alembic structure...")
 
-        with in_directory(project_dir):
+        with in_directory(get_path(project_dir, "api")):
             shutil.copytree(
                 get_path(_templates_dir, "database/alembic"), "alembic",
             )
@@ -31,11 +31,18 @@ class DatabaseGenerator(Generator):
             )
             resolve_template("alembic/env.py.template", app_name=app_name)
 
+            _print_step("Copying core database plugins...")
             with in_directory(app_name):
                 shutil.copytree(
                     get_path(_templates_dir, "database/database"), "database",
                 )
                 resolve_template("database/__init__.py.template", app_name=app_name)
+
+                _print_step("Patching settings...")
+                run_patch(
+                    get_path(_templates_dir, "database/settings.patch"),
+                    "settings.patch",
+                )
 
             # TODO: uncomment when available on pypi
             # run_command("poetry add indico-virga")
