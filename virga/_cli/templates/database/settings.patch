@@ -1,0 +1,44 @@
+--- settings.py
++++ settings.py
+@@ -3,1 +3,1 @@
+-# from functools import lru_cache
++from functools import lru_cache
+@@ -8,19 +8,19 @@
+-    # db_driver: str = "postgresql+asyncpg"
+-    # postgres_host: str
+-    # postgres_port: int
+-    # postgres_username: str
+-    # postgres_password: str
+-    # postgres_db: str
+-
+-    # @property
+-    # @lru_cache
+-    # def db_url(self):
+-    #     # dialect+driver://username:password@host:port/database
+-    #     return "{}://{}:{}@{}:{}/{}".format(
+-    #         self.db_driver,
+-    #         self.postgres_username,
+-    #         self.postgres_password,
+-    #         self.postgres_host,
+-    #         self.postgres_port,
+-    #         self.postgres_db,
+-    #     )
++    db_driver: str = "postgresql+asyncpg"
++    postgres_host: str
++    postgres_port: int
++    postgres_username: str
++    postgres_password: str
++    postgres_db: str
++
++    @property
++    @lru_cache
++    def db_url(self):
++        # dialect+driver://username:password@host:port/database
++        return "{}://{}:{}@{}:{}/{}".format(
++            self.db_driver,
++            self.postgres_username,
++            self.postgres_password,
++            self.postgres_host,
++            self.postgres_port,
++            self.postgres_db,
++        )

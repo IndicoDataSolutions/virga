@@ -1,22 +1,26 @@
 from pydantic import BaseSettings
 
+# from functools import lru_cache
+
 
 class Settings(BaseSettings):
-    app_name: str = "$app_name"
-    db_driver: str = "postgresql+asyncpg"
-    postgres_host: str
-    postgres_port: int
-    postgres_username: str
-    postgres_password: str
-    postgres_db: str
+    app_name: str = "new_project"
+    # db_driver: str = "postgresql+asyncpg"
+    # postgres_host: str
+    # postgres_port: int
+    # postgres_username: str
+    # postgres_password: str
+    # postgres_db: str
 
-    @property
-    def db_config(self):
-        return {
-            "drivername": self.db_driver,
-            "host": self.postgres_host,
-            "port": self.postgres_port,
-            "username": self.postgres_username,
-            "password": self.postgres_password,
-            "database": self.postgres_db,
-        }
+    # @property
+    # @lru_cache
+    # def db_url(self):
+    #     # dialect+driver://username:password@host:port/database
+    #     return "{}://{}:{}@{}:{}/{}".format(
+    #         self.db_driver,
+    #         self.postgres_username,
+    #         self.postgres_password,
+    #         self.postgres_host,
+    #         self.postgres_port,
+    #         self.postgres_db,
+    #     )

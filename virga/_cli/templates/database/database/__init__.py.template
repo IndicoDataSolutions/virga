@@ -9,4 +9,4 @@ BASE = declarative_base()
 # https://docs.sqlalchemy.org/en/14/_modules/examples/asyncio/async_orm.html
 def async_session(**kwargs):
     settings = get_settings()
-    return start_async_session(settings.db_config, **kwargs)
+    return start_async_session(settings.db_url, **kwargs)

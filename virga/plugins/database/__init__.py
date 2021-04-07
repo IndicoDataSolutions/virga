@@ -4,7 +4,7 @@ from sqlalchemy.engine.url import URL
 from sqlalchemy.orm import sessionmaker
 
 
-def make_async_engine(config: dict, **kwargs) -> AsyncEngine:
+def make_async_engine(url: str, **kwargs) -> AsyncEngine:
     """
     Create and return an asyncio database engine from the DB_INFO environment variable.
     """
@@ -24,7 +24,10 @@ def make_async_engine(config: dict, **kwargs) -> AsyncEngine:
         "execution_options", {"schema_translate_map": {None: "public"}}
     )
 
-    return create_async_engine(URL(**config), **kwargs)
+    kwargs["future"] = True
+    kwargs["echo"] = kwargs.get("echo", True)
+
+    return create_async_engine(url, **kwargs)
 
 
 class _SessionMaker(object):
@@ -32,9 +35,9 @@ class _SessionMaker(object):
     _engine = None
 
     @classmethod
-    def new(cls, db_config, **kwargs):
+    def new(cls, db_url, **kwargs):
         if not cls._sessionmaker or not cls._engine:
-            cls._engine = make_async_engine(db_config, **kwargs)
+            cls._engine = make_async_engine(db_url, **kwargs)
             cls._sessionmaker = sessionmaker(
                 cls._engine, expire_on_commit=False, class_=AsyncSession
             )
@@ -42,9 +45,9 @@ class _SessionMaker(object):
         return cls._sessionmaker()
 
 
-def start_async_session(db_config: dict, **kwargs) -> AsyncSession:
+def start_async_session(db_url: str, **kwargs) -> AsyncSession:
     """
     Create and return a new asyncio-backed database session. The underlying
-    sqlalchemy sessionmaker and engine are created once anc cached.
+    sqlalchemy sessionmaker and engine are created once and cached.
     """
-    return _SessionMaker.new(db_config, **kwargs)
+    return _SessionMaker.new(db_url, **kwargs)
