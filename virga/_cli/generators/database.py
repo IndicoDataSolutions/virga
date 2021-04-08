@@ -36,12 +36,14 @@ class DatabaseGenerator(Generator):
                 shutil.copytree(
                     get_path(_templates_dir, "database/database"), "database",
                 )
-                resolve_template("database/__init__.py.template", app_name=app_name)
 
-                _print_step("Patching settings...")
+                _print_step("Patching generated files...")
                 run_patch(
                     get_path(_templates_dir, "database/settings.patch"),
                     "settings.patch",
+                )
+                run_patch(
+                    get_path(_templates_dir, "database/app.patch"), "app.patch",
                 )
 
             # TODO: uncomment when available on pypi

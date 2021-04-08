@@ -27,9 +27,7 @@ class GraphQLGenerator(Generator):
 
                 _print_step("Patching existing code...")
 
-                run_patch(
-                    get_path(_templates_dir, "graphql/graphql.patch"), "graphql.patch"
-                )
+                run_patch(get_path(_templates_dir, "graphql/app.patch"), "app.patch")
 
             # TODO: uncomment when available on pypi
             # run_command("poetry add indico-virga")

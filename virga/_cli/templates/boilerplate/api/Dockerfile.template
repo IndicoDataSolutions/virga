@@ -3,7 +3,7 @@ FROM python:3.7-slim-buster
 ENV APP_NAME=$app_name POETRY_HOME=/etc/poetry
 
 RUN apt update && \
-    apt install -y curl
+    apt install -y curl vim
 
 COPY . /$app_name
 WORKDIR /$app_name

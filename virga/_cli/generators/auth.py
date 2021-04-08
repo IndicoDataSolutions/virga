@@ -28,7 +28,7 @@ class NoctAuthGenerator(Generator):
                 # run_command("poetry add indico-virga")
 
                 with in_directory(app_name):
-                    run_patch(get_path(_templates_dir, "auth/noct.patch"), "noct.patch")
+                    run_patch(get_path(_templates_dir, "auth/app.patch"), "app.patch")
 
             _print_step("Patching existing configs...")
             run_patch(
@@ -43,5 +43,6 @@ class NoctAuthGenerator(Generator):
             # change the noct route in the webui only if it was generated
             if os.path.exists("webui"):
                 run_patch(
-                    get_path(_templates_dir, "auth/webroute.patch"), "webroute.patch"
+                    get_path(_templates_dir, "auth/app-config.patch"),
+                    "app-config.patch",
                 )

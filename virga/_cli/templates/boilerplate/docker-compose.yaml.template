@@ -6,8 +6,6 @@ services:
   #     POSTGRES_DB: indico
   #     POSTGRES_USER: indico
   #     POSTGRES_PASSWORD: development
-  #   volumes:
-  #     - noct_data:/var/lib/postgresql/data
   # noct:
   #   image: gcr.io/new-indico/noct:development
   #   environment:
@@ -22,15 +20,26 @@ services:
   #   depends_on:
   #     - noct-db
 
+  api-db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: indico
+      POSTGRES_USER: indico
+      POSTGRES_PASSWORD: development
   api:
     build: api
     environment:
       ATMOSPHERE_TOKEN_SECRET: atmospheretokensecret
       ATMOSPHERE_COOKIE_SECRET: atmospherecookiesecret
       ATMOSPHERE_AUTH_COOKIE_DOMAIN: indico.local
+      POSTGRES_HOST: api-db
+      POSTGRES_USER: indico
+      POSTGRES_PASSWORD: development
+      POSTGRES_DB: indico
     volumes:
       - ./api:/$app_name-api
-    # depends_on:
+    depends_on:
+      - api-db
     #   - noct
 
   # webui:
@@ -47,6 +56,3 @@ services:
     depends_on:
       - api
       # - webui
-
-volumes:
-  noct_data:
