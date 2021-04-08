@@ -12,13 +12,13 @@ from fastapi import FastAPI, Depends
 # from .database import async_session
 # from .database.models import ExampleUser
 
-from .settings import Settings, get_settings
+from .settings import Settings, settings
 
 app = FastAPI()
 
 
 @app.get("/")
-async def home(settings: Settings = Depends(get_settings)):
+async def home(settings: Settings = Depends(settings)):
     return {settings.app_name: "Hello World!"}
 
 
@@ -34,7 +34,8 @@ async def home(settings: Settings = Depends(get_settings)):
 # @app.get("/db")
 # async def db_home(session: AsyncSession = Depends(async_session)):
 #     stmt = select(ExampleUser).filter_by(id=1)
-#     result = session.execute(stmt).scalars().first()
+#     result = await session.execute(stmt)
+#     result = result.scalars().first()
 #     return {"message": f"Hello, {result.name}!"}
 
 

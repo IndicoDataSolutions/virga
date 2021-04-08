@@ -44,9 +44,9 @@ class _SessionMaker(object):
         return cls._sessionmaker()
 
 
-def start_async_session(db_url: str) -> AsyncSession:
+def start_async_session(db_url: str, **kwargs) -> AsyncSession:
     """
     Create and return a new asyncio-backed database session. The underlying
     sqlalchemy sessionmaker and engine are created once and cached.
     """
-    return _SessionMaker.new(db_url)
+    return _SessionMaker.new(db_url, **kwargs)

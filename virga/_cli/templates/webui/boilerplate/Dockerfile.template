@@ -1,0 +1,14 @@
+FROM node:14-buster-slim
+
+RUN apt update && \
+    apt install -y curl vim
+
+COPY . /$app_name
+WORKDIR /$app_name
+
+# install nodejs packages
+RUN yarn install
+
+EXPOSE 443
+
+CMD [ "/$app_name/scripts/dev-server.sh" ]

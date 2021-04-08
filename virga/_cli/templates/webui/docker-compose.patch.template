@@ -4,11 +4,11 @@
 -  # webui:
 -  #   build: webui
 -  #   volumes:
--  #     - ./webui:/$app_name-webui
+-  #     - ./webui:/$app_name
 +  webui:
 +    build: webui
 +    volumes:
-+      - ./webui:/$app_name-webui
++      - ./webui:/$app_name
 @@ -58,1 +58,1 @@
 -      # - webui
 +      - webui

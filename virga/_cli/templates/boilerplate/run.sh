@@ -10,4 +10,4 @@ if ! docker ps | grep -q dns-proxy; then
         dvdarias/docker-hoster
 fi
 
-docker-compose up --force-recreate --build --remove-orphans
+docker-compose up

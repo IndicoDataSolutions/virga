@@ -42,6 +42,7 @@ class WebUIGenerator(Generator):
 
             with in_directory("webui"):
                 resolve_template("package.json.template", app_name=app_name)
+                resolve_template("Dockerfile.template", app_name=app_name)
 
                 # install yarn stuff
                 _print_step("Installing Yarn dependencies...")

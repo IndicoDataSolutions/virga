@@ -37,7 +37,7 @@ services:
       POSTGRES_PASSWORD: development
       POSTGRES_DB: indico
     volumes:
-      - ./api:/$app_name-api
+      - ./api:/$app_name
     depends_on:
       - api-db
     #   - noct
@@ -45,7 +45,7 @@ services:
   # webui:
   #   build: webui
   #   volumes:
-  #     - ./webui:/$app_name-webui
+  #     - ./webui:/$app_name
 
   app:
     build: nginx

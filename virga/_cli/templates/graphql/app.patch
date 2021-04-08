@@ -7,7 +7,7 @@
 +from graphene import Schema
 +from virga.plugins.graphql import GraphQLRoute
 +from .gql import RootQuery
-@@ -41,6 +41,6 @@
+@@ -42,6 +42,6 @@
 -# # Mounts a Graphene executor with schema to '/graphql'. POST requests to
 -# # the route get executed while GET requests will render GraphiQL.
 -# # GraphQLRoute accepts any Graphene Schema object.
