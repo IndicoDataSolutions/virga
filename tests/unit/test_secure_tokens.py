@@ -1,4 +1,3 @@
-from base64 import encode
 import pytest
 import uuid
 import hmac

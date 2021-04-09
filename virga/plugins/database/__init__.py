@@ -29,7 +29,7 @@ def make_async_engine(url: str, **kwargs) -> AsyncEngine:
     return create_async_engine(url, **kwargs)
 
 
-class _SessionMaker(object):
+class _SessionMaker:
     _sessionmaker = None
     _engine = None
 

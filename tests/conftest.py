@@ -1,6 +1,7 @@
 import pytest
 import requests
-import random, string
+import random
+import string
 import uuid
 
 from virga.plugins.noct import NOCT_URL, VALID_DOMAIN

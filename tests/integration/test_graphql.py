@@ -4,9 +4,6 @@ from graphene import ObjectType, String, Schema
 
 from virga.plugins.graphql import GraphQLRoute
 
-app = FastAPI()
-client = TestClient(app)
-
 
 class MockLoaderClient:
     def __init__(self, name):
@@ -37,6 +34,9 @@ def get_schema(request: Request):
     assert request
     return Schema(query=MockQuery)
 
+
+app = FastAPI()
+client = TestClient(app)
 
 app.add_route("/static", GraphQLRoute(schema=Schema(query=MockQuery)))
 app.add_route("/dynamic", GraphQLRoute(schema=get_schema))

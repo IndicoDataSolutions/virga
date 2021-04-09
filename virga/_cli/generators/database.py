@@ -48,4 +48,4 @@ class DatabaseGenerator(Generator):
 
             # TODO: uncomment when available on pypi
             # run_command("poetry add indico-virga")
-            run_command("poetry add alembic asyncpg")
+            run_command("poetry add asyncpg")

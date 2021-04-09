@@ -5,7 +5,15 @@ virga-test:
     - .:/virga
   depends_on:
     - noct
+    - virga-test
   dockercfg_service: gcr-dockercfg
+  cached: True
+virga-db:
+  image: postgres:9.6-alpine
+  environment:
+    POSTGRES_DB: indico
+    POSTGRES_USER: indico
+    POSTGRES_PASSWORD: development
   cached: True
 
 noct:
