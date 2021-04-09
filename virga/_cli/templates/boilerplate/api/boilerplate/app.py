@@ -33,9 +33,9 @@ async def home(settings: Settings = Depends(settings)):
 # # https://docs.sqlalchemy.org/en/14/orm/session_basics.html#querying-2-0-style
 # @app.get("/db")
 # async def db_home(session: AsyncSession = Depends(async_session)):
-#     stmt = select(ExampleUser).filter_by(id=1)
+#     stmt = select(ExampleUser).where(ExampleUser.id == 1)
 #     result = await session.execute(stmt)
-#     result = result.scalars().first()
+#     result = result.scalar_one()
 #     return {"message": f"Hello, {result.name}!"}
 
 

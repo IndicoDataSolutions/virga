@@ -1,6 +1,6 @@
 import pytest
 import os
-from urllib.parse import quote_plus
+import asyncio
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import Column, String, Integer, select
@@ -9,13 +9,10 @@ from fastapi.testclient import TestClient
 
 from virga.plugins.database import make_async_engine, start_async_session
 
-driver = os.getenv("DB_DRIVER", "postgresql+asyncpg")
-host = os.getenv("POSTGRES_HOST", "localhost")
-port = os.getenv("POSTGRES_PORT", 5432)
-user = os.getenv("POSTGRES_USER", "")
-passwd = quote_plus(os.getenv("POSTGRES_PASSWORD", ""))
-db = os.getenv("POSTGRES_DB", "")
-DB_URL = f"{driver}://{user}:{passwd}@{host}:{port}/{db}"
+user = os.getenv("POSTGRES_USER")
+passwd = os.getenv("POSTGRES_PASSWORD")
+db = os.getenv("POSTGRES_DB")
+DB_URL = f"postgresql+asyncpg://{user}:{passwd}@virga-db:5432/{db}"
 BASE = declarative_base()
 
 
@@ -30,9 +27,27 @@ async def prepare_database():
     engine = make_async_engine(DB_URL)
 
     async with engine.begin() as conn:
+        await conn.run_sync(BASE.metadata.reflect)
         await conn.run_sync(BASE.metadata.drop_all)
-        yield
         await conn.run_sync(BASE.metadata.create_all)
+
+    yield
+
+    async with engine.begin() as conn:
+        await conn.run_sync(BASE.metadata.reflect)
+        await conn.run_sync(BASE.metadata.drop_all)
+
+
+# https://stackoverflow.com/a/56238383
+@pytest.fixture(scope="session")
+def event_loop():
+    loop = asyncio.get_event_loop()
+    yield loop
+    loop.close()
+
+
+app = FastAPI()
+client = TestClient(app)
 
 
 async def async_session():
@@ -41,24 +56,20 @@ async def async_session():
     try:
         yield session
     finally:
-        session.close()
-
-
-app = FastAPI()
-client = TestClient(app)
+        await session.close()
 
 
 async def get_user(session):
-    stmt = select(ExampleUser).filter_by(id=1)
+    stmt = select(ExampleUser).where(ExampleUser.id == 1)
     result = await session.execute(stmt)
-    return result.one_or_none()
+    return result.scalar_one_or_none()
 
 
 @app.get("/create")
 async def create(session: AsyncSession = Depends(async_session)):
     assert not await get_user(session)
 
-    user = ExampleUser(id=1, name="Mickey Mouse")
+    user = ExampleUser(name="Mickey Mouse")
     session.add(user)
     await session.commit()
 
@@ -77,9 +88,11 @@ async def read(session: AsyncSession = Depends(async_session)):
 @app.get("/delete")
 async def delete(session: AsyncSession = Depends(async_session)):
     user = await get_user(session)
-    session.delete(user)
-    session.commit()
+    await session.delete(user)
+    await session.commit()
+
     assert not await get_user(session)
+    assert user not in session
     return {"message": f"Goodbye, {user.name}!"}
 
 

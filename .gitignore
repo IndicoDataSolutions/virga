@@ -6,3 +6,4 @@ tmp
 # environment
 codeship.aes
 .env
+env
