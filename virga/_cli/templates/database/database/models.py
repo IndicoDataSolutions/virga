@@ -4,7 +4,7 @@ from . import BASE
 
 
 # https://fastapi.tiangolo.com/tutorial/sql-databases/#create-the-database-models
-class ExampleUser(BASE):
-    __tablename__ = "example_users"
+class Widget(BASE):
+    __tablename__ = "widgets"
     id = Column(Integer, primary_key=True)
     name = Column(String)

@@ -9,15 +9,15 @@ from fastapi.testclient import TestClient
 
 from virga.plugins.database import make_async_engine, start_async_session
 
-user = os.getenv("POSTGRES_USER")
+widget = os.getenv("POSTGRES_USER")
 passwd = os.getenv("POSTGRES_PASSWORD")
 db = os.getenv("POSTGRES_DB")
-DB_URL = f"postgresql+asyncpg://{user}:{passwd}@virga-db:5432/{db}"
+DB_URL = f"postgresql+asyncpg://{widget}:{passwd}@virga-db:5432/{db}"
 BASE = declarative_base()
 
 
-class ExampleUser(BASE):
-    __tablename__ = "example_users"
+class Widget(BASE):
+    __tablename__ = "widgets"
     id = Column(Integer, primary_key=True)
     name = Column(String)
 
@@ -59,41 +59,41 @@ async def async_session():
         await session.close()
 
 
-async def get_user(session):
-    stmt = select(ExampleUser).where(ExampleUser.id == 1)
+async def get_widget(session):
+    stmt = select(Widget).where(Widget.id == 1)
     result = await session.execute(stmt)
     return result.scalar_one_or_none()
 
 
 @app.get("/create")
 async def create(session: AsyncSession = Depends(async_session)):
-    assert not await get_user(session)
+    assert not await get_widget(session)
 
-    user = ExampleUser(name="Mickey Mouse")
-    session.add(user)
+    widget = Widget(name="Calendar")
+    session.add(widget)
     await session.commit()
 
-    user = await get_user(session)
-    assert user
-    return {"message": f"Welcome, {user.name}!"}
+    widget = await get_widget(session)
+    assert widget
+    return {"message": f"Created the {widget.name} widget!"}
 
 
 @app.get("/read")
 async def read(session: AsyncSession = Depends(async_session)):
-    user = await get_user(session)
-    assert user
-    return {"message": f"Hello, {user.name}!"}
+    widget = await get_widget(session)
+    assert widget
+    return {"message": f"Fetching the {widget.name} widget!"}
 
 
 @app.get("/delete")
 async def delete(session: AsyncSession = Depends(async_session)):
-    user = await get_user(session)
-    await session.delete(user)
+    widget = await get_widget(session)
+    await session.delete(widget)
     await session.commit()
 
-    assert not await get_user(session)
-    assert user not in session
-    return {"message": f"Goodbye, {user.name}!"}
+    assert not await get_widget(session)
+    assert widget not in session
+    return {"message": f"Removing the {widget.name} widget!"}
 
 
 ###
@@ -101,9 +101,10 @@ async def delete(session: AsyncSession = Depends(async_session)):
 
 
 @pytest.mark.parametrize(
-    "query,message", [("create", "Welcome"), ("read", "Hello"), ("delete", "Goodbye")]
+    "query,message",
+    [("create", "Created"), ("read", "Fetching"), ("Removing", "Goodbye")],
 )
 def test_db(query, message):
     response = client.get(f"/{query}")
     assert response.status_code == 200
-    assert response.json() == {"message": f"{message}, Mickey Mouse!"}
+    assert response.json() == {"message": f"{message} the Calendar widget!"}

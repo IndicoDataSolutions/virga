@@ -10,7 +10,7 @@ from fastapi import FastAPI, Depends
 # from sqlalchemy.ext.asyncio import AsyncSession
 # from sqlalchemy import select
 # from .database import async_session
-# from .database.models import ExampleUser
+# from .database.models import Widget
 
 from .settings import Settings, settings
 
@@ -33,10 +33,10 @@ async def home(settings: Settings = Depends(settings)):
 # # https://docs.sqlalchemy.org/en/14/orm/session_basics.html#querying-2-0-style
 # @app.get("/db")
 # async def db_home(session: AsyncSession = Depends(async_session)):
-#     stmt = select(ExampleUser).where(ExampleUser.id == 1)
+#     stmt = select(Widget).where(Widget.id == 1)
 #     result = await session.execute(stmt)
 #     result = result.scalar_one()
-#     return {"message": f"Hello, {result.name}!"}
+#     return {"message": f"This is a {result.name} widget!"}
 
 
 # # Mounts a Graphene executor with schema to '/graphql'. POST requests to
