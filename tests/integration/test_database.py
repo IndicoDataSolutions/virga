@@ -9,10 +9,10 @@ from fastapi.testclient import TestClient
 
 from virga.plugins.database import make_async_engine, start_async_session
 
-widget = os.getenv("POSTGRES_USER")
+user = os.getenv("POSTGRES_USER")
 passwd = os.getenv("POSTGRES_PASSWORD")
 db = os.getenv("POSTGRES_DB")
-DB_URL = f"postgresql+asyncpg://{widget}:{passwd}@virga-db:5432/{db}"
+DB_URL = f"postgresql+asyncpg://{user}:{passwd}@virga-db:5432/{db}"
 BASE = declarative_base()
 
 
