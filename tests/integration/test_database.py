@@ -102,7 +102,7 @@ async def delete(session: AsyncSession = Depends(async_session)):
 
 @pytest.mark.parametrize(
     "query,message",
-    [("create", "Created"), ("read", "Fetching"), ("Removing", "Goodbye")],
+    [("create", "Created"), ("read", "Fetching"), ("delete", "Removing")],
 )
 def test_db(query, message):
     response = client.get(f"/{query}")
