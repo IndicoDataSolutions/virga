@@ -14,4 +14,4 @@ until (curl -sf http://noct:5000/api/ping); do
     sleep 0.5
 done
 
-pytest -vv tests -k integ
+pytest -vv tests
