@@ -61,7 +61,7 @@ def test_virga_new_good_direct():
         assert os.path.isfile("new-project/api/Dockerfile")
 
 
-cli_args = ["--auth", "--graphql", "--webui"]
+cli_args = ["--auth", "--graphql", "--webui", "--database"]
 
 
 @pytest.mark.parametrize(

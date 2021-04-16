@@ -1,5 +1,40 @@
 from pydantic import BaseSettings
 
+# from functools import lru_cache
+# from urllib.parse import quote_plus as escape
 
-class Settings(BaseSettings):
+
+# Objects and arguments passed through dependency injection must be hashable.
+# Passing `frozen=True` to pydantic models ensures hashability at the
+# expense of mutability (which is not required for environment-based settings).
+#
+# Read more:
+#   - https://github.com/tiangolo/fastapi/issues/1985
+#   - https://github.com/samuelcolvin/pydantic/pull/1881
+class Settings(BaseSettings, frozen=True):
     app_name: str = "$app_name"
+    # db_driver: str = "postgresql+asyncpg"
+    # postgres_host: str = "localhost"
+    # postgres_port: int = 5432
+    # postgres_user: str
+    # postgres_password: str
+    # postgres_db: str
+
+    # @property
+    # @lru_cache(maxsize=None)
+    # def db_url(self):
+    #     # dialect+driver://username:password@host:port/database
+    #     return "{}://{}:{}@{}:{}/{}".format(
+    #         self.db_driver,
+    #         self.postgres_user,
+    #         escape(self.postgres_password),
+    #         self.postgres_host,
+    #         self.postgres_port,
+    #         self.postgres_db,
+    #     )
+
+
+
+@lru_cache(maxsize=None)
+def settings():
+    return Settings()

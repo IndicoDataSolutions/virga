@@ -1,7 +1,5 @@
 import click
 import shutil
-import patch
-import os
 
 from .base import Generator
 from ..utils import (
@@ -13,6 +11,7 @@ from ..utils import (
     run_command,
     in_directory,
     apply_patch,
+    run_patch,
 )
 
 
@@ -37,13 +36,13 @@ class WebUIGenerator(Generator):
             )
             apply_patch("docker-compose.patch")
 
-            shutil.copy2(
+            run_patch(
                 get_path(_templates_dir, "webui/nginx-conf.patch"), "nginx-conf.patch"
             )
-            apply_patch("nginx-conf.patch")
 
             with in_directory("webui"):
                 resolve_template("package.json.template", app_name=app_name)
+                resolve_template("Dockerfile.template", app_name=app_name)
 
                 # install yarn stuff
                 _print_step("Installing Yarn dependencies...")

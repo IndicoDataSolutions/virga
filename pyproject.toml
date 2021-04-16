@@ -14,9 +14,13 @@ python-jose = {extras = ["cryptography"], version = "^3.2.0"}
 graphene = "^2.1.8"
 orjson = "^3.5.0"
 fastapi = "^0.63.0"
+SQLAlchemy = "^1.4.5"
+alembic = "^1.5.8"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+asyncpg = "^0.22.0"
+pytest-asyncio = "^0.14.0"
 
 [tool.poetry.scripts]
 virga = "virga._cli.application:virga"

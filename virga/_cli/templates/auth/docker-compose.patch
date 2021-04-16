@@ -1,14 +1,12 @@
 --- docker-compose.yaml
 +++ docker-compose.yaml
-@@ -3,21 +3,21 @@
+@@ -3,19 +3,19 @@
 -  # noct-db:
 -  #   image: postgres:9.6-alpine
 -  #   environment:
 -  #     POSTGRES_DB: indico
 -  #     POSTGRES_USER: indico
 -  #     POSTGRES_PASSWORD: development
--  #   volumes:
--  #     - noct_data:/var/lib/postgresql/data
 -  # noct:
 -  #   image: gcr.io/new-indico/noct:development
 -  #   environment:
@@ -28,8 +26,6 @@
 +      POSTGRES_DB: indico
 +      POSTGRES_USER: indico
 +      POSTGRES_PASSWORD: development
-+    volumes:
-+      - noct_data:/var/lib/postgresql/data
 +  noct:
 +    image: gcr.io/new-indico/noct:development
 +    environment:
@@ -43,8 +39,6 @@
 +      - "5000"
 +    depends_on:
 +      - noct-db
-@@ -33,2 +33,2 @@
--    # depends_on:
+@@ -43,1 +43,1 @@
 -    #   - noct
-+    depends_on:
 +      - noct

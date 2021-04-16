@@ -77,6 +77,20 @@ async def read_root():
     return {"msg": "Hello World!"}
 ```
 
+### Database connections
+
+Like with authentication, all routes needing access to a database connection must explictly ask for one through a route dependency, specifically:
+
+```python
+session: AsyncSession = Depends(async_session)
+```
+
+to any route's definition will automatically open and close an asyncronous database connection. An example is provided for all generated sidecar applications.
+
+#### Alembic
+
+Virga's `--database` option provides a baseline structure for managing database schema and migrations through Alembic. Detailed instructions about generating and running database migrations are available on its [documentation website](https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script).
+
 ## Development
 
 Virga is a [Poetry](https://python-poetry.org/) project, meaning it uses Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/). To setup the project, install Poetry dependencies by cloning the repo and running `poetry install` in the project directory. Combined, those command will look like the followin:

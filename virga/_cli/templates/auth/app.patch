@@ -1,16 +1,16 @@
 --- app.py
 +++ app.py
-@@ -4,2 +4,2 @@
+@@ -3,2 +3,2 @@
 -# from virga.types import User
 -# from virga.plugins.noct import get_current_user
 +from virga.types import User
 +from virga.plugins.noct import get_current_user
-@@ -21,4 +21,4 @@
+@@ -25,4 +25,4 @@
 -# # Makes use of Noct middleware to fetch the current authenticated user.
--# @app.get("/user_info")
--# async def get_user(current_user: User = Depends(get_current_user)):
+-# @app.get("/user")
+-# async def user_home(current_user: User = Depends(get_current_user)):
 -#     return {"message": f"Hello, {current_user.email}!"}
 +# Makes use of Noct middleware to fetch the current authenticated user.
-+@app.get("/user_info")
-+async def get_user(current_user: User = Depends(get_current_user)):
++@app.get("/user")
++async def user_home(current_user: User = Depends(get_current_user)):
 +    return {"message": f"Hello, {current_user.email}!"}

@@ -12,14 +12,6 @@ from virga.plugins.noct.noct import (
     _NOCT_JWT_ALGORITHM,
 )
 
-app = FastAPI()
-client = TestClient(app)
-
-
-@app.get("/")
-async def get_user(current_user: User = Depends(get_current_user)):
-    return {"msg": f"Hello, {current_user.name}"}
-
 
 @pytest.fixture(scope="session")
 def expired_token(mock_user):
@@ -39,6 +31,19 @@ def expired_token(mock_user):
         ),
     )
     return expired_token
+
+
+app = FastAPI()
+client = TestClient(app)
+
+
+@app.get("/")
+async def get_user(current_user: User = Depends(get_current_user)):
+    return {"msg": f"Hello, {current_user.name}"}
+
+
+###
+###
 
 
 def test_get_user_auth(mock_user, mock_tokens):

@@ -9,7 +9,7 @@ from ..utils import (
     _templates_dir,
     in_directory,
     run_command,
-    apply_patch,
+    run_patch,
 )
 
 
@@ -28,26 +28,21 @@ class NoctAuthGenerator(Generator):
                 # run_command("poetry add indico-virga")
 
                 with in_directory(app_name):
-                    shutil.copy2(
-                        get_path(_templates_dir, "auth/noct.patch"), "noct.patch"
-                    )
-                    apply_patch("noct.patch")
+                    run_patch(get_path(_templates_dir, "auth/app.patch"), "app.patch")
 
             _print_step("Patching existing configs...")
-            shutil.copy2(
-                get_path(_templates_dir, "auth/nginx-conf.patch"), "nginx-conf.patch",
+            run_patch(
+                get_path(_templates_dir, "auth/nginx-conf.patch"), "nginx-conf.patch"
             )
-            apply_patch("nginx-conf.patch")
 
-            shutil.copy2(
+            run_patch(
                 get_path(_templates_dir, "auth/docker-compose.patch"),
                 "docker-compose.patch",
             )
-            apply_patch("docker-compose.patch")
 
             # change the noct route in the webui only if it was generated
             if os.path.exists("webui"):
-                shutil.copy2(
-                    get_path(_templates_dir, "auth/webroute.patch"), "webroute.patch",
+                run_patch(
+                    get_path(_templates_dir, "auth/app-config.patch"),
+                    "app-config.patch",
                 )
-                apply_patch("webroute.patch")
