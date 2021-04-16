@@ -1,14 +1,32 @@
 --- docker-compose.yaml
 +++ docker-compose.yaml
-@@ -45,4 +45,4 @@
+@@ -45,5 +45,5 @@
 -  # webui:
 -  #   build: webui
 -  #   volumes:
 -  #     - ./webui:/$app_name
+-  #     - node_modules:/$app_name/node_modules
 +  webui:
 +    build: webui
 +    volumes:
 +      - ./webui:/$app_name
-@@ -67,1 +67,1 @@
++      - node_modules:/$app_name/node_modules
+@@ -68,9 +68,9 @@
 -      # - webui
+-
+-# volumes:
+-#   node_modules:
+-#     driver: local
+-#     driver_opts:
+-#       type: none
+-#       o: bind
+-#       device: ./webui/node_modules
 +      - webui
++
++volumes:
++  node_modules:
++    driver: local
++    driver_opts:
++      type: none
++      o: bind
++      device: ./webui/node_modules

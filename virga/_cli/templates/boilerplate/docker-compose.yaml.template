@@ -46,6 +46,7 @@ services:
   #   build: webui
   #   volumes:
   #     - ./webui:/$app_name
+  #     - node_modules:/$app_name/node_modules
 
   dns-proxy:
     image: defreitas/dns-proxy-server
@@ -65,3 +66,11 @@ services:
       - dns-proxy
       - api
       # - webui
+
+# volumes:
+#   node_modules:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./webui/node_modules
