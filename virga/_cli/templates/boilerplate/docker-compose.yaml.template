@@ -47,6 +47,14 @@ services:
   #   volumes:
   #     - ./webui:/$app_name
 
+  dns-proxy:
+    image: defreitas/dns-proxy-server
+    hostname: dns.mageddo
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/resolv.conf:/etc/resolv.conf
+    logging:
+      driver: "none"
   app:
     build: nginx
     hostname: app.indico.local
@@ -54,5 +62,6 @@ services:
       - "80"
       - "443"
     depends_on:
+      - dns-proxy
       - api
       # - webui

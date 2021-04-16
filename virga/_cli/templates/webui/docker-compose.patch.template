@@ -9,6 +9,6 @@
 +    build: webui
 +    volumes:
 +      - ./webui:/$app_name
-@@ -58,1 +58,1 @@
+@@ -67,1 +67,1 @@
 -      # - webui
 +      - webui
