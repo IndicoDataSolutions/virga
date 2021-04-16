@@ -25,6 +25,8 @@ class StructureGenerator(Generator):
         shutil.copytree(get_path(_templates_dir, "boilerplate"), project_dir)
 
         with in_directory(project_dir):
+            run_command("git init")
+
             resolve_template("docker-compose.yaml.template", app_name=app_name)
 
             with in_directory("api"):
@@ -41,13 +43,11 @@ class StructureGenerator(Generator):
                 run_command("poetry install")
 
                 # TODO: remove once accessibility is determined
-                token = os.getenv("GITHUB_ACCESS_TOKEN", "")
+                _print_step("Initializing repository with Virga submodule...")
                 run_command(
-                    "git clone",
-                    "--depth=1",
-                    "--no-tags",
-                    f"https://{token}@github.com/IndicoDataSolutions/virga.git",
+                    "git submodule",
+                    "add",
+                    "https://github.com/IndicoDataSolutions/virga.git",
                     "lib/virga",
                 )
-                run_command("rm -rf .git")
                 run_command("poetry add ./lib/virga")

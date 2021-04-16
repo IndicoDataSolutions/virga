@@ -2,6 +2,8 @@ import shutil
 import click
 import os
 import tempfile
+import re
+import string
 
 from .generators import (
     StructureGenerator,
@@ -10,6 +12,23 @@ from .generators import (
     WebUIGenerator,
     DatabaseGenerator,
 )
+
+
+def _to_valid_appname(s):
+    """
+    Return the given string converted to a string that can be used for a clean
+    filename. Remove leading and trailing spaces, numbers, and symbols; convert
+    inner spaces, dots, and dashes to underscores, and remove all remaining
+    non-alphanumerics.
+
+    https://www.python.org/dev/peps/pep-0008/#package-and-module-names
+    """
+    s = re.sub(
+        r"(?u)[\s.-]",
+        "_",
+        str(s).strip(string.whitespace + string.punctuation + string.digits),
+    )
+    return re.sub(r"(?u)[^\w]", "", s)
 
 
 @click.group()
@@ -49,7 +68,6 @@ def new(ctx: click.Context, app_path, **kwargs):
     """
     Create a new project called APP_NAME using provided template options.
     """
-    print(app_path)
     # santize the requested app name to ensure no overwrites
     if os.path.exists(app_path):
         # if its a file, always reject (ignore --force option)
@@ -71,7 +89,7 @@ def new(ctx: click.Context, app_path, **kwargs):
                 )
             )
 
-    app_name = os.path.basename(app_path)
+    app_name = _to_valid_appname(os.path.basename(app_path))
 
     # ensure a quasi-transactional state by generating the project in a temporary
     # directory, then moving it to our desired directory once everything has

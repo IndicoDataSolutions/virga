@@ -7,7 +7,6 @@ authors = ["thearchitector <elias.gabriel@indico.io>"]
 [tool.poetry.dependencies]
 python = "^3.7"
 click = "^7.1.2"
-colorama = "^0.4.4"
 patch = "^1.16"
 requests = "^2.25.1"
 python-jose = {extras = ["cryptography"], version = "^3.2.0"}
