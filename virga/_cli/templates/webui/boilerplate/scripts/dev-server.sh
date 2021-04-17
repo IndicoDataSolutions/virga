@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # create a self-signed cert for https if none exists
 if [ ! -f snowpack.key ]; then

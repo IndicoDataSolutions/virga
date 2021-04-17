@@ -1,17 +1,19 @@
 --- docker-compose.yaml
 +++ docker-compose.yaml
-@@ -45,5 +45,5 @@
+@@ -46,6 +46,6 @@
 -  # webui:
 -  #   build: webui
+-  #   user: "${USERID-1000}:${GROUPID-1000}"
 -  #   volumes:
--  #     - ./webui:/$app_name
--  #     - node_modules:/$app_name/node_modules
+-  #     - ./webui:/home/developer/$app_name
+-  #     - node_modules:/home/developer/$app_name/node_modules
 +  webui:
 +    build: webui
++    user: "${USERID-1000}:${GROUPID-1000}"
 +    volumes:
-+      - ./webui:/$app_name
-+      - node_modules:/$app_name/node_modules
-@@ -68,9 +68,9 @@
++      - ./webui:/home/developer/$app_name
++      - node_modules:/home/developer/$app_name/node_modules
+@@ -70,9 +70,9 @@
 -      # - webui
 -
 -# volumes:

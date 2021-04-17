@@ -1,22 +1,27 @@
 FROM python:3.7-slim-buster
 
-ENV APP_NAME=$app_name POETRY_HOME=/etc/poetry
+ENV APP_NAME=$app_name \
+    USERID=1000 GROUPID=1000 \
+    POETRY_HOME=/etc/poetry
+ENV PATH = "${PATH}:${POETRY_HOME}/bin"
 
 RUN apt update && \
-    apt install -y curl vim
+    apt install -y curl vim && \
+    groupadd -g ${GROUPID} developer && \
+    useradd -lmu ${USERID} -g developer developer
 
-COPY . /$app_name
-WORKDIR /$app_name
+# copy codebase to container with developer owner
+COPY --chown=developer . /home/developer/$app_name
+WORKDIR /home/developer/$app_name
 
-# app dependencies
-RUN pip3 install --upgrade pip && \
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 - && \
-    . /etc/poetry/env && \
+# install Poetry and app dependencies
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 - && \
+    . ${POETRY_HOME}/env && \
     poetry config virtualenvs.create false && \
     poetry install
 
-ENV PATH = "${PATH}:/etc/poetry/bin"
+USER developer
 
+# launch development application by default
 EXPOSE 80
-
-CMD [ "/$app_name/scripts/dev-server.sh" ]
+CMD [ "/home/developer/$app_name/scripts/dev-server.sh" ]

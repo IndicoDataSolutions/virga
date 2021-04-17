@@ -36,17 +36,19 @@ services:
       POSTGRES_USER: indico
       POSTGRES_PASSWORD: development
       POSTGRES_DB: indico
+    user: "${USERID-1000}:${GROUPID-1000}"
     volumes:
-      - ./api:/$app_name
+      - ./api:/home/developer/$app_name
     depends_on:
       - api-db
     #   - noct
 
   # webui:
   #   build: webui
+  #   user: "${USERID-1000}:${GROUPID-1000}"
   #   volumes:
-  #     - ./webui:/$app_name
-  #     - node_modules:/$app_name/node_modules
+  #     - ./webui:/home/developer/$app_name
+  #     - node_modules:/home/developer/$app_name/node_modules
 
   dns-proxy:
     image: defreitas/dns-proxy-server

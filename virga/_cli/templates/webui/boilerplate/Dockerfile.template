@@ -1,14 +1,23 @@
 FROM node:14-buster-slim
 
+ENV APP_NAME=$app_name \
+    USERID=1000 GROUPID=1000
+
 RUN apt update && \
-    apt install -y curl vim
+    apt install -y curl vim && \
+    userdel -rf node && \
+    groupadd -g ${GROUPID} developer && \
+    useradd -lmu ${USERID} -g developer developer
 
-COPY . /$app_name
-WORKDIR /$app_name
+# copy codebase to container with developer owner
+COPY --chown=developer . /home/developer/$app_name
+WORKDIR /home/developer/$app_name
 
-# install nodejs packages
+USER developer
+
+# install app dependencies
 RUN yarn install
 
+# launch development application by default
 EXPOSE 443
-
-CMD [ "/$app_name/scripts/dev-server.sh" ]
+CMD [ "/home/developer/$app_name/scripts/dev-server.sh" ]
