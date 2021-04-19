@@ -19,7 +19,7 @@ Projects generated with `--auth` require GCR access to download and run the Noct
 
 You can create a new project by running `virga new new_app --webui --graphql --auth`. This command will generate the new project with the given flags. General command usage is available with `virga new --help`.
 
-> Note: To avoid GitHub HTTPS authentication every time a project is generated, set the `GITHUB_ACCESS_TOKEN` to a valid GitHub access token.
+> Note: To use SSH authentication instead of HTTPS authentication every time a project is generated, set the `GIT_USE_SSH` to `True`. This will force all generated projects to use SSH authentication with cloning Virga as a dependency submodule.
 
 ---
 

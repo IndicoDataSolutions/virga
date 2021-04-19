@@ -44,10 +44,15 @@ class StructureGenerator(Generator):
 
                 # TODO: remove once accessibility is determined
                 _print_step("Initializing repository with Virga submodule...")
+                clone_protocol = (
+                    "git@github.com:"
+                    if os.getenv("GIT_USE_SSH", "False") == "True"
+                    else "https://github.com/"
+                )
                 run_command(
                     "git submodule",
                     "add",
-                    "https://github.com/IndicoDataSolutions/virga.git",
+                    f"{clone_protocol}IndicoDataSolutions/virga.git",
                     "lib/virga",
                 )
                 run_command("poetry add ./lib/virga")
