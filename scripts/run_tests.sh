@@ -14,4 +14,6 @@ until (curl -sf http://noct:5000/api/ping); do
     sleep 0.5
 done
 
+mkdir ~/.ssh
+ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 pytest -vv tests
