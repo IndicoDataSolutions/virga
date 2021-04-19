@@ -1,14 +1,12 @@
-# virga
+# Virga
 
-Templated adaptable sidecar app generation.
-
-## Usage
+## CLI Usage
 
 ### Authenticating with GCloud
 
 Projects generated with `--auth` require GCR access to download and run the Noct service, Indico's platform-wide authentication server. To setup GCR access on your machine:
 
-1. Download the `gcr` service account key file from an Indico admin.
+1. Download the `gcr` service account key file provided by an Indico admin (check with your employee contact or DevOps).
 2. Download the Google Cloud SDK (<https://cloud.google.com/sdk/docs/install>).
 3. Authenticate with the provided service account key: `gcloud auth activate-service-account --key-file=/path/to/key.json`.
 4. Configure Docker to run with GCR: `gcloud auth configure-docker`.
@@ -17,26 +15,48 @@ Projects generated with `--auth` require GCR access to download and run the Noct
 
 **For now, Virga is not publically released. To run Virga commands, you must clone this repo and run `poetry install`, then `poetry shell`. All commands must be run from within `poetry shell` or via `poetry run`. See the [development section](#development) for more information.**
 
-You can create a new project by running `virga new new_app --webui --graphql --auth`. This command will generate the new project with the given flags. General command usage is available with `virga new --help`.
+You can create a new project by running `virga new <NAME> [FLAGS]`. This command will generate the new project with the given flags. General command usage and descriptions of avaliable flags are available with `virga new --help`.
 
-> Note: To use SSH authentication instead of HTTPS authentication every time a project is generated, set the `GIT_USE_SSH` to `True`. This will force all generated projects to use SSH authentication with cloning Virga as a dependency submodule.
+#### Environment Variables
 
----
+- `GITHUB_USE_SSH`: `True` by default, Virga will attempt to add itself to generated templates using `ssh` authentication. To use HTTPS authentication instead of SSH authentication for project generation and submodule cloning, set the this to `False`.
+- `GITHUB_ACCESS_TOKEN`: Blank by default. If `GITHUB_USE_SSH` is set to `False`, Virga will use the provided token to authentication with GitHub for self-cloning. If blank or invalid, you will be prompted for credentials as per usual. Note that this token _is only used for cloning_, and is _not_ used during submodule initialization, as to avoid it from appearing in plaintext in the generated `.gitmodules` file.
+
+## Development Usage
+
+Virga applications, and Virga itself, are [Poetry](https://python-poetry.org/) projects, meaning they use Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/). To setup the project, install Poetry dependencies by cloning the repo and running `poetry install` in the project directory.
+
+To properly clone a Virga project with all submodules, you need to run:
+
+```sh
+git clone YOUR_PROJECT --recurse-submodules
+
+# OR
+
+git clone YOUR_PROJECT
+cd YOUR_PROJECT
+git submodule update --init
+```
+
+To install Poetry and all Python dependencies:
+
+```sh
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+cd YOUR_PROJECT && poetry install
+```
 
 To launch the generated project:
 
 ```sh
-cd new_app
-./run.sh
+cd YOUR_PROJECT
+USERID=$(id -u) GROUPID=$(id -g) docker-compose up
 ```
 
 You'll be able to access the UI at `https://app.indico.local`. You can verify noct is running by going to `https://app.indico.local/auth/api/ping`. The templated FastAPI application is mounted to `https://app.indico.local/api`.
 
 > Note:
 >
-> `./run.sh` is a convience script for spawning the project inside several Docker containers managed by Docker Compose. Depending on the flags used to generate the application, different services will be created.
->
-> In order for the hostname DNS resolution to succeed, `./run.sh` spawns a [DNS proxy server](https://github.com/dvddarias/docker-hoster), which allows the container hostnames to resolve on the host machine without knowing the container IPs. This shouldn't cause any complications since it simply appends and removes entries from your `/etc/hosts` file, but if problems occur, only run the service while testing your generated application.
+> In order for the hostname DNS resolution to succeed, `docker-compose` contains a [DNS proxy server](https://mageddo.github.io/dns-proxy-server/latest/en/), which allows the container hostnames to resolve on the host machine without knowing the container IPs. If you encounter resolution issues, ensure to `docker-compose down` to shutdown the service and try again.
 
 ### Creating a user
 
@@ -79,27 +99,17 @@ async def read_root():
 
 ### Database connections
 
-Like with authentication, all routes needing access to a database connection must explictly ask for one through a route dependency, specifically:
+Like with authentication, all routes needing access to a database connection must explictly ask for one through a route dependency. Adding
 
 ```python
 session: AsyncSession = Depends(async_session)
 ```
 
-to any route's definition will automatically open and close an asyncronous database connection. An example is provided for all generated sidecar applications.
+to any route's definition will automatically open and close an asyncronous database connection. An example is provided in all generated sidecar applications.
 
 #### Alembic
 
 Virga's `--database` option provides a baseline structure for managing database schema and migrations through Alembic. Detailed instructions about generating and running database migrations are available on its [documentation website](https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script).
-
-## Development
-
-Virga is a [Poetry](https://python-poetry.org/) project, meaning it uses Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/). To setup the project, install Poetry dependencies by cloning the repo and running `poetry install` in the project directory. Combined, those command will look like the followin:
-
-```sh
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-git clone git@github.com:IndicoDataSolutions/virga.git
-cd virga && poetry install
-```
 
 ### Docker Compose
 

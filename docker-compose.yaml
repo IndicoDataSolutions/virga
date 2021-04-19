@@ -6,8 +6,6 @@ services:
       POSTGRES_DB: indico
       POSTGRES_USER: indico
       POSTGRES_PASSWORD: development
-    volumes:
-      - noct_data:/var/lib/postgresql/data
   noct:
     image: gcr.io/new-indico/noct:development
     environment:
@@ -22,6 +20,12 @@ services:
     depends_on:
       - noct-db
 
+  virga-db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: indico
+      POSTGRES_USER: indico
+      POSTGRES_PASSWORD: development
   virga:
     image: gcr.io/new-indico/virga:development
     build: .
@@ -34,6 +38,3 @@ services:
       - .:/virga
     depends_on:
       - noct
-
-volumes:
-  noct_data:

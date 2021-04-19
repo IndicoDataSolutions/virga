@@ -27,6 +27,7 @@ class StructureGenerator(Generator):
         with in_directory(project_dir):
             run_command("git init")
 
+            shutil.copy2(get_path(_templates_dir, "../../..", "README.md"), "README.md")
             resolve_template("docker-compose.yaml.template", app_name=app_name)
 
             with in_directory("api"):
@@ -44,15 +45,34 @@ class StructureGenerator(Generator):
 
                 # TODO: remove once accessibility is determined
                 _print_step("Initializing repository with Virga submodule...")
+
+                # if ssh is enabled, clone and add submodule using bare SSH link
+                use_ssh = os.getenv("GITHUB_USE_SSH", "True") == "True"
+                submod_protocol = (
+                    "git@github.com:" if use_ssh else "https://github.com/"
+                )
+
+                # if ssh is disabled, clone repo using https + token (if a token
+                # is provided) and add submodule using bare https so the token
+                # isn't unintentionally stored and checked in .gitmodules
+
                 clone_protocol = (
-                    "git@github.com:"
-                    if os.getenv("GIT_USE_SSH", "False") == "True"
-                    else "https://github.com/"
+                    f"https://{os.getenv('GITHUB_ACCESS_TOKEN', '')}@github.com/"
+                    if not use_ssh
+                    else submod_protocol
+                )
+
+                run_command(
+                    "git clone",
+                    "--depth=1",
+                    "--no-tags",
+                    f"{clone_protocol}IndicoDataSolutions/virga.git",
+                    "lib/virga",
                 )
                 run_command(
                     "git submodule",
                     "add",
-                    f"{clone_protocol}IndicoDataSolutions/virga.git",
+                    f"{submod_protocol}IndicoDataSolutions/virga.git",
                     "lib/virga",
                 )
                 run_command("poetry add ./lib/virga")
