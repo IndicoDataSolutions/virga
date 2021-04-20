@@ -1,3 +1,3 @@
-- service: virga-test
-  name: pytest
-  command: /virga/scripts/run_tests.sh
+- name: pytest
+  service: virga-test
+  command: ./scripts/run_tests.sh

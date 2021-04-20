@@ -36,17 +36,28 @@ services:
       POSTGRES_USER: indico
       POSTGRES_PASSWORD: development
       POSTGRES_DB: indico
+    user: "${USERID-1000}:${GROUPID-1000}"
     volumes:
-      - ./api:/$app_name
+      - ./api:/home/developer/$app_name
     depends_on:
       - api-db
     #   - noct
 
   # webui:
   #   build: webui
+  #   user: "${USERID-1000}:${GROUPID-1000}"
   #   volumes:
-  #     - ./webui:/$app_name
+  #     - ./webui:/home/developer/$app_name
+  #     - node_modules:/home/developer/$app_name/node_modules
 
+  dns-proxy:
+    image: defreitas/dns-proxy-server
+    hostname: dns.mageddo
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/resolv.conf:/etc/resolv.conf
+    logging:
+      driver: "none"
   app:
     build: nginx
     hostname: app.indico.local
@@ -54,5 +65,14 @@ services:
       - "80"
       - "443"
     depends_on:
+      - dns-proxy
       - api
       # - webui
+
+# volumes:
+#   node_modules:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./webui/node_modules
