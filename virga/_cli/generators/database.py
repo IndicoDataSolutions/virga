@@ -23,9 +23,7 @@ class DatabaseGenerator(Generator):
         _print_step("Creating basic Alembic structure...")
 
         with in_directory(get_path(project_dir, "api")):
-            shutil.copytree(
-                get_path(_templates_dir, "database/alembic"), "alembic",
-            )
+            shutil.copytree(get_path(_templates_dir, "database/alembic"), "alembic")
             shutil.copy2(
                 get_path(_templates_dir, "database/alembic.ini"), "alembic.ini"
             )
@@ -34,7 +32,7 @@ class DatabaseGenerator(Generator):
             _print_step("Copying core database plugins...")
             with in_directory(app_name):
                 shutil.copytree(
-                    get_path(_templates_dir, "database/database"), "database",
+                    get_path(_templates_dir, "database/database"), "database"
                 )
 
                 _print_step("Patching generated files...")
@@ -42,9 +40,7 @@ class DatabaseGenerator(Generator):
                     get_path(_templates_dir, "database/settings.patch"),
                     "settings.patch",
                 )
-                run_patch(
-                    get_path(_templates_dir, "database/app.patch"), "app.patch",
-                )
+                run_patch(get_path(_templates_dir, "database/app.patch"), "app.patch")
 
             # TODO: uncomment when available on pypi
             # run_command("poetry add indico-virga")

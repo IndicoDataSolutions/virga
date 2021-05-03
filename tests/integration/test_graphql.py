@@ -66,7 +66,7 @@ def test_graphiql():
 
 def test_graphql_bad_media_type():
     response = client.post(
-        "/static", data={"query": HELLO_QUERY, "variables": {"name": "World"}},
+        "/static", data={"query": HELLO_QUERY, "variables": {"name": "World"}}
     )
     assert response.status_code == 415
     assert response.text == "Unsupported Media Type"
@@ -74,21 +74,21 @@ def test_graphql_bad_media_type():
 
 def test_graphql_bad_method():
     response = client.put(
-        "/static", data={"query": HELLO_QUERY, "variables": {"name": "World"}},
+        "/static", data={"query": HELLO_QUERY, "variables": {"name": "World"}}
     )
     assert response.status_code == 405
     assert response.text == "Method Not Allowed"
 
 
 def test_graphql_bad_request():
-    response = client.post("/static", json={"variables": {"name": "World"}},)
+    response = client.post("/static", json={"variables": {"name": "World"}})
     assert response.status_code == 400
     assert response.text == "No GraphQL query found in the request"
 
 
 def test_graphql_static():
     response = client.post(
-        "/static", json={"query": HELLO_QUERY, "variables": {"name": "Dave"}},
+        "/static", json={"query": HELLO_QUERY, "variables": {"name": "Dave"}}
     )
     assert response.status_code == 200
     assert response.json() == {"data": {"hello": "Hello Dave"}}
@@ -96,7 +96,7 @@ def test_graphql_static():
 
 def test_graphql_static_clients_loaders():
     response = client.post(
-        "/static", json={"query": GOODBYE_QUERY, "variables": {"name": "World"}},
+        "/static", json={"query": GOODBYE_QUERY, "variables": {"name": "World"}}
     )
     assert response.status_code == 200
     assert response.json() == {"data": {"goodbye": "Goodbye World :("}}
@@ -104,7 +104,7 @@ def test_graphql_static_clients_loaders():
 
 def test_graphql_dynamic():
     response = client.post(
-        "/dynamic", json={"query": HELLO_QUERY, "variables": {"name": "Dave"}},
+        "/dynamic", json={"query": HELLO_QUERY, "variables": {"name": "Dave"}}
     )
     assert response.status_code == 200
     assert response.json() == {"data": {"hello": "Hello Dave"}}
