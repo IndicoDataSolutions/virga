@@ -122,7 +122,7 @@ def new(ctx: click.Context, app_path, **kwargs):
             shutil.move(project_dir, app_path)
             click.echo("\n=========\n")
             click.secho(
-                "Virga application generation complete!\n", bold=True, fg="green",
+                "Virga application generation complete!\n", bold=True, fg="green"
             )
         except Exception as err:
             click.echo(
@@ -133,5 +133,5 @@ def new(ctx: click.Context, app_path, **kwargs):
                     bold=True,
                     fg="red",
                 )
-                + click.style(f"\n\n{err}\n", fg="red"),
+                + click.style(f"\n\n{err}\n", fg="red")
             )

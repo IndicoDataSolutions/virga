@@ -7,7 +7,7 @@ from virga.plugins.secure_cookies import write_secure_cookie, read_secure_cookie
 
 @pytest.mark.integration
 def test_tornado_tokens(mock_tokens):
-    auth_e, refresh_e, auth, refresh, = mock_tokens
+    (auth_e, refresh_e, auth, refresh) = mock_tokens
     decoded = read_secure_cookie("auth_token", auth_e)
     assert decoded == auth
 
