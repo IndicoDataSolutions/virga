@@ -9,9 +9,8 @@ module.exports = {
     User: './src/app/modules/user',
   },
   devOptions: {
-    secure: true,
-    hostname: 'app.indico.local',
-    port: 443
+    hostname: '0.0.0.0',
+    port: +process.env.WEBUI_PORT,
   },
   routes: [{ match: 'routes', src: '.*', dest: '/index.html' }],
 }

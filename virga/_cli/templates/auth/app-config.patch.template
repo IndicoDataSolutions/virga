@@ -2,4 +2,4 @@
 +++ webui/public/js/app-config.js
 @@ -12,1 +12,1 @@
 -      AuthURL: 'https://dev.indico.io/auth',
-+      AuthURL: 'https://app.indico.local/auth',
++      AuthURL: 'https://$app_name.indico.local/auth',

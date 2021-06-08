@@ -1,78 +1,57 @@
 version: "3"
 services:
-  # noct-db:
-  #   image: postgres:9.6-alpine
-  #   environment:
-  #     POSTGRES_DB: indico
-  #     POSTGRES_USER: indico
-  #     POSTGRES_PASSWORD: development
+  services-db:
+    image: postgres:12-alpine
+    env_file: api/dev-services.env
+    logging:
+      driver: "none"
+
   # noct:
   #   image: gcr.io/new-indico/noct:development
+  #   env_file: api/dev-services.env
   #   environment:
-  #     ATMOSPHERE_TOKEN_SECRET: atmospheretokensecret
-  #     ATMOSPHERE_COOKIE_SECRET: atmospherecookiesecret
-  #     ATMOSPHERE_AUTH_COOKIE_DOMAIN: indico.local
-  #     NOCT_UI_FRONTEND_URL: https://app.indico.local
+  #     NOCT_UI_FRONTEND_URL: https://$app_name.indico.local
   #     NOCT_BYPASS_CONFIRMATION: "True"
   #     NOCT_BYPASS_APP_ACCESS: "True"
   #   expose:
   #     - "5000"
+  #   logging:
+  #     driver: "none"
   #   depends_on:
-  #     - noct-db
+  #     - services-db
 
-  api-db:
-    image: postgres:13-alpine
-    environment:
-      POSTGRES_DB: indico
-      POSTGRES_USER: indico
-      POSTGRES_PASSWORD: development
   api:
     build: api
-    environment:
-      ATMOSPHERE_TOKEN_SECRET: atmospheretokensecret
-      ATMOSPHERE_COOKIE_SECRET: atmospherecookiesecret
-      ATMOSPHERE_AUTH_COOKIE_DOMAIN: indico.local
-      POSTGRES_HOST: api-db
-      POSTGRES_USER: indico
-      POSTGRES_PASSWORD: development
-      POSTGRES_DB: indico
-    user: "${USERID-1000}:${GROUPID-1000}"
+    env_file: api/dev-services.env
     volumes:
-      - ./api:/home/developer/$app_name
+      - ./api:/$app_name-api
     depends_on:
-      - api-db
-    #   - noct
+      - services-db
+      # - noct
+    command: /start-reload.sh
 
   # webui:
-  #   build: webui
-  #   user: "${USERID-1000}:${GROUPID-1000}"
+  #   build:
+  #     context: webui
+  #     target: development
   #   volumes:
-  #     - ./webui:/home/developer/$app_name
-  #     - node_modules:/home/developer/$app_name/node_modules
+  #     - ./webui:/$app_name-webui
+  #     - /$app_name-webui/node_modules
+  #   expose:
+  #     - "8080"
+  #   init: true
 
-  dns-proxy:
-    image: defreitas/dns-proxy-server
-    hostname: dns.mageddo
+  caddy:
+    image: caddy:2
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /etc/resolv.conf:/etc/resolv.conf
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "443:443"
     logging:
-      driver: "none"
-  app:
-    build: nginx
-    hostname: app.indico.local
-    expose:
-      - "80"
-      - "443"
-    depends_on:
-      - dns-proxy
-      - api
-      # - webui
+      driver: none
 
-# volumes:
-#   node_modules:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       o: bind
-#       device: ./webui/node_modules
+volumes:
+  caddy_data:
+  caddy_config:

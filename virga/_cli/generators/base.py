@@ -13,5 +13,5 @@ class Generator(ABC):
     @staticmethod
     @abstractmethod
     def generate(ctx: Context, *args: Any, **kwargs: Any):
-        """ Run any generator-specific code. """
+        """Run any generator-specific code."""
         pass

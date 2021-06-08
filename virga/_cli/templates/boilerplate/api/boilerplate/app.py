@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 
 # from virga.types import User
 # from virga.plugins.noct import get_current_user
@@ -14,7 +15,30 @@ from fastapi import FastAPI, Depends
 
 from .settings import Settings, settings
 
-app = FastAPI()
+app = FastAPI(root_path="/api")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=".*",
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PUT"],
+    allow_headers=[
+        "Origin",
+        "X-Requested-With",
+        "Content-Type",
+        "Accept",
+        "Authorization",
+        "x-xsrftoken",
+    ],
+)
+
+
+@app.get("/ping")
+def pong():
+    """
+    Returns HTTP 200 OK when the application is live and ready to receive requests. This
+    can be used as a healthcheck endpoint in deployment configurations.
+    """
+    return True
 
 
 @app.get("/")
