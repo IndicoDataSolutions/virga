@@ -17,46 +17,39 @@ Projects generated with `--auth` require GCR access to download and run the Noct
 
 You can create a new project by running `virga new <NAME> [FLAGS]`. This command will generate the new project with the given flags. General command usage and descriptions of avaliable flags are available with `virga new --help`.
 
-#### Environment Variables
-
-- `GITHUB_USE_SSH`: `True` by default, Virga will attempt to add itself to generated templates using `ssh` authentication. To use HTTPS authentication instead of SSH authentication for project generation and submodule cloning, set the this to `False`.
-- `GITHUB_ACCESS_TOKEN`: Blank by default. If `GITHUB_USE_SSH` is set to `False`, Virga will use the provided token to authentication with GitHub for self-cloning. If blank or invalid, you will be prompted for credentials as per usual. Note that this token _is only used for cloning_, and is _not_ used during submodule initialization, as to avoid it from appearing in plaintext in the generated `.gitmodules` file.
-
 ## Development Usage
 
-Virga applications, and Virga itself, are [Poetry](https://python-poetry.org/) projects, meaning they use Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/). To setup the project, install Poetry dependencies by cloning the repo and running `poetry install` in the project directory.
+Virga applications, and Virga itself, are [Poetry](https://python-poetry.org/) projects, meaning they use Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/). To setup the project, install Yarn and Poetry, and the dependencies by cloning the repo and running `poetry install` in the project directory:
 
-To properly clone a Virga project with all submodules, you need to run:
+1. Install Poetry and Yarn:
 
-```sh
-git clone YOUR_PROJECT --recurse-submodules
+  ```sh
+  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+  curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+  sudo apt-get install -y nodejs
+  npm install --global yarn
+  ```
 
-# OR
+2. Install the API and WebUI dependencies:
 
-git clone YOUR_PROJECT
-cd YOUR_PROJECT
-git submodule update --init
+  ```sh
+  git clone THIS_REPO
+  poetry install # from the `api` subdirectory
+  yarn install # from the `webui` subdirectory
+  ```
+
+3. Launch the generated project:
+
+  ```sh
+  docker-compose up # from the project root
 ```
 
-To install Poetry and all Python dependencies:
+4. Add `APP_NAME.indico.local` to your local hosts file (`/etc/hosts` on most Linux systems)
 
-```sh
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-cd YOUR_PROJECT && poetry install
-```
+    - Find the running app container IP by running `docker inspect APP_NAME_caddy_1 | grep "IPAddress" | tail -1 | awk -F[\"\"] '{print $4}'`
+    - Add `IP_ADDRESS APP_NAME.indico.local` to your hosts file.
 
-To launch the generated project:
-
-```sh
-cd YOUR_PROJECT
-USERID=$(id -u) GROUPID=$(id -g) docker-compose up
-```
-
-You'll be able to access the UI at `https://app.indico.local`. You can verify noct is running by going to `https://app.indico.local/auth/api/ping`. The templated FastAPI application is mounted to `https://app.indico.local/api`.
-
-> Note:
->
-> In order for the hostname DNS resolution to succeed, `docker-compose` contains a [DNS proxy server](https://mageddo.github.io/dns-proxy-server/latest/en/), which allows the container hostnames to resolve on the host machine without knowing the container IPs. If you encounter resolution issues, ensure to `docker-compose down` to shutdown the service and try again.
+You'll be able to access the UI at `https://APP_NAME.indico.local`. You can verify noct is running by going to `https://APP_NAME.indico.local/auth/api/ping`. The templated FastAPI application is mounted to `https://APP_NAME.indico.local/api`.
 
 ### Creating a user
 
@@ -67,6 +60,7 @@ $ docker exec -it new_project_noct_1 bash
 $ python3 alembic/migrations/setup_user_access.py EMAIL_ADDRESS
 setup_user_access.py:20: UserWarning: User with email EMAIL_ADDRESS not found, creating...
   warnings.warn("User with email {} not found, creating...".format(email))
+Confirm Password for EMAIL_ADDRESS: 
 Confirm Password for EMAIL_ADDRESS: 
 ```
 
