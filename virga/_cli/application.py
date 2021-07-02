@@ -65,7 +65,15 @@ def virga():
 @click.pass_context
 def new(ctx: click.Context, app_path, name: str = None, **kwargs):
     """
-    Create a new project called APP_NAME using provided template options.
+    Create a new project using provided template options.
+
+    If no name is supplied, one is derived from the given desired project path according to the rules specified in PEP-8. For example:
+
+      - `virga new fruit/banana` generates a new Python module called 'banana' in the directory 'fruit/banana'.
+
+      - `virga new fruit/tropical --name mango` generates a new Python module called mango in the directory 'fruit/banana'.
+
+    Rules: https://www.python.org/dev/peps/pep-0008/#package-and-module-names
     """
     # santize the requested app name to ensure no overwrites
     if os.path.exists(app_path):

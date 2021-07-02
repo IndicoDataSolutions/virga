@@ -91,6 +91,8 @@ async def read_root():
     return {"msg": "Hello World!"}
 ```
 
+You can also add [global dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/global-dependencies/) if all your routes will require authentication.
+
 ### Database connections
 
 Like with authentication, all routes needing access to a database connection must explictly ask for one through a route dependency. Adding
