@@ -12,6 +12,6 @@ class Generator(ABC):
 
     @staticmethod
     @abstractmethod
-    def generate(ctx: Context, *args: Any, **kwargs: Any):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs: Any):
         """Run any generator-specific code."""
-        pass
+        raise NotImplementedError()

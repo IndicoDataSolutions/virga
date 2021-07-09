@@ -71,7 +71,7 @@ def new(ctx: click.Context, app_path, name: str = None, **kwargs):
 
       - `virga new fruit/banana` generates a new Python module called 'banana' in the directory 'fruit/banana'.
 
-      - `virga new fruit/tropical --name mango` generates a new Python module called mango in the directory 'fruit/banana'.
+      - `virga new fruit/tropical --name mango` generates a new Python module called mango in the directory 'fruit/tropical'.
 
     Rules: https://www.python.org/dev/peps/pep-0008/#package-and-module-names
     """

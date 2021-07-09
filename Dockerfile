@@ -1,13 +1,16 @@
 FROM python:3.7-slim-buster
 
 ENV APP_NAME=virga POETRY_HOME=/etc/poetry
+ENV PATH = "${PATH}:/etc/poetry/bin"
 
-RUN apt update && \
-    apt -y full-upgrade && \
-    apt install -y build-essential curl vim git && \
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y build-essential curl vim git && \
     curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
-    apt install -y nodejs && \
-    npm install -g yarn
+    apt install --no-install-recommends -y nodejs && \
+    npm install -g yarn && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY . /virga
 WORKDIR /virga
@@ -15,10 +18,8 @@ WORKDIR /virga
 # python dependencies (Poetry)
 RUN pip3 install --upgrade pip && \
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 - && \
-    . /etc/poetry/env && \
+    source /etc/poetry/env && \
     poetry config virtualenvs.create false && \
     poetry install
 
-ENV PATH = "${PATH}:/etc/poetry/bin"
-
-CMD [ "tail", "-f", "/dev/null" ]
+CMD ["bash"]

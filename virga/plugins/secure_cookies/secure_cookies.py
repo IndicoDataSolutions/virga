@@ -86,7 +86,7 @@ def _decode_signed_value_v2(name: str, value: bytes, max_age_days) -> Optional[b
         return None
 
 
-def _encode_signed_value_v2(name: str, value: bytes):
+def _encode_signed_value_v2(name: str, value: bytes) -> bytes:
     timestamp = utf8_bytes(str(int(time.time())))
     value = base64.b64encode(value)
 
