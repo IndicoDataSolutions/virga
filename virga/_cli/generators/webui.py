@@ -37,7 +37,7 @@ class WebUIGenerator(Generator):
             apply_patch("docker-compose.patch")
 
             run_patch(
-                get_path(_templates_dir, "webui/nginx-conf.patch"), "nginx-conf.patch"
+                get_path(_templates_dir, "webui/Caddyfile.patch"), "Caddyfile.patch"
             )
 
             with in_directory("webui"):

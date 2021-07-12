@@ -1,0 +1,11 @@
+--- Caddyfile
++++ Caddyfile
+@@ -8,4 +8,4 @@
+-# # noct
+-# handle_path /auth/* {
+-#     reverse_proxy http://noct:5000
+-# }
++# noct
++handle_path /auth/* {
++    reverse_proxy http://noct:5000
++}

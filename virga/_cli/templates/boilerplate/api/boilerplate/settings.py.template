@@ -1,7 +1,6 @@
 from pydantic import BaseSettings
 
-# from functools import lru_cache
-# from urllib.parse import quote_plus as escape
+from functools import lru_cache
 
 
 # Objects and arguments passed through dependency injection must be hashable.
@@ -27,12 +26,11 @@ class Settings(BaseSettings, frozen=True):
     #     return "{}://{}:{}@{}:{}/{}".format(
     #         self.db_driver,
     #         self.postgres_user,
-    #         escape(self.postgres_password),
+    #         self.postgres_password,
     #         self.postgres_host,
     #         self.postgres_port,
     #         self.postgres_db,
     #     )
-
 
 
 @lru_cache(maxsize=None)

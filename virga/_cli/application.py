@@ -42,9 +42,8 @@ def virga():
 
 @virga.command()
 @click.option(
-    "--force",
-    is_flag=True,
-    help=f"({click.style('dangerous', fg='red')}) Force app generation even the given project directory is not empty.",
+    "--name",
+    help="The name of the application to generate. This will be used for both the Python module and development URL subdomain. If not supplied, this will be parsed from the provided APP_PATH.",
 )
 @click.option(
     "--auth/--no-auth",
@@ -64,32 +63,29 @@ def virga():
 )
 @click.argument("app_path", type=click.Path(writable=True, resolve_path=True))
 @click.pass_context
-def new(ctx: click.Context, app_path, **kwargs):
+def new(ctx: click.Context, app_path, name: str = None, **kwargs):
     """
-    Create a new project called APP_NAME using provided template options.
+    Create a new project using provided template options.
+
+    If no name is supplied, one is derived from the given desired project path according to the rules specified in PEP-8. For example:
+
+      - `virga new fruit/banana` generates a new Python module called 'banana' in the directory 'fruit/banana'.
+
+      - `virga new fruit/tropical --name mango` generates a new Python module called mango in the directory 'fruit/tropical'.
+
+    Rules: https://www.python.org/dev/peps/pep-0008/#package-and-module-names
     """
     # santize the requested app name to ensure no overwrites
     if os.path.exists(app_path):
-        # if its a file, always reject (ignore --force option)
-        if os.path.isfile(app_path):
-            raise click.BadParameter(
-                click.style(
-                    f"'{app_path}' is a file that already exists. Please supply the name of a non-existent file or directory. ",
-                    fg="red",
-                    bold=True,
-                )
+        raise click.BadParameter(
+            click.style(
+                f"'{app_path}' already exists. To create a new project, supply a path to a non-existent directory.",
+                fg="red",
+                bold=True,
             )
-        # if its a directory, reject unless --force is provided
-        elif not kwargs["force"] and os.listdir(app_path):
-            raise click.BadParameter(
-                click.style(
-                    f"The '{app_path}' directory already exists and is not empty.\n  To create a new project within this directory and overwrite existing files, supply the `--force` flag {click.style('with extreme care', underline=True, reset=False)}.",
-                    fg="red",
-                    bold=True,
-                )
-            )
+        )
 
-    app_name = _to_valid_appname(os.path.basename(app_path))
+    app_name = name or _to_valid_appname(os.path.basename(app_path))
 
     # ensure a quasi-transactional state by generating the project in a temporary
     # directory, then moving it to our desired directory once everything has

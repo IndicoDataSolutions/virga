@@ -6,7 +6,6 @@ from ..utils import (
     _print_step,
     get_path,
     _templates_dir,
-    run_command,
     in_directory,
     run_patch,
 )
@@ -28,6 +27,3 @@ class GraphQLGenerator(Generator):
                 _print_step("Patching existing code...")
 
                 run_patch(get_path(_templates_dir, "graphql/app.patch"), "app.patch")
-
-            # TODO: uncomment when available on pypi
-            # run_command("poetry add indico-virga")

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "virga"
-version = "0.1.0"
+version = "1.1.0"
 description = "Templated adaptable sidecar app generation."
 authors = ["thearchitector <elias.gabriel@indico.io>"]
 
@@ -13,16 +13,29 @@ python-jose = {extras = ["cryptography"], version = "^3.2.0"}
 graphene = "^2.1.8"
 orjson = "^3.5.0"
 fastapi = "^0.63.0"
-SQLAlchemy = "^1.4.5"
-alembic = "^1.5.8"
+SQLAlchemy = "^1.4"
+alembic = "^1.5.5"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
 asyncpg = "^0.22.0"
-pytest-asyncio = "^0.14.0"
+pytest = "^6.2.4"
+pytest-asyncio = "^0.15.1"
+black = "^21.6b0"
+mypy = "^0.910"
+sqlalchemy2-stubs = "^0.0.2-alpha.4"
+types-orjson = "^0.1.1"
+types-requests = "^2.25.0"
 
 [tool.poetry.scripts]
 virga = "virga._cli.application:virga"
+
+[tool.mypy]
+ignore_missing_imports = true
+warn_return_any = true
+show_column_numbers = true
+follow_imports = "silent"
+warn_unreachable = true
+plugins = "sqlalchemy.ext.mypy.plugin"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

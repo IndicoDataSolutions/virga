@@ -1,5 +1,5 @@
-from .structure import StructureGenerator
-from .auth import NoctAuthGenerator
-from .graphql import GraphQLGenerator
-from .webui import WebUIGenerator
-from .database import DatabaseGenerator
+from .structure import StructureGenerator  # noqa
+from .auth import NoctAuthGenerator  # noqa
+from .graphql import GraphQLGenerator  # noqa
+from .webui import WebUIGenerator  # noqa
+from .database import DatabaseGenerator  # noqa

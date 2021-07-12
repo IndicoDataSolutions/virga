@@ -4,13 +4,8 @@ virga-test:
   volumes:
     - .:/virga
   depends_on:
-    - virga-db
     - noct
   dockercfg_service: gcr-dockercfg
-  cached: True
-virga-db:
-  image: postgres:13-alpine
-  encrypted_env_file: codeship.env
   cached: True
 
 noct:
@@ -18,12 +13,14 @@ noct:
   environment:
     NOCT_BYPASS_CONFIRMATION: True
     NOCT_BYPASS_APP_ACCESS: True
+    POSTGRES_HOST: test-db
   depends_on:
-    - noct-db
+    - test-db
   dockercfg_service: gcr-dockercfg
   cached: True
-noct-db:
-  image: postgres:9.6-alpine
+
+test-db:
+  image: postgres:12-alpine
   encrypted_env_file: codeship.env
   cached: True
 

@@ -1,6 +1,6 @@
 --- app.py
 +++ app.py
-@@ -10,4 +10,4 @@
+@@ -11,4 +11,4 @@
 -# from sqlalchemy.ext.asyncio import AsyncSession
 -# from sqlalchemy import select
 -# from .database import async_session
@@ -9,7 +9,7 @@
 +from sqlalchemy import select
 +from .database import async_session
 +from .database.models import Widget
-@@ -31,9 +31,9 @@
+@@ -53,9 +53,9 @@
 -# # Spawn an asynchronous database session and fetch a database object.
 -# # https://docs.sqlalchemy.org/en/14/orm/session_basics.html
 -# # https://docs.sqlalchemy.org/en/14/orm/session_basics.html#querying-2-0-style

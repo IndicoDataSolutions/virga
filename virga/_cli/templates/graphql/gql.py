@@ -1,5 +1,6 @@
 from graphene import ObjectType, String
 
+
 #
 # Queries are constructed following the conventions and examples provided
 # under the Graphene documentation.

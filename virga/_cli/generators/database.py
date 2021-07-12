@@ -42,6 +42,4 @@ class DatabaseGenerator(Generator):
                 )
                 run_patch(get_path(_templates_dir, "database/app.patch"), "app.patch")
 
-            # TODO: uncomment when available on pypi
-            # run_command("poetry add indico-virga")
-            run_command("poetry add asyncpg")
+            run_command("poetry add asyncpg aiodataloader")

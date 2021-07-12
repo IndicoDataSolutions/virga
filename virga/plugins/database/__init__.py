@@ -34,11 +34,11 @@ class _SessionMaker:
     _engine = None
 
     @classmethod
-    def new(cls, db_url, **kwargs):
-        if not cls._sessionmaker or not cls._engine:
+    def new(cls, db_url, **kwargs) -> AsyncSession:
+        if not cls._sessionmaker:
             cls._engine = make_async_engine(db_url, **kwargs)
             cls._sessionmaker = sessionmaker(
-                cls._engine, expire_on_commit=False, class_=AsyncSession
+                cls._engine, future=True, expire_on_commit=False, class_=AsyncSession
             )
 
         return cls._sessionmaker()

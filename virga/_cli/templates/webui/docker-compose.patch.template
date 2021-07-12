@@ -1,34 +1,23 @@
 --- docker-compose.yaml
 +++ docker-compose.yaml
-@@ -46,6 +46,6 @@
+@@ -33,10 +33,10 @@
 -  # webui:
--  #   build: webui
--  #   user: "${USERID-1000}:${GROUPID-1000}"
+-  #   build:
+-  #     context: webui
+-  #     target: development
 -  #   volumes:
--  #     - ./webui:/home/developer/$app_name
--  #     - node_modules:/home/developer/$app_name/node_modules
+-  #     - ./webui:/$app_name-webui
+-  #     - /$app_name-webui/node_modules
+-  #   expose:
+-  #     - "8080"
+-  #   init: true
 +  webui:
-+    build: webui
-+    user: "${USERID-1000}:${GROUPID-1000}"
++    build:
++      context: webui
++      target: development
 +    volumes:
-+      - ./webui:/home/developer/$app_name
-+      - node_modules:/home/developer/$app_name/node_modules
-@@ -70,9 +70,9 @@
--      # - webui
--
--# volumes:
--#   node_modules:
--#     driver: local
--#     driver_opts:
--#       type: none
--#       o: bind
--#       device: ./webui/node_modules
-+      - webui
-+
-+volumes:
-+  node_modules:
-+    driver: local
-+    driver_opts:
-+      type: none
-+      o: bind
-+      device: ./webui/node_modules
++      - ./webui:/$app_name-webui
++      - /$app_name-webui/node_modules
++    expose:
++      - "8080"
++    init: true

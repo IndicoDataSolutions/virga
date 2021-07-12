@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer
 
-from . import BASE
+from .base import BASE
 
 
 # https://fastapi.tiangolo.com/tutorial/sql-databases/#create-the-database-models

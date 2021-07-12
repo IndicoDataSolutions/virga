@@ -1,7 +1,7 @@
 import pytest
 import os
 import asyncio
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import Column, String, Integer, select
 from fastapi import FastAPI, Depends
@@ -12,30 +12,27 @@ from virga.plugins.database import make_async_engine, start_async_session
 user = os.getenv("POSTGRES_USER")
 passwd = os.getenv("POSTGRES_PASSWORD")
 db = os.getenv("POSTGRES_DB")
-DB_URL = f"postgresql+asyncpg://{user}:{passwd}@virga-db:5432/{db}"
-BASE = declarative_base()
+DB_URL = f"postgresql+asyncpg://{user}:{passwd}@test-db:5432/{db}"
+Base = declarative_base()
 
 
-class Widget(BASE):
+class Widget(Base):
     __tablename__ = "widgets"
     id = Column(Integer, primary_key=True)
     name = Column(String)
 
 
 @pytest.fixture(scope="session", autouse=True)
-async def prepare_database():
+async def prepare_dataBase():
     engine = make_async_engine(DB_URL)
 
     async with engine.begin() as conn:
-        await conn.run_sync(BASE.metadata.reflect)
-        await conn.run_sync(BASE.metadata.drop_all)
-        await conn.run_sync(BASE.metadata.create_all)
+        await conn.run_sync(Widget.__table__.create)
 
     yield
 
     async with engine.begin() as conn:
-        await conn.run_sync(BASE.metadata.reflect)
-        await conn.run_sync(BASE.metadata.drop_all)
+        await conn.run_sync(Widget.__table__.drop)
 
 
 # https://stackoverflow.com/a/56238383
