@@ -24,7 +24,6 @@ class StructureGenerator(Generator):
         shutil.copytree(get_path(_templates_dir, "boilerplate"), project_dir)
 
         with in_directory(project_dir):
-            shutil.copy2(get_path(_templates_dir, "../../..", "README.md"), "README.md")
             resolve_template("docker-compose.yaml.template", app_name=app_name)
             resolve_template("Caddyfile.template", app_name=app_name)
 
