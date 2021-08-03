@@ -1,1 +1,1 @@
-from .graphql import GraphQLRoute
+from .graphql import GraphQLRoute  # noqa
