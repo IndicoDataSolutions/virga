@@ -1,0 +1,55 @@
+version: "3.7"
+services:
+  services-db:
+    image: postgres:12-alpine
+    env_file: api/dev-services.env
+    logging:
+      driver: "none"
+
+  # noct:
+  #   image: gcr.io/new-indico/noct:development
+  #   env_file: api/dev-services.env
+  #   environment:
+  #     NOCT_UI_FRONTEND_URL: https://review_list_page.indico.local
+  #     NOCT_BYPASS_CONFIRMATION: "True"
+  #     NOCT_BYPASS_APP_ACCESS: "True"
+  #   expose:
+  #     - "5000"
+  #   logging:
+  #     driver: "none"
+  #   depends_on:
+  #     - services-db
+
+  api:
+    build: api
+    env_file: api/dev-services.env
+    volumes:
+      - ./api:/review_list_page-api
+    depends_on:
+      - services-db
+      # - noct
+    command: /start-reload.sh
+
+  webui:
+    build:
+      context: webui
+      target: development
+    volumes:
+      - ./webui:/review_list_page-webui
+      - /review_list_page-webui/node_modules
+    expose:
+      - "8080"
+    init: true
+
+  caddy:
+    image: caddy:2
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "443:443"
+
+volumes:
+  caddy_data:
+  caddy_config:

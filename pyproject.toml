@@ -15,6 +15,7 @@ orjson = "^3.5.0"
 fastapi = "^0.63.0"
 SQLAlchemy = "^1.4"
 alembic = "^1.5.5"
+indico-client = "^4.12.5"
 
 [tool.poetry.dev-dependencies]
 asyncpg = "^0.22.0"
