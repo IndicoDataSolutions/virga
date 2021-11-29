@@ -1,8 +1,8 @@
-- type: parallel
-  steps:
-  - name: lint
+- steps:
+  - command: ./scripts/run_lints.sh
+    name: lint
     service: virga-test
-    command: ./scripts/run_lints.sh
-  - name: test
+  - command: ./scripts/run_tests.sh
+    name: test
     service: virga-test
-    command: ./scripts/run_tests.sh
+  type: parallel
