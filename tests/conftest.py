@@ -1,9 +1,9 @@
-import pytest
-import requests
 import random
 import string
 import uuid
 
+import pytest
+import requests
 from virga.plugins.noct import NOCT_URL, VALID_DOMAIN
 
 
@@ -21,18 +21,17 @@ def _rng_password():
 def mock_user():
     id = str(uuid.uuid4()).replace("-", "")
     password = _rng_password()
-    req = requests.post(
+    name = "Mock User"
+    email = f"mockuser{id}@indicodata.ai"
+
+    requests.post(
         f"{NOCT_URL}/users/register",
-        data={
-            "name": "Mock User",
-            "email": f"mockuser{id}@indico.io",
-            "password": password,
-            "accept_terms": "y",
-        },
+        data={"name": name, "email": email, "password": password, "accept_terms": "y"},
         headers={"Host": f"virga.{VALID_DOMAIN}"},
+        allow_redirects=True,
     )
 
-    return {"password": password, **req.json()["user"]}
+    return {"password": password, "name": name, "email": email, "id": 1}
 
 
 @pytest.fixture(scope="session")
