@@ -7,7 +7,6 @@ authors = []
 [tool.poetry.dependencies]
 python = "^3.7"
 fastapi = "^0.63.0"
-indico-client = "^4.5.0"
 uvicorn = "^0.14.0"
 uvloop = "^0.15.2"
 httptools = "^0.2.0"
