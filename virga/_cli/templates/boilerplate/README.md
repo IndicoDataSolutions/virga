@@ -1,8 +1,7 @@
 # Virga
 
-## CLI Usage
 
-### Authenticating with GCloud
+## Authenticating with GCloud
 
 Projects generated with `--auth` require GCR access to download and run the Noct service, Indico's platform-wide authentication server. To setup GCR access on your machine:
 
@@ -11,49 +10,47 @@ Projects generated with `--auth` require GCR access to download and run the Noct
 3. Authenticate with the provided service account key: `gcloud auth activate-service-account --key-file=/path/to/key.json`.
 4. Configure Docker to run with GCR: `gcloud auth configure-docker`.
 
-### Generating an app
+## Generating an app
 
-**For now, Virga is not publically released. To run Virga commands, you must clone this repo and run `poetry install`, then `poetry shell`. All commands must be run from within `poetry shell` or via `poetry run`. See the [development section](#development) for more information.**
+Virga applications, and Virga itself, are [Poetry](https://python-poetry.org/) projects, meaning they use Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/).
 
-You can create a new project by running `virga new <NAME> [FLAGS]`. This command will generate the new project with the given flags. General command usage and descriptions of avaliable flags are available with `virga new --help`.
+In order to create an app with a UI, you must also install [Yarn](https://yarnpkg.com/getting-started/install).
 
-## Development Usage
-
-Virga applications, and Virga itself, are [Poetry](https://python-poetry.org/) projects, meaning they use Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/). To setup the project, install Yarn and Poetry, and the dependencies by cloning the repo and running `poetry install` in the project directory:
-
-1. Install Poetry and Yarn:
+1. Install Poetry and Yarn (assumes Python >= 3.7):
 
   ```sh
-  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+  curl -sSL https://install.python-poetry.org | python3 -
   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
   sudo apt-get install -y nodejs
   npm install --global yarn
   ```
 
-2. Install the API and WebUI dependencies:
+2. Generate a new project:
+
+  **For now, Virga is not publically published. To run Virga commands, you must pip install it from this repo rather than PyPI.**
 
   ```sh
-  git clone THIS_REPO
-  poetry install # from the `api` subdirectory
-  yarn install # from the `webui` subdirectory
+  pip install git+https://github.com/IndicoDataSolutions/virga.git
   ```
+
+  You can create a new project by running `virga new <NAME> [FLAGS]`. This command will generate the new project with the given flags. General command usage and descriptions of avaliable flags are available with `virga new --help`.
 
 3. Launch the generated project:
 
   ```sh
   docker-compose up # from the project root
-```
+  ```
 
 4. Add `APP_NAME.indico.local` to your local hosts file (`/etc/hosts` on most Linux systems)
 
     - Find the running app container IP by running `docker inspect APP_NAME_caddy_1 | grep "IPAddress" | tail -1 | awk -F[\"\"] '{print $4}'`
     - Add `IP_ADDRESS APP_NAME.indico.local` to your hosts file.
 
-You'll be able to access the UI at `https://APP_NAME.indico.local`. You can verify noct is running by going to `https://APP_NAME.indico.local/auth/api/ping`. The templated FastAPI application is mounted to `https://APP_NAME.indico.local/api`.
+You'll be able to access the UI at `https://APP_NAME.indico.local`. You can verify Noct is running by going to `https://APP_NAME.indico.local/auth/api/ping`. The templated FastAPI application is mounted to `https://APP_NAME.indico.local/api`.
 
 ### Creating a user
 
-As of now, the UI does not support creating users. In order to create a user and access authenticated routes, you must create one manually through the CLI. Noct is responsible for handling users, and there is a convinence script placed within its container's working directory. To create an admin user:
+As of now, the UI does not support creating users. In order to create a user and access authenticated routes, you must create one manually through the CLI. Noct is responsible for handling users, and there is a convenience script placed within its container's working directory. To create an admin user:
 
 ```sh
 $ docker exec -it new_project_noct_1 bash
@@ -66,7 +63,7 @@ Confirm Password for EMAIL_ADDRESS:
 
 ### Authenticated routes
 
-For now, all routes are unauthenticated unless explicily required. Authentication and request for the current user can be added to a route via FastAPI's [Dependency Injection](https://fastapi.tiangolo.com/tutorial/dependencies/?h=depends) system. In general, adding
+For now, all routes are unauthenticated unless explicitly required. Authentication and request for the current user can be added to a route via FastAPI's [Dependency Injection](https://fastapi.tiangolo.com/tutorial/dependencies/?h=depends) system. In general, adding
 
 ```python
 current_user: User = Depends(get_current_user)
@@ -95,13 +92,13 @@ You can also add [global dependencies](https://fastapi.tiangolo.com/tutorial/dep
 
 ### Database connections
 
-Like with authentication, all routes needing access to a database connection must explictly ask for one through a route dependency. Adding
+Like with authentication, all routes needing access to a database connection must explicitly ask for one through a route dependency. Adding
 
 ```python
 session: AsyncSession = Depends(async_session)
 ```
 
-to any route's definition will automatically open and close an asyncronous database connection. An example is provided in all generated sidecar applications.
+to any route's definition will automatically open and close an asynchronous database connection. An example is provided in all generated sidecar applications.
 
 #### Alembic
 
@@ -109,7 +106,7 @@ Virga's `--database` option provides a baseline structure for managing database 
 
 ### Docker Compose
 
-Virga comes with a `docker-compose` file to make testing easier. Simply `docker-compose up --build`. The Docker setup contains a development version of Noct running an PostgreSQL 9.6.x server running on Alpine, reachable at `http://noct:5000` and `http://noct-db:5432` respectivly.
+Virga comes with a `docker-compose` file to make testing easier. Simply `docker-compose up --build`. The Docker setup contains a development version of Noct running an PostgreSQL 9.6.x server running on Alpine, reachable at `http://noct:5000` and `http://noct-db:5432` respectively.
 
 You can also run the Virga CLI from your host machine by executing through Poetry `poetry run` or via a Poetry shell:
 
