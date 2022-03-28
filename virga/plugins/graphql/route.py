@@ -5,10 +5,13 @@ from typing import Any, Callable, Union
 import graphene
 from fastapi import BackgroundTasks, Response, status
 from fastapi.responses import FileResponse, ORJSONResponse, PlainTextResponse
-from graphql import format_error
-from graphql.execution.executors.asyncio import AsyncioExecutor
 from starlette.requests import Request
 from starlette.types import Receive, Scope, Send
+
+from graphql import format_error
+from graphql.execution.executors.asyncio import AsyncioExecutor
+
+GRAPHIQL = str(pathlib.Path(__file__).parent / "graphiql.html")
 
 
 class GraphQLRoute:
@@ -26,8 +29,7 @@ class GraphQLRoute:
         # route GET requests to the IDE
         if request.method == "GET" and "text/html" in request.headers.get("Accept", ""):
             # read the GraphiQL playground html and serve it as content
-            graphiql = pathlib.Path(__file__).parent / "graphiql.html"
-            return FileResponse(str(graphiql), media_type="text/html")
+            return FileResponse(GRAPHIQL, media_type="text/html")
         # route POST requests to the graphql executor
         elif request.method == "POST":
             content_type = request.headers.get("Content-Type", "")

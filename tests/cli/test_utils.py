@@ -4,7 +4,6 @@ import shutil
 import click
 import pytest
 from click.exceptions import UsageError
-
 from virga._cli.utils import (
     copy_template,
     get_path,

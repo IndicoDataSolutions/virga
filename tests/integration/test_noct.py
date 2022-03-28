@@ -4,14 +4,13 @@ import pytest
 from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
 from jose import jwt
-
-from virga.plugins.noct.noct import (
+from virga.plugins.noct import User
+from virga.plugins.noct.handler import (
     _NOCT_JWT_ALGORITHM,
     _NOCT_JWT_SECRET,
     get_current_user,
 )
 from virga.plugins.secure_cookies import write_secure_cookie
-from virga.types import User
 
 
 @pytest.fixture(scope="session")

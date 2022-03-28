@@ -1,13 +1,6 @@
 from fastapi import Request, Response
-
 from virga.plugins.database import start_async_session
-from virga.plugins.noct.noct import (
-    ExpiredTokenException,
-    LoginRequiredException,
-    _get_current_user,
-    _refresh_token,
-    write_secure_cookie,
-)
+from virga.plugins.noct import LoginRequiredException, read_user
 
 from .graphql import GraphQLRoute
 
@@ -28,26 +21,16 @@ class SessionedGraphQLRoute(GraphQLRoute):
                 raise LoginRequiredException()
 
             # decode or refresh token if necessary
-            try:
-                self.user = _get_current_user(cookie=auth_token)
-                self.token = auth_token
-                self.domain = None
-            except ExpiredTokenException:
-                self.token, self.domain = _refresh_token(refresh_token)
-                self.user = _get_current_user(token=self.token)
+            self.user, self.token, self.cookie = read_user(
+                auth_token=auth_token, refresh_token=refresh_token
+            )
 
         # handle graphql request as per normal
         response = await super()._handle_request(request)
 
-        if self.check_auth and self.domain:
+        if self.check_auth and self.cookie:
             # set cookie if dirty
-            response.set_cookie(
-                "auth_token",
-                write_secure_cookie("auth_token", self.token),
-                domain=self.domain,
-                httponly=True,
-                secure=True,
-            )
+            response.set_cookie(**self.cookie)
 
         return response
 

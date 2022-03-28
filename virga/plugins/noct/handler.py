@@ -1,10 +1,9 @@
 import os
-from typing import Optional, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 import requests
 from fastapi import Cookie, Response
 from jose import JWTError, jwt
-
 from virga.plugins.secure_cookies import read_secure_cookie, write_secure_cookie
 
 from .errors import ExpiredTokenException, LoginRequiredException
@@ -72,13 +71,13 @@ def _parse_current_user(token=None, cookie=None):
 
 def read_user(
     auth_token: Optional[str] = None, refresh_token: Optional[str] = None
-) -> Tuple[User, str]:
+) -> Tuple[User, str, Optional[Dict[str, Union[str, bool]]]]:
     """
     Handle and process a Noct session JWT stored in an atmosphere secure cookie.
     If the token is expired, the passed refresh token will be used to fetch a new one.
-    Returns a User, and if one was regenerated, a new secure token cookie with
-    attributes. If a new token cookie is present, the method caller is responsible for
-    writing it back to a Response to ensure the client gets updated.
+    Returns a User, and if one was regenerated, a new secure token and its cookie. If
+    a new token cookie is present, the method caller is responsible for writing it back
+    to a Response to ensure the client gets updated.
 
     If you're using FastAPI with a normal route, it is highly recommended to use the
     `get_current_user` method instead, as is intended to be a FastAPI dependency.
@@ -88,20 +87,24 @@ def read_user(
 
     try:
         # ensure we have valid credentials
-        return _parse_current_user(cookie=auth_token), None
+        return _parse_current_user(cookie=auth_token), auth_token, None
     except ExpiredTokenException:
-        # fetch a new tocken from Noct
+        # fetch a new token from Noct
         new_token, domain = _refresh_token(refresh_token)
         user = _parse_current_user(token=new_token)
 
-        # return the user alonside the new cookie
-        return user, {
-            "key": "auth_token",
-            "value": write_secure_cookie("auth_token", new_token),
-            "domain": domain,
-            "httponly": True,
-            "secure": True,
-        }
+        # return the user alongside the token and new cookie
+        return (
+            user,
+            new_token,
+            {
+                "key": "auth_token",
+                "value": write_secure_cookie("auth_token", new_token),
+                "domain": domain,
+                "httponly": True,
+                "secure": True,
+            },
+        )
 
 
 def get_current_user(
@@ -114,7 +117,7 @@ def get_current_user(
     Expired tokens are requested for refresh if a refresh token exists. This is a
     FastAPI dependency.
     """
-    user, cookie = read_user(auth_token=auth_token, refresh_token=refresh_token)
+    user, _, cookie = read_user(auth_token=auth_token, refresh_token=refresh_token)
     if cookie:
         response.set_cookie(**cookie)
 
