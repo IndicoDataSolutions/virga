@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
-from graphene import ObjectType, String, Schema
+from graphene import ObjectType, Schema, String
 
 from virga.plugins.graphql import GraphQLRoute
 

@@ -1,14 +1,9 @@
-import click
 import shutil
 
+import click
+
+from ..utils import _print_step, _templates_dir, get_path, in_directory, run_patch
 from .base import Generator
-from ..utils import (
-    _print_step,
-    get_path,
-    _templates_dir,
-    in_directory,
-    run_patch,
-)
 
 
 class GraphQLGenerator(Generator):

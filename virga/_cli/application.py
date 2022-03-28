@@ -1,16 +1,17 @@
-import shutil
-import click
 import os
-import tempfile
 import re
+import shutil
 import string
+import tempfile
+
+import click
 
 from .generators import (
-    StructureGenerator,
-    NoctAuthGenerator,
-    GraphQLGenerator,
-    WebUIGenerator,
     DatabaseGenerator,
+    GraphQLGenerator,
+    NoctAuthGenerator,
+    StructureGenerator,
+    WebUIGenerator,
 )
 
 

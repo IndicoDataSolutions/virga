@@ -4,6 +4,7 @@ from typing import Optional, Tuple
 import requests
 from fastapi import Cookie, Response
 from jose import JWTError, jwt
+
 from virga.plugins.secure_cookies import read_secure_cookie, write_secure_cookie
 
 from .errors import ExpiredTokenException, LoginRequiredException

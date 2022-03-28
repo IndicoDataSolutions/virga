@@ -1,7 +1,8 @@
-from click.testing import CliRunner
 import os
-import pytest
 from itertools import combinations
+
+import pytest
+from click.testing import CliRunner
 
 from virga._cli.application import virga
 

@@ -1,18 +1,19 @@
-import click
 import shutil
 
-from .base import Generator
+import click
+
 from ..utils import (
     _print_step,
-    get_path,
     _templates_dir,
-    resolve_template,
-    copy_template,
-    run_command,
-    in_directory,
     apply_patch,
+    copy_template,
+    get_path,
+    in_directory,
+    resolve_template,
+    run_command,
     run_patch,
 )
+from .base import Generator
 
 
 class WebUIGenerator(Generator):

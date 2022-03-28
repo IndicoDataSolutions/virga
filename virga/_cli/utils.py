@@ -1,11 +1,12 @@
 import os
-from typing import Union
-import click
-from subprocess import run, PIPE, CalledProcessError
-from contextlib import contextmanager
 import shutil
+from contextlib import contextmanager
 from fileinput import FileInput
 from string import Template
+from subprocess import PIPE, CalledProcessError, run
+from typing import Union
+
+import click
 import patch
 
 Path = Union[str, os.PathLike]

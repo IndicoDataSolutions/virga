@@ -1,16 +1,17 @@
-import click
 import shutil
 
-from .base import Generator
+import click
+
 from ..utils import (
     _print_step,
-    get_path,
     _templates_dir,
-    run_command,
+    get_path,
     in_directory,
     resolve_template,
+    run_command,
     run_patch,
 )
+from .base import Generator
 
 
 class DatabaseGenerator(Generator):

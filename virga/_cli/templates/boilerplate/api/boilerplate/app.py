@@ -1,5 +1,7 @@
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from .settings import Settings, settings
 
 # from virga.types import User
 # from virga.plugins.noct import get_current_user
@@ -13,7 +15,6 @@ from fastapi.middleware.cors import CORSMiddleware
 # from .database import async_session
 # from .database.models import Widget
 
-from .settings import Settings, settings
 
 app = FastAPI(root_path="/api")
 app.add_middleware(

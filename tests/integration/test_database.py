@@ -1,11 +1,12 @@
-import pytest
-import os
 import asyncio
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import Column, String, Integer, select
-from fastapi import FastAPI, Depends
+import os
+
+import pytest
+from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
+from sqlalchemy import Column, Integer, String, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import declarative_base
 
 from virga.plugins.database import make_async_engine, start_async_session
 

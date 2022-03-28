@@ -1,8 +1,9 @@
-import pytest
-import uuid
 import hmac
+import uuid
 
-from virga.plugins.secure_cookies import write_secure_cookie, read_secure_cookie
+import pytest
+
+from virga.plugins.secure_cookies import read_secure_cookie, write_secure_cookie
 
 
 @pytest.mark.integration
