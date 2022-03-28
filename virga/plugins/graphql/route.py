@@ -5,14 +5,12 @@ from typing import Any, Callable, Union
 import graphene
 from fastapi import BackgroundTasks, Response, status
 from fastapi.responses import FileResponse, ORJSONResponse, PlainTextResponse
+from graphql import format_error
+from graphql.execution.executors.asyncio import AsyncioExecutor
 from starlette.requests import Request
 from starlette.types import Receive, Scope, Send
 
-from graphql import format_error
-from graphql.execution.executors.asyncio import AsyncioExecutor
 
-
-# TODO: add token authentication
 class GraphQLRoute:
     def __init__(
         self, schema: Union[graphene.Schema, Callable[[Request], graphene.Schema]]

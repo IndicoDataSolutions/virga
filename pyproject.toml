@@ -2,7 +2,7 @@
 name = "virga"
 version = "1.1.2"
 description = "Templated adaptable sidecar app generation."
-authors = ["thearchitector <elias.gabriel@indico.io>"]
+authors = ["thearchitector <elias.gabriel@indicodata.ai>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"

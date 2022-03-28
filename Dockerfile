@@ -17,7 +17,7 @@ WORKDIR /virga
 
 # python dependencies (Poetry)
 RUN pip3 install --upgrade pip && \
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 - && \
+    curl -sSL https://install.python-poetry.org | python3 - && \
     source /etc/poetry/env && \
     poetry config virtualenvs.create false && \
     poetry install
