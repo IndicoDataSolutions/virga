@@ -1,9 +1,19 @@
 import os
 from itertools import combinations
+from unittest.mock import MagicMock, patch
 
 import pytest
 from click.testing import CliRunner
 from virga._cli.application import virga
+
+
+@pytest.fixture
+def run_command_patch():
+    mock = MagicMock()
+    with patch("virga._cli.generators.structure.run_command", mock):
+        with patch("virga._cli.generators.webui.run_command", mock):
+            with patch("virga._cli.generators.database.run_command", mock):
+                yield mock
 
 
 def test_virga_new_exists():
@@ -17,7 +27,7 @@ def test_virga_new_exists():
         assert result.output.find("already exists") > -1
 
 
-def test_virga_new():
+def test_virga_new(run_command_patch):
     runner = CliRunner()
 
     with runner.isolated_filesystem():
@@ -29,6 +39,8 @@ def test_virga_new():
         assert os.path.isfile("new-project/api/pyproject.toml")
         assert os.path.isfile("new-project/api/poetry.lock")
         assert os.path.isfile("new-project/api/Dockerfile")
+
+        run_command_patch.assert_called_once_with("poetry install --remove-untracked")
 
 
 cli_args = ["--auth", "--graphql", "--webui", "--database"]
@@ -42,10 +54,18 @@ cli_args = ["--auth", "--graphql", "--webui", "--database"]
         for args in combinations(cli_args, n + 1)
     ],
 )
-def test_virga_new_good_opts(opts):
+def test_virga_new_good_opts(opts, run_command_patch):
     runner = CliRunner()
 
     with runner.isolated_filesystem():
         result = runner.invoke(virga, ["new", "new-project", *opts])
         assert result.exit_code == 0
         assert result.output.find("Virga application generation complete!") > -1
+
+        run_command_patch.assert_any_call("poetry install --remove-untracked")
+        if "--webui" in opts:
+            run_command_patch.assert_any_call("yarn", "install")
+        if "--database" in opts:
+            run_command_patch.assert_any_call(
+                "poetry add asyncpg aiodataloader aiofiles"
+            )

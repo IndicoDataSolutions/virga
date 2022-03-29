@@ -19,7 +19,7 @@ class StructureGenerator(Generator):
         """
         Generate project base files given the the provided APP_NAME.
         """
-        # 1] copy template repostitory to the provided project directory
+        # 1] copy template repository to the provided project directory
         _print_step("Copying base sidecar template...")
 
         shutil.copytree(get_path(_templates_dir, "boilerplate"), project_dir)

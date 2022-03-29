@@ -43,4 +43,4 @@ class DatabaseGenerator(Generator):
                 )
                 run_patch(get_path(_templates_dir, "database/app.patch"), "app.patch")
 
-            run_command("poetry add asyncpg aiodataloader")
+            run_command("poetry add asyncpg aiodataloader aiofiles")

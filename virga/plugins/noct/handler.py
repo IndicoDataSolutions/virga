@@ -1,8 +1,9 @@
 import os
 from typing import Dict, Optional, Tuple, Union
 
-import requests
-from fastapi import Cookie, Response
+import orjson
+from aiohttp import ClientSession
+from fastapi import Cookie, Request, Response, status
 from jose import JWTError, jwt
 from virga.plugins.secure_cookies import read_secure_cookie, write_secure_cookie
 
@@ -19,21 +20,38 @@ if _NOCT_COOKIE_DOMAIN.startswith("."):
     _NOCT_COOKIE_DOMAIN = _NOCT_COOKIE_DOMAIN[1:]
 
 
-def _refresh_token(refresh_token):
+async def _refresh_token(request: Request, refresh_token: str):
     refresh_token = read_secure_cookie("refresh_token", refresh_token)
 
-    req = requests.post(
+    # if we need to fetch a refresh token, do so with an aiohttp client.
+    # since we want to share the client across multiple requests, add it to the
+    # application state instead of the route state.
+    if not hasattr(request.app.state, "_aiohttpclient"):
+        # make a new client, defining our default Host header
+        _aiohttpclient = ClientSession(
+            headers={"Host": f"virga.{_NOCT_COOKIE_DOMAIN}"},
+        )
+
+        # clients require graceful cleanup, so define a shutdown handler
+        # to add to our fastapi app that will run before app termination
+        async def _close():
+            await _aiohttpclient.close()
+
+        # store the async client in the app state, and add the event handler
+        request.app.state._aiohttpclient = _aiohttpclient
+        request.app.add_event_handler("shutdown", _close)
+
+    # make an async POST request for a new refresh token
+    async with request.app.state._aiohttpclient.post(
         f"{_NOCT_SERVICE_LOCATION}/users/refresh_token",
-        headers={
-            "Authorization": f"Bearer {refresh_token}",
-            "Host": f"virga.{_NOCT_COOKIE_DOMAIN}",
-        },
-    )
+        headers={"Authorization": f"Bearer {refresh_token}"},
+    ) as resp:
+        if resp.status == status.HTTP_401_UNAUTHORIZED:
+            raise LoginRequiredException()
 
-    if req.status_code == 401:
-        raise LoginRequiredException()
-
-    return req.json()["auth_token"], req.json()["cookie_domain"]
+        # decode the payload and return the new token with its domain
+        payload = await resp.json(loads=orjson.loads)
+        return payload["auth_token"], payload["cookie_domain"]
 
 
 def _get_token_data(token):
@@ -69,8 +87,10 @@ def _parse_current_user(token=None, cookie=None):
         return User(**token_data)
 
 
-def read_user(
-    auth_token: Optional[str] = None, refresh_token: Optional[str] = None
+async def read_user(
+    request: Request,
+    auth_token: Optional[str] = None,
+    refresh_token: Optional[str] = None,
 ) -> Tuple[User, str, Optional[Dict[str, Union[str, bool]]]]:
     """
     Handle and process a Noct session JWT stored in an atmosphere secure cookie.
@@ -90,7 +110,7 @@ def read_user(
         return _parse_current_user(cookie=auth_token), auth_token, None
     except ExpiredTokenException:
         # fetch a new token from Noct
-        new_token, domain = _refresh_token(refresh_token)
+        new_token, domain = await _refresh_token(request, refresh_token)
         user = _parse_current_user(token=new_token)
 
         # return the user alongside the token and new cookie
@@ -107,7 +127,8 @@ def read_user(
         )
 
 
-def get_current_user(
+async def get_current_user(
+    request: Request,
     response: Response,
     auth_token: Optional[str] = Cookie(None),
     refresh_token: Optional[str] = Cookie(None),
@@ -117,7 +138,9 @@ def get_current_user(
     Expired tokens are requested for refresh if a refresh token exists. This is a
     FastAPI dependency.
     """
-    user, _, cookie = read_user(auth_token=auth_token, refresh_token=refresh_token)
+    user, _, cookie = await read_user(
+        request, auth_token=auth_token, refresh_token=refresh_token
+    )
     if cookie:
         response.set_cookie(**cookie)
 

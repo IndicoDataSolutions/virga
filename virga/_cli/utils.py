@@ -58,7 +58,8 @@ def run_command(command: str, *args: str):
         # print a nice message instead of throwing a runtime exception
         click.get_current_context().fail(
             click.style(
-                f"The command `{' '.join(cmd)}` was attempted, but failed. The output was recaptured and is printed."
+                f"The command `{' '.join(cmd)}` was attempted, but failed. The"
+                " output was recaptured and is printed."
             )
             + err
         )

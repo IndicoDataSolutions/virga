@@ -16,8 +16,7 @@ COPY . /virga
 WORKDIR /virga
 
 # python dependencies (Poetry)
-RUN pip3 install --upgrade pip && \
-    curl -sSL https://install.python-poetry.org | python3 - && \
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
     poetry config virtualenvs.create false && \
     poetry install
 

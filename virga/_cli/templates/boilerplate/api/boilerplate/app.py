@@ -3,11 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .settings import Settings, settings
 
-# from virga.types import User
-# from virga.plugins.noct import get_current_user
+# from virga.plugins.noct import User, get_current_user
 
 # from graphene import Schema
-# from virga.plugins.graphql import GraphQLRoute
+# from virga.plugins.graphql import SessionedGraphQLRoute
 # from .gql import RootQuery
 
 # from sqlalchemy.ext.asyncio import AsyncSession
@@ -62,9 +61,27 @@ async def home(settings: Settings = Depends(settings)):
 #     return {"message": f"This is a {result.name} widget!"}
 
 
-# # Mounts a Graphene executor with schema to '/graphql'. POST requests to
-# # the route get executed while GET requests will render GraphiQL.
-# # GraphQLRoute accepts any Graphene Schema object.
+# # Mounts a Graphene executor with schema to a route. POST requests to
+# # the route get executed while GET requests will render GraphiQL. GraphQLRoute
+# # accepts any Graphene Schema object.
 # #
-# # Read more: https://docs.graphene-python.org/en/stable/types/schema/
-# app.add_route("/graphql", GraphQLRoute(schema=Schema(query=RootQuery)))
+# # SessionedGraphQLRoute (recommended) also accepts two kwargs, `database_url` and
+# # `authenticated`:
+# #
+# # - When `authenticted` is True, the route will check the request authentication
+# #   cookies, exactly like `get_current_user`, and if valid will attach `user` and
+# #   `token` fields to the GQL context passed to resolvers.
+# #
+# # - When set, `database_url` will be used to start an async db session. The session
+# #   will be attached to the GQL context via the `db` field.
+# #
+# #
+# # Read more:
+# # https://docs.graphene-python.org/en/stable/types/schema/
+# # https://graphql.org/learn/execution/#root-fields-resolvers
+# schema = Schema(query=RootQuery)
+# app.add_route("/graphql", SessionedGraphQLRoute(schema=schema))
+# app.add_route("/gql_auth", SessionedGraphQLRoute(schema=schema, authenticated=True))
+# app.add_route(
+#     "/gql_db", SessionedGraphQLRoute(schema=schema, database_url=settings().db_url)
+# )

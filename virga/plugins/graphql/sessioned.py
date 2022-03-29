@@ -2,7 +2,7 @@ from fastapi import Request, Response
 from virga.plugins.database import start_async_session
 from virga.plugins.noct import LoginRequiredException, read_user
 
-from .graphql import GraphQLRoute
+from .route import GraphQLRoute
 
 
 class SessionedGraphQLRoute(GraphQLRoute):
@@ -21,8 +21,8 @@ class SessionedGraphQLRoute(GraphQLRoute):
                 raise LoginRequiredException()
 
             # decode or refresh token if necessary
-            self.user, self.token, self.cookie = read_user(
-                auth_token=auth_token, refresh_token=refresh_token
+            self.user, self.token, self.cookie = await read_user(
+                request, auth_token=auth_token, refresh_token=refresh_token
             )
 
         # handle graphql request as per normal

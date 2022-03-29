@@ -1,6 +1,6 @@
 --- app.py
 +++ app.py
-@@ -11,4 +11,4 @@
+@@ -12,4 +12,4 @@
 -# from sqlalchemy.ext.asyncio import AsyncSession
 -# from sqlalchemy import select
 -# from .database import async_session

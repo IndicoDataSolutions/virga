@@ -4,7 +4,6 @@ import uuid
 
 import pytest
 import requests
-
 from virga.plugins.noct import NOCT_URL, VALID_DOMAIN
 
 
