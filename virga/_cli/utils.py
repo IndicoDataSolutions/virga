@@ -52,7 +52,7 @@ def run_command(command: str, *args: str):
         # if the command failed, we only care about its stderr
         if isinstance(err, CalledProcessError):
             err = err.stderr
-        err = click.style(f"\n\n{err}", dim=True) if str(err) else ""
+        errmsg = click.style(f"\n\n{err}", dim=True) if str(err) else ""
 
         # the subprocess failed due to an OS exception or an invalid command, so
         # print a nice message instead of throwing a runtime exception
@@ -61,7 +61,7 @@ def run_command(command: str, *args: str):
                 f"The command `{' '.join(cmd)}` was attempted, but failed. The"
                 " output was recaptured and is printed."
             )
-            + err
+            + errmsg
         )
 
 

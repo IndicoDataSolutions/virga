@@ -20,7 +20,7 @@ if _NOCT_COOKIE_DOMAIN.startswith("."):
     _NOCT_COOKIE_DOMAIN = _NOCT_COOKIE_DOMAIN[1:]
 
 
-async def _refresh_token(request: Request, refresh_token: str):
+async def _refresh_token(request: Request, refresh_token: Optional[str]):
     refresh_token = read_secure_cookie("refresh_token", refresh_token)
 
     # if we need to fetch a refresh token, do so with an aiohttp client.
@@ -74,7 +74,9 @@ def _get_token_data(token):
         raise LoginRequiredException()
 
 
-def _parse_current_user(token=None, cookie=None):
+def _parse_current_user(
+    token: Optional[str] = None, cookie: Optional[str] = None
+) -> User:
     token = token or read_secure_cookie("auth_token", cookie)
 
     if not token:
@@ -82,9 +84,10 @@ def _parse_current_user(token=None, cookie=None):
 
     token_data = _get_token_data(token=token)
     user_id = token_data.get("user_id")
+    if not user_id:
+        raise LoginRequiredException()
 
-    if user_id:
-        return User(**token_data)
+    return User(**token_data)
 
 
 async def read_user(
@@ -107,19 +110,20 @@ async def read_user(
 
     try:
         # ensure we have valid credentials
-        return _parse_current_user(cookie=auth_token), auth_token, None
+        return _parse_current_user(cookie=auth_token), str(auth_token), None
     except ExpiredTokenException:
         # fetch a new token from Noct
         new_token, domain = await _refresh_token(request, refresh_token)
         user = _parse_current_user(token=new_token)
 
         # return the user alongside the token and new cookie
+        new_token = write_secure_cookie("auth_token", new_token)
         return (
             user,
             new_token,
             {
                 "key": "auth_token",
-                "value": write_secure_cookie("auth_token", new_token),
+                "value": new_token,
                 "domain": domain,
                 "httponly": True,
                 "secure": True,
@@ -142,6 +146,6 @@ async def get_current_user(
         request, auth_token=auth_token, refresh_token=refresh_token
     )
     if cookie:
-        response.set_cookie(**cookie)
+        response.set_cookie(**cookie)  # type: ignore
 
     return user

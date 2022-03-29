@@ -1,4 +1,6 @@
 #!/bin/bash
 
+poetry install -E linting
+
 black --check --diff .
-mypy --pretty .
+mypy --pretty --exclude tests .
