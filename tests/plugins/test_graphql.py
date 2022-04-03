@@ -10,8 +10,8 @@ class MockLoaderClient:
 
 
 class MockQuery(ObjectType):
-    hello = String(name=String(default_value="Stranger"))
-    goodbye = String(name=String(default_value="Stranger"))
+    hello = String(name=String())
+    goodbye = String(name=String())
 
     def resolve_hello(self, info, name):
         assert info.context["request"]
@@ -93,6 +93,15 @@ def test_graphql_static():
     assert response.json() == {"data": {"hello": "Hello Dave"}}
 
 
+def test_graphql_static_errors():
+    response = client.post("/static", json={"query": HELLO_QUERY})
+    assert response.status_code == 200
+
+    json = response.json()
+    assert not json["data"]["hello"]
+    assert "missing 1 required" in json["errors"][0]["message"]
+
+
 def test_graphql_static_clients_loaders():
     response = client.post(
         "/static", json={"query": GOODBYE_QUERY, "variables": {"name": "World"}}
@@ -107,3 +116,12 @@ def test_graphql_dynamic():
     )
     assert response.status_code == 200
     assert response.json() == {"data": {"hello": "Hello Dave"}}
+
+
+def test_graphql_dynamic_errors():
+    response = client.post("/dynamic", json={"query": HELLO_QUERY})
+    assert response.status_code == 200
+
+    json = response.json()
+    assert not json["data"]["hello"]
+    assert "missing 1 required" in json["errors"][0]["message"]
