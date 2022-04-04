@@ -5,21 +5,24 @@ COPY --from=tiangolo/uvicorn-gunicorn:python3.7 /start.sh /start.sh
 COPY --from=tiangolo/uvicorn-gunicorn:python3.7 /gunicorn_conf.py /gunicorn_conf.py
 
 # configure env vars for runtime
+ARG API_PORT=5000
 ENV APP_NAME=$app_name-api \
     APP_MODULE="$app_name.app:app" \
-    API_PORT=5000 \
     ACCESS_LOG="/var/log/$app_name-api.log" \
+    ERROR_LOG="${ACCESS_LOG}" \
     PRE_START_PATH="/$app_name-api/scripts/prestart.sh" \
+    PORT=${API_PORT} \
     POETRY_HOME=/etc/poetry
-ENV PORT=${API_PORT} ERROR_LOG="${ACCESS_LOG}" PATH="${PATH}:${POETRY_HOME}/bin"
 
 # install system dependencies and poetry
-RUN apt update && \
-    apt install -y curl vim postgresql-client git && \
-    apt autoremove -y && \
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 - && \
-    chmod 755 ${POETRY_HOME}/bin/poetry && \
-    . ${POETRY_HOME}/env && \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        vim \
+        postgresql-client \
+        git \
+        libevent-dev && \
+    curl -sSL https://install.python-poetry.org | python3 - && \
     poetry config virtualenvs.create false
 
 # copy everything and install app dependencies

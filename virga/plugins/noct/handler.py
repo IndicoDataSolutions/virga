@@ -2,13 +2,18 @@ import os
 from typing import Dict, Optional, Tuple, Union
 
 import orjson
-from aiohttp import ClientSession
 from fastapi import Cookie, Request, Response, status
-from jose import JWTError, jwt
 from virga.plugins.secure_cookies import read_secure_cookie, write_secure_cookie
 
 from .errors import ExpiredTokenException, LoginRequiredException
 from .user import User
+
+try:
+    import aiohttp
+    import jose
+except ImportError:
+    aiohttp = None  # type: ignore
+    jose = None  # type: ignore
 
 _NOCT_SERVICE_LOCATION = os.getenv("NOCT_HOST", "http://noct:5000")
 _NOCT_JWT_ALGORITHM = os.getenv("NOCT_TOKEN_ALGORITHM", "HS256")
@@ -28,7 +33,7 @@ async def _refresh_token(request: Request, refresh_token: Optional[str]):
     # application state instead of the route state.
     if not hasattr(request.app.state, "_aiohttpclient"):
         # make a new client, defining our default Host header
-        _aiohttpclient = ClientSession(
+        _aiohttpclient = aiohttp.ClientSession(
             headers={"Host": f"virga.{_NOCT_COOKIE_DOMAIN}"},
         )
 
@@ -57,7 +62,7 @@ async def _refresh_token(request: Request, refresh_token: Optional[str]):
 def _get_token_data(token):
     scopes = set([f"indico:{s}" for s in (["base", "app_access"])])
     try:
-        payload = jwt.decode(
+        payload = jose.jwt.decode(
             token,
             _NOCT_JWT_SECRET,
             algorithms=[_NOCT_JWT_ALGORITHM],
@@ -68,9 +73,9 @@ def _get_token_data(token):
             raise LoginRequiredException()
 
         return payload
-    except jwt.ExpiredSignatureError:
+    except jose.jwt.ExpiredSignatureError:
         raise ExpiredTokenException()
-    except JWTError:
+    except jose.JWTError:
         raise LoginRequiredException()
 
 
@@ -105,6 +110,14 @@ async def read_user(
     If you're using FastAPI with a normal route, it is highly recommended to use the
     `get_current_user` method instead, as is intended to be a FastAPI dependency.
     """
+    # complain if the auth extra isn't installed
+    assert (
+        jose is not None
+    ), "virga[auth] extra must be installed to use the Noct plugin"
+    assert (
+        aiohttp is not None
+    ), "virga[auth] extra must be installed to use the Noct plugin"
+
     if not auth_token and not refresh_token:
         raise LoginRequiredException()
 

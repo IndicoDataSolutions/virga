@@ -15,7 +15,9 @@ from .base import Generator
 
 class StructureGenerator(Generator):
     @staticmethod
-    def generate(ctx: click.Context, app_name: str, project_dir: str, **kwargs):
+    def generate(
+        ctx: click.Context, app_name: str, project_dir: str, extras=None, **kwargs
+    ):
         """
         Generate project base files given the the provided APP_NAME.
         """
@@ -38,4 +40,10 @@ class StructureGenerator(Generator):
                 _print_step("Initializing Poetry project...")
 
                 resolve_template("pyproject.toml", app_name=app_name)
-                run_command("poetry install --remove-untracked")
+                run_command("poetry", "install")
+                run_command(
+                    "poetry",
+                    "add",
+                    "git+https://github.com/IndicoDataSolutions/virga.git#main",
+                    *sorted(extras),
+                )

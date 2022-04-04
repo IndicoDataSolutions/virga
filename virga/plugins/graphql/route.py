@@ -2,22 +2,32 @@ import asyncio
 import pathlib
 from typing import Any, Callable, Union
 
-import graphene
 from fastapi import BackgroundTasks, Response, status
 from fastapi.responses import FileResponse, ORJSONResponse, PlainTextResponse
 from starlette.requests import Request
 from starlette.types import Receive, Scope, Send
 
-from graphql import format_error
-from graphql.execution.executors.asyncio import AsyncioExecutor
+# complain if graphql extra isn't installed
+try:
+    import graphene
+
+    from graphql import format_error
+    from graphql.execution.executors.asyncio import AsyncioExecutor
+except ImportError:
+    graphene = None  # type: ignore
+
 
 GRAPHIQL = str(pathlib.Path(__file__).parent / "graphiql.html")
 
 
 class GraphQLRoute:
     def __init__(
-        self, schema: Union[graphene.Schema, Callable[[Request], graphene.Schema]]
+        self, schema: Union["graphene.Schema", Callable[[Request], "graphene.Schema"]]
     ):
+        assert (
+            graphene is not None
+        ), "virga[graphql] extra must be installed to use the GraphQL plugin"
+
         self.schema = schema
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:

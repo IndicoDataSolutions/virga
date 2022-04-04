@@ -145,7 +145,7 @@ def test_gql_auth_refresh(monkeypatch, expired_token, mock_tokens, event_loop):
     aiosession.close = MagicMock(side_effect=aiosession.close)
 
     with patch(
-        "virga.plugins.noct.handler.ClientSession",
+        "virga.plugins.noct.handler.aiohttp.ClientSession",
         return_value=aiosession,
     ) as mock:
         # context manager runs app startup/shutdown

@@ -30,7 +30,7 @@ In order to create an app with a UI, you must also install [Yarn](https://yarnpk
   **For now, Virga is not publically published. To run Virga commands, you must pip install it from this repo rather than PyPI.**
 
   ```sh
-  pip install git+https://github.com/IndicoDataSolutions/virga.git
+  python -m pip install "virga[cli] @ git+https://github.com/IndicoDataSolutions/virga.git"
   ```
 
   You can create a new project by running `virga new <NAME> [FLAGS]`. This command will generate the new project with the given flags. General command usage and descriptions of avaliable flags are available with `virga new --help`.

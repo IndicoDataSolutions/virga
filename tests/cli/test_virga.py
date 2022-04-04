@@ -37,13 +37,15 @@ def test_virga_new(run_command_patch):
 
         assert os.path.isdir("new-project")
         assert os.path.isfile("new-project/api/pyproject.toml")
-        assert os.path.isfile("new-project/api/poetry.lock")
         assert os.path.isfile("new-project/api/Dockerfile")
 
-        run_command_patch.assert_called_once_with("poetry install --remove-untracked")
+        run_command_patch.assert_any_call("poetry", "install")
+        run_command_patch.assert_any_call(
+            "poetry", "add", "git+https://github.com/IndicoDataSolutions/virga.git#main"
+        )
 
 
-cli_args = ["--auth", "--graphql", "--webui", "--database"]
+cli_args = sorted(["--auth", "--graphql", "--webui", "--database"])
 
 
 @pytest.mark.parametrize(
@@ -62,10 +64,14 @@ def test_virga_new_good_opts(opts, run_command_patch):
         assert result.exit_code == 0
         assert result.output.find("Virga application generation complete!") > -1
 
-        run_command_patch.assert_any_call("poetry install --remove-untracked")
+        expected_extras = [f"-E{o[2:]}" for o in opts if o != "webui"]
+        run_command_patch.assert_any_call("poetry", "install")
+        run_command_patch.assert_any_call(
+            "poetry",
+            "add",
+            "git+https://github.com/IndicoDataSolutions/virga.git#main",
+            *expected_extras,
+        )
+
         if "--webui" in opts:
             run_command_patch.assert_any_call("yarn", "install")
-        if "--database" in opts:
-            run_command_patch.assert_any_call(
-                "poetry add asyncpg aiodataloader aiofiles"
-            )
