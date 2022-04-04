@@ -16,7 +16,7 @@ Virga applications, and Virga itself, are [Poetry](https://python-poetry.org/) p
 
 In order to create an app with a UI, you must also install [Yarn](https://yarnpkg.com/getting-started/install).
 
-1. Install Poetry and Yarn (assumes Python >= 3.7):
+### 1. Install Poetry and Yarn (assumes Python >= 3.7):
 
   ```sh
   curl -sSL https://install.python-poetry.org | python3 -
@@ -25,7 +25,7 @@ In order to create an app with a UI, you must also install [Yarn](https://yarnpk
   npm install --global yarn
   ```
 
-2. Generate a new project:
+### 2. Generate a new project:
 
   **For now, Virga is not publically published. To run Virga commands, you must pip install it from this repo rather than PyPI.**
 
@@ -33,22 +33,63 @@ In order to create an app with a UI, you must also install [Yarn](https://yarnpk
   python -m pip install "virga[cli] @ git+https://github.com/IndicoDataSolutions/virga.git"
   ```
 
-  You can create a new project by running `virga new <NAME> [FLAGS]`. This command will generate the new project with the given flags. General command usage and descriptions of avaliable flags are available with `virga new --help`.
+  You can create a new project by running `virga new <NAME> [FLAGS]`. This command will generate a new project with the given flags. General command usage and descriptions of avaliable flags are available with `virga new --help`.
+  
+  See [plugin dependencies](#Plugin-dependencies) for some caveats.
 
-3. Launch the generated project:
+### 3. Launch the generated project:
 
   ```sh
   docker-compose up # from the project root
   ```
 
-4. Add `APP_NAME.indico.local` to your local hosts file (`/etc/hosts` on most Linux systems)
+### 4. Add `APP_NAME.indico.local` to your local hosts file (`/etc/hosts` on most Linux systems)
 
     - Find the running app container IP by running `docker inspect APP_NAME_caddy_1 | grep "IPAddress" | tail -1 | awk -F[\"\"] '{print $4}'`
     - Add `IP_ADDRESS APP_NAME.indico.local` to your hosts file.
 
 You'll be able to access the UI at `https://APP_NAME.indico.local`. You can verify Noct is running by going to `https://APP_NAME.indico.local/auth/api/ping`. The templated FastAPI application is mounted to `https://APP_NAME.indico.local/api`.
 
-### Creating a user
+### Docker Compose
+
+Virga comes with a `docker-compose` file to make testing easier. Simply `docker-compose up --build`. The Docker setup contains a development version of Noct running a PostgreSQL 9.6.x server running on Alpine, reachable at `http://noct:5000` and `http://noct-db:5432` respectively.
+
+You can also run the Virga CLI from your host machine by executing through Poetry `poetry run` or via a Poetry shell:
+
+```sh
+$ poetry shell
+Spawning shell within ...
+(...) $ 
+```
+
+## Plugin dependencies
+
+As of 1.2, Virga makes an attempt to have generated projects require as few dependencies as possible. This means that the dependencies that the `noct`, `database`, and `graphql` plugins require have been moved to optional extras, and are conditionally added to your project during generation based on the configuration options provided during generation.
+
+If you generate a project without explicitly stating using option, and then try to use its corresponding plugin, your application will fail with an `ImportError`. To resolve that issue, edit your `pyproject.toml` to include the extras:
+
+```toml
+# before
+virga = {
+  git = "https://github.com/IndicoDataSolutions/virga.git", rev = "main"
+}
+
+# after, assuming you want to include all the extras
+virga = {
+  git = "https://github.com/IndicoDataSolutions/virga.git", rev = "main",
+  extras = ["auth", "graphql", "database"]
+}
+```
+
+You'll need to re-run `poetry update` to have the updates reflected.
+
+The available extras are:
+
+- `auth` for the Noct plugin, which adds `python-jose` and `aiohttp`.
+- `database` for the database plugin, which adds `SQLAlchemy`, `asyncpg`, and `alembic`.
+- `graphql` for the GraphQL plugin, which adds `graphene`, `aiofiles`, and `aiodataloader`.
+
+## Creating a user
 
 As of now, the UI does not support creating users. In order to create a user and access authenticated routes, you must create one manually through the CLI. Noct is responsible for handling users, and there is a convenience script placed within its container's working directory. To create an admin user:
 
@@ -61,7 +102,7 @@ Confirm Password for EMAIL_ADDRESS:
 Confirm Password for EMAIL_ADDRESS: 
 ```
 
-### Authenticated routes
+## Authenticated routes
 
 For now, all routes are unauthenticated unless explicitly required. Authentication and request for the current user can be added to a route via FastAPI's [Dependency Injection](https://fastapi.tiangolo.com/tutorial/dependencies/?h=depends) system. In general, adding
 
@@ -90,7 +131,7 @@ async def read_root():
 
 You can also add [global dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/global-dependencies/) if all your routes will require authentication.
 
-### Database connections
+## Database connections
 
 Like with authentication, all routes needing access to a database connection must explicitly ask for one through a route dependency. Adding
 
@@ -100,18 +141,6 @@ session: AsyncSession = Depends(async_session)
 
 to any route's definition will automatically open and close an asynchronous database connection. An example is provided in all generated sidecar applications.
 
-#### Alembic
+### Alembic
 
 Virga's `--database` option provides a baseline structure for managing database schema and migrations through Alembic. Detailed instructions about generating and running database migrations are available on its [documentation website](https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script).
-
-### Docker Compose
-
-Virga comes with a `docker-compose` file to make testing easier. Simply `docker-compose up --build`. The Docker setup contains a development version of Noct running an PostgreSQL 9.6.x server running on Alpine, reachable at `http://noct:5000` and `http://noct-db:5432` respectively.
-
-You can also run the Virga CLI from your host machine by executing through Poetry `poetry run` or via a Poetry shell:
-
-```sh
-$ poetry shell
-Spawning shell within ~/.cache/pypoetry/virtualenvs/virga-4k78GcwH-py3.8
-(virga-4k78GcwH-py3.8) $ 
-```
