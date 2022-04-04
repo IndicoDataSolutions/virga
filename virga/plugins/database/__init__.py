@@ -1,12 +1,22 @@
 import orjson
-from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
+
+# complain if database extra isn't installed
+try:
+    import sqlalchemy
+    from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
+    from sqlalchemy.orm import sessionmaker
+except ImportError:
+    sqlalchemy = None  # type: ignore
 
 
-def make_async_engine(url: str, **kwargs) -> AsyncEngine:
+def make_async_engine(url: str, **kwargs) -> "AsyncEngine":
     """
     Create and return an asyncio database engine from the DB_INFO environment variable.
     """
+    assert (
+        sqlalchemy is not None
+    ), "virga[database] extra must be installed to use the database plugin"
+
     # pool parameters
     kwargs["pool_recycle"] = kwargs.get("pool_recycle", 200)
     kwargs["pool_timeout"] = kwargs.get("pool_timeout", 30)
@@ -34,17 +44,20 @@ class _SessionMaker:
     _engine = None
 
     @classmethod
-    def new(cls, db_url, **kwargs) -> AsyncSession:
+    def new(cls, db_url, **kwargs):
         if not cls._sessionmaker:
             cls._engine = make_async_engine(db_url, **kwargs)
             cls._sessionmaker = sessionmaker(
-                cls._engine, future=True, expire_on_commit=False, class_=AsyncSession
+                cls._engine,
+                future=True,
+                expire_on_commit=False,
+                class_=AsyncSession,
             )
 
         return cls._sessionmaker()
 
 
-def start_async_session(db_url: str, **kwargs) -> AsyncSession:
+def start_async_session(db_url: str, **kwargs) -> "AsyncSession":
     """
     Create and return a new asyncio-backed database session. The underlying
     sqlalchemy sessionmaker and engine are created once and cached.

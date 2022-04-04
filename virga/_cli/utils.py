@@ -1,11 +1,12 @@
 import os
-from typing import Union
-import click
-from subprocess import run, PIPE, CalledProcessError
-from contextlib import contextmanager
 import shutil
+from contextlib import contextmanager
 from fileinput import FileInput
 from string import Template
+from subprocess import PIPE, CalledProcessError, run
+from typing import Union
+
+import click
 import patch
 
 Path = Union[str, os.PathLike]
@@ -51,15 +52,16 @@ def run_command(command: str, *args: str):
         # if the command failed, we only care about its stderr
         if isinstance(err, CalledProcessError):
             err = err.stderr
-        err = click.style(f"\n\n{err}", dim=True) if str(err) else ""
+        errmsg = click.style(f"\n\n{err}", dim=True) if str(err) else ""
 
         # the subprocess failed due to an OS exception or an invalid command, so
         # print a nice message instead of throwing a runtime exception
         click.get_current_context().fail(
             click.style(
-                f"The command `{' '.join(cmd)}` was attempted, but failed. The output was recaptured and is printed."
+                f"The command `{' '.join(cmd)}` was attempted, but failed. The"
+                " output was recaptured and is printed."
             )
-            + err
+            + errmsg
         )
 
 

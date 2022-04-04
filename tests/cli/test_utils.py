@@ -1,15 +1,15 @@
 import os
-from click.exceptions import UsageError
-import pytest
-import click
 import shutil
 
+import click
+import pytest
+from click.exceptions import UsageError
 from virga._cli.utils import (
+    copy_template,
     get_path,
-    run_command,
     in_directory,
     resolve_template,
-    copy_template,
+    run_command,
 )
 
 

@@ -1,47 +1,11 @@
 import pytest
-import os
-import asyncio
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import Column, String, Integer, select
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from virga.plugins.database import start_async_session
 
-from virga.plugins.database import make_async_engine, start_async_session
-
-user = os.getenv("POSTGRES_USER")
-passwd = os.getenv("POSTGRES_PASSWORD")
-db = os.getenv("POSTGRES_DB")
-DB_URL = f"postgresql+asyncpg://{user}:{passwd}@test-db:5432/{db}"
-Base = declarative_base()
-
-
-class Widget(Base):
-    __tablename__ = "widgets"
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-
-
-@pytest.fixture(scope="session", autouse=True)
-async def prepare_dataBase():
-    engine = make_async_engine(DB_URL)
-
-    async with engine.begin() as conn:
-        await conn.run_sync(Widget.__table__.create)
-
-    yield
-
-    async with engine.begin() as conn:
-        await conn.run_sync(Widget.__table__.drop)
-
-
-# https://stackoverflow.com/a/56238383
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.get_event_loop()
-    yield loop
-    loop.close()
-
+from .conftest import DB_URL, Widget
 
 app = FastAPI()
 client = TestClient(app)

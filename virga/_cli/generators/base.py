@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from click import Context
 from typing import Any
+
+from click import Context
 
 
 class Generator(ABC):

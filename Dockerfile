@@ -6,7 +6,7 @@ ENV PATH = "${PATH}:/etc/poetry/bin"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update && \
     apt-get install --no-install-recommends -y build-essential curl vim git && \
-    curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
     apt install --no-install-recommends -y nodejs && \
     npm install -g yarn && \
     apt-get clean && \
@@ -16,10 +16,8 @@ COPY . /virga
 WORKDIR /virga
 
 # python dependencies (Poetry)
-RUN pip3 install --upgrade pip && \
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 - && \
-    source /etc/poetry/env && \
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
     poetry config virtualenvs.create false && \
-    poetry install
+    poetry install --extras "cli auth database graphql"
 
-CMD ["bash"]
+CMD [ "bash" ]

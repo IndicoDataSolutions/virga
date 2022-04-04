@@ -1,27 +1,33 @@
 import asyncio
-from typing import Union, Callable, Any
 import pathlib
+from typing import Any, Callable, Union
 
-import graphene
-from graphql.execution.executors.asyncio import AsyncioExecutor
-from graphql import format_error
-
-from starlette.types import Receive, Scope, Send
+from fastapi import BackgroundTasks, Response, status
+from fastapi.responses import FileResponse, ORJSONResponse, PlainTextResponse
 from starlette.requests import Request
-from fastapi import (
-    Request,
-    Response,
-    status,
-    BackgroundTasks,
-)
-from fastapi.responses import HTMLResponse, ORJSONResponse, PlainTextResponse
+from starlette.types import Receive, Scope, Send
+
+# complain if graphql extra isn't installed
+try:
+    import graphene
+
+    from graphql import format_error
+    from graphql.execution.executors.asyncio import AsyncioExecutor
+except ImportError:
+    graphene = None  # type: ignore
 
 
-# TODO: add token authentication
+GRAPHIQL = str(pathlib.Path(__file__).parent / "graphiql.html")
+
+
 class GraphQLRoute:
     def __init__(
-        self, schema: Union[graphene.Schema, Callable[[Request], graphene.Schema]]
+        self, schema: Union["graphene.Schema", Callable[[Request], "graphene.Schema"]]
     ):
+        assert (
+            graphene is not None
+        ), "virga[graphql] extra must be installed to use the GraphQL plugin"
+
         self.schema = schema
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -33,13 +39,7 @@ class GraphQLRoute:
         # route GET requests to the IDE
         if request.method == "GET" and "text/html" in request.headers.get("Accept", ""):
             # read the GraphiQL playground html and serve it as content
-            graphiql = pathlib.Path(__file__).parent / "graphiql.html"
-            raw_html = None
-
-            with open(graphiql.absolute(), "r") as f:
-                raw_html = f.read()
-
-            return HTMLResponse(raw_html)
+            return FileResponse(GRAPHIQL, media_type="text/html")
         # route POST requests to the graphql executor
         elif request.method == "POST":
             content_type = request.headers.get("Content-Type", "")
@@ -79,11 +79,9 @@ class GraphQLRoute:
         if result.errors:
             response["errors"] = [format_error(e) for e in result.errors]
 
-        status_code = (
-            status.HTTP_400_BAD_REQUEST if result.errors else status.HTTP_200_OK
+        return ORJSONResponse(
+            response, status_code=status.HTTP_200_OK, background=background
         )
-
-        return ORJSONResponse(response, status_code=status_code, background=background)
 
     async def _execute_graphql(self, query, variables, context):
         # execute the graphql query on the assigned schema

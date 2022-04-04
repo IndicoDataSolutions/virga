@@ -1,1 +1,2 @@
-from .graphql import GraphQLRoute
+from .route import GraphQLRoute  # noqa
+from .sessioned import SessionedGraphQLRoute  # noqa

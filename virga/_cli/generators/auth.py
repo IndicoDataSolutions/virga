@@ -1,16 +1,17 @@
-import click
 import os
 
-from .base import Generator
+import click
+
 from ..utils import (
     _print_step,
-    get_path,
     _templates_dir,
-    in_directory,
-    copy_template,
     apply_patch,
+    copy_template,
+    get_path,
+    in_directory,
     run_patch,
 )
+from .base import Generator
 
 
 class NoctAuthGenerator(Generator):
