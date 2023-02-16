@@ -10,7 +10,6 @@ from starlette.types import Receive, Scope, Send
 # complain if graphql extra isn't installed
 try:
     import graphene
-
     from graphql import format_error
     from graphql.execution.executors.asyncio import AsyncioExecutor
 except ImportError:

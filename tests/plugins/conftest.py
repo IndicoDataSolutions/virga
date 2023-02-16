@@ -10,6 +10,7 @@ import requests
 from jose import jwt
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base
+
 from virga.plugins.database import make_async_engine
 from virga.plugins.noct import NOCT_URL, VALID_DOMAIN
 from virga.plugins.noct.handler import _NOCT_JWT_ALGORITHM, _NOCT_JWT_SECRET

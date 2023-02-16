@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
+
 from virga.plugins.noct import User
 from virga.plugins.noct.handler import get_current_user
 
