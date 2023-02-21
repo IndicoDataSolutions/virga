@@ -19,7 +19,7 @@ from virga.plugins.secure_cookies import write_secure_cookie
 user = os.getenv("POSTGRES_USER")
 passwd = os.getenv("POSTGRES_PASSWORD")
 db = os.getenv("POSTGRES_DB")
-DB_URL = f"postgresql+asyncpg://{user}:{passwd}@test-db:5432/{db}"
+DB_URL = f"postgresql+asyncpg://{user}:{passwd}@{os.getenv('POSTGRES_HOST')}:5432/{db}"
 Base = declarative_base()
 
 
