@@ -33,14 +33,18 @@ steps:
       POSTGRES_DB: indico
       POSTGRES_USER: indico
       POSTGRES_PASSWORD: development
+    depends_on:
+      - build-test
 
   - name: noct
-    image: harbor.devops.indico.io/indico/noct
+    image: harbor.devops.indico.io/indico/noct:development.e5c575c706114a923e3223f6d5246a770f2af6a4
     detach: true
     environment:
       NOCT_BYPASS_CONFIRMATION: True
       NOCT_BYPASS_APP_ACCESS: True
-      POSTGRES_HOST: test-db
+      POSTGRES_HOST: localhost
+    depends_on:
+      - build-test
 
   - name: linting
     image: harbor.devops.indico.io/indico/virga:${DRONE_COMMIT_SHA}.unittest
@@ -48,26 +52,18 @@ steps:
       - ./scripts/run_lints.sh
     depends_on:
       - build-test
-    when:
-      status:
-      - failure
-      - success
 
   - name: test
     image: harbor.devops.indico.io/indico/virga:${DRONE_COMMIT_SHA}.unittest
     commands:
       - ./scripts/run_tests.sh
     environment:
-      POSTGRES_HOST: test-db
+      POSTGRES_HOST: localhost
       POSTGRES_DB: indico
       POSTGRES_USER: indico
       POSTGRES_PASSWORD: development
     depends_on:
       - build-test
-    when:
-      status:
-      - failure
-      - success
 
 ---
 kind: secret
