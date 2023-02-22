@@ -10,6 +10,7 @@ import requests
 from jose import jwt
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base
+
 from virga.plugins.database import make_async_engine
 from virga.plugins.noct import NOCT_URL, VALID_DOMAIN
 from virga.plugins.noct.handler import _NOCT_JWT_ALGORITHM, _NOCT_JWT_SECRET
@@ -18,7 +19,7 @@ from virga.plugins.secure_cookies import write_secure_cookie
 user = os.getenv("POSTGRES_USER")
 passwd = os.getenv("POSTGRES_PASSWORD")
 db = os.getenv("POSTGRES_DB")
-DB_URL = f"postgresql+asyncpg://{user}:{passwd}@test-db:5432/{db}"
+DB_URL = f"postgresql+asyncpg://{user}:{passwd}@{os.getenv('POSTGRES_HOST')}:5432/{db}"
 Base = declarative_base()
 
 

@@ -4,6 +4,7 @@ import shutil
 import click
 import pytest
 from click.exceptions import UsageError
+
 from virga._cli.utils import (
     copy_template,
     get_path,
@@ -66,7 +67,7 @@ def test_resolve_template(mock_template, tmp_path):
     assert os.path.exists(temp)
 
     with open(temp, "r") as f:
-        assert f.read() == "hello world!"
+        assert f.read() == "hello world!\n"
 
 
 def test_copy_template(mock_template, tmp_path):
@@ -77,4 +78,4 @@ def test_copy_template(mock_template, tmp_path):
     assert os.path.exists(temp)
 
     with open(temp, "r") as f:
-        assert f.read() == "hello outside world!"
+        assert f.read() == "hello outside world!\n"

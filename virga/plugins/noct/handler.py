@@ -3,6 +3,7 @@ from typing import Dict, Optional, Tuple, Union
 
 import orjson
 from fastapi import Cookie, Request, Response, status
+
 from virga.plugins.secure_cookies import read_secure_cookie, write_secure_cookie
 
 from .errors import ExpiredTokenException, LoginRequiredException

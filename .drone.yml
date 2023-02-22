@@ -1,0 +1,85 @@
+kind: pipeline
+type: kubernetes
+name: test
+
+trigger:
+  event:
+    - push
+
+image_pull_secrets:
+  - DOCKER_CONFIG_JSON
+
+steps:
+  - name: build-test
+    image: harbor.devops.indico.io/indico/drone-builder
+    settings:
+      username:
+        from_secret: harbor_username
+      password:
+        from_secret: harbor_password
+      registry: harbor.devops.indico.io
+      repo: harbor.devops.indico.io/indico/virga
+      tags:
+        - ${DRONE_COMMIT_SHA}.unittest
+      squash: true
+      experimental: true
+    environment:
+      DOCKER_BUILDKIT: 1
+
+  - name: test-db
+    image: postgres:12-alpine
+    detach: true
+    environment:
+      POSTGRES_DB: indico
+      POSTGRES_USER: indico
+      POSTGRES_PASSWORD: development
+    depends_on:
+      - build-test
+
+  - name: noct
+    image: harbor.devops.indico.io/indico/noct:development.e5c575c706114a923e3223f6d5246a770f2af6a4
+    detach: true
+    environment:
+      NOCT_BYPASS_CONFIRMATION: True
+      NOCT_BYPASS_APP_ACCESS: True
+      POSTGRES_HOST: localhost
+    depends_on:
+      - build-test
+
+  - name: linting
+    image: harbor.devops.indico.io/indico/virga:${DRONE_COMMIT_SHA}.unittest
+    commands:
+      - ./scripts/run_lints.sh
+    depends_on:
+      - build-test
+
+  - name: test
+    image: harbor.devops.indico.io/indico/virga:${DRONE_COMMIT_SHA}.unittest
+    commands:
+      - ./scripts/run_tests.sh
+    environment:
+      POSTGRES_HOST: localhost
+      POSTGRES_DB: indico
+      POSTGRES_USER: indico
+      POSTGRES_PASSWORD: development
+    depends_on:
+      - build-test
+
+---
+kind: secret
+name: DOCKER_CONFIG_JSON
+get:
+  path: tools/drone/devops_harbor_pull_secret
+  name: DOCKER_CONFIG_JSON
+---
+kind: secret
+name: harbor_username
+get:
+  path: tools/drone/harbor-push-token
+  name: username
+---
+kind: secret
+name: harbor_password
+get:
+  path: tools/drone/harbor-push-token
+  name: password

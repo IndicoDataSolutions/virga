@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "virga"
-version = "1.2.0"
+version = "1.2.1"
 description = "Templated adaptable sidecar app generation."
-authors = ["thearchitector <elias.gabriel@indicodata.ai>"]
+authors = ["Elias Gabriel <elias.gabriel@indicodata.ai>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -19,7 +19,7 @@ graphene = {version = "^2.1.8", optional = true}
 aiofiles = {version = "^0.8.0", optional = true}
 aiodataloader = {version = "^0.2.1", optional = true}
 
-SQLAlchemy = {version = "^1.4", optional = true}
+SQLAlchemy = {version = "^1.4.35", optional = true}
 alembic = {version = "^1.5.5", optional = true}
 asyncpg = {version = "^0.25.0", optional = true}
 
@@ -51,7 +51,6 @@ warn_return_any = true
 show_column_numbers = true
 follow_imports = "silent"
 warn_unreachable = true
-plugins = "sqlalchemy.ext.mypy.plugin"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

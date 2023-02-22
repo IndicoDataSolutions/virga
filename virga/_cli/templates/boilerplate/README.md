@@ -34,7 +34,7 @@ In order to create an app with a UI, you must also install [Yarn](https://yarnpk
   ```
 
   You can create a new project by running `virga new <NAME> [FLAGS]`. This command will generate a new project with the given flags. General command usage and descriptions of avaliable flags are available with `virga new --help`.
-  
+
   See [plugin dependencies](#Plugin-dependencies) for some caveats.
 
 ### 3. Development and Testing
@@ -117,8 +117,8 @@ $ docker exec -it new_project_noct_1 bash
 $ python3 alembic/migrations/setup_user_access.py EMAIL_ADDRESS
 setup_user_access.py:20: UserWarning: User with email EMAIL_ADDRESS not found, creating...
   warnings.warn("User with email {} not found, creating...".format(email))
-Confirm Password for EMAIL_ADDRESS: 
-Confirm Password for EMAIL_ADDRESS: 
+Confirm Password for EMAIL_ADDRESS:
+Confirm Password for EMAIL_ADDRESS:
 ```
 
 ## Database connections
@@ -146,17 +146,17 @@ For example:
 ```python
 schema = Schema(query=RootQuery)
 
-# this, for no authentication or database access
-# this is equivalent to using GraphQLRoute
+# this for no authentication or database access
+# it is equivalent to using GraphQLRoute
 app.add_route("/graphql", SessionedGraphQLRoute(schema=schema))
 
-# this for just authentication
+# this for authentication
 app.add_route(
   "/graphql",
   SessionedGraphQLRoute(schema=schema, authenticated=True)
 )
 
-# this for both authenticaton and database access
+# this for database access
 app.add_route(
   "/graphql",
   SessionedGraphQLRoute(schema=schema, database_url=settings().db_url)

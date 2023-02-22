@@ -3,6 +3,7 @@ from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from virga.plugins.database import start_async_session
 
 from .conftest import DB_URL, Widget

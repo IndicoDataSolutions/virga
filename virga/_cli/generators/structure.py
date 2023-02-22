@@ -36,6 +36,7 @@ class StructureGenerator(Generator):
 
                 resolve_template("Dockerfile.template", app_name=app_name)
                 resolve_template("scripts/dev-server.sh.template", app_name=app_name)
+                resolve_template("scripts/entrypoint.sh.template", app_name=app_name)
                 # 2] initialize the poetry project and install expected dependencies
                 _print_step("Initializing Poetry project...")
 

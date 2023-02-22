@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import pytest
+
 from virga.plugins.database import make_async_engine
 from virga.plugins.graphql import GraphQLRoute, SessionedGraphQLRoute
 from virga.plugins.noct import read_user

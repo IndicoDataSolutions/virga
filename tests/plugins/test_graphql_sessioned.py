@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from graphene import Mutation, ObjectType, Schema, String
 from sqlalchemy import select
+
 from virga.plugins.graphql import SessionedGraphQLRoute
 from virga.plugins.noct import VALID_DOMAIN
 
