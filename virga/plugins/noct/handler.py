@@ -11,10 +11,10 @@ from .user import User
 
 try:
     import aiohttp
-    import jose
+    from jose import jwt
 except ImportError:
     aiohttp = None  # type: ignore
-    jose = None  # type: ignore
+    jwt = None  # type: ignore
 
 _NOCT_SERVICE_LOCATION = os.getenv("NOCT_HOST", "http://noct:5000")
 _NOCT_JWT_ALGORITHM = os.getenv("NOCT_TOKEN_ALGORITHM", "HS256")
@@ -63,7 +63,7 @@ async def _refresh_token(request: Request, refresh_token: Optional[str]):
 def _get_token_data(token):
     scopes = set([f"indico:{s}" for s in (["base", "app_access"])])
     try:
-        payload = jose.jwt.decode(
+        payload = jwt.decode(
             token,
             _NOCT_JWT_SECRET,
             algorithms=[_NOCT_JWT_ALGORITHM],
@@ -74,9 +74,9 @@ def _get_token_data(token):
             raise LoginRequiredException()
 
         return payload
-    except jose.jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError:
         raise ExpiredTokenException()
-    except jose.JWTError:
+    except jwt.JWTError:
         raise LoginRequiredException()
 
 
@@ -112,9 +112,7 @@ async def read_user(
     `get_current_user` method instead, as is intended to be a FastAPI dependency.
     """
     # complain if the auth extra isn't installed
-    assert (
-        jose is not None
-    ), "virga[auth] extra must be installed to use the Noct plugin"
+    assert jwt is not None, "virga[auth] extra must be installed to use the Noct plugin"
     assert (
         aiohttp is not None
     ), "virga[auth] extra must be installed to use the Noct plugin"

@@ -1,6 +1,6 @@
 import asyncio
 import pathlib
-from typing import Any, Callable, Union
+from typing import Any, Callable, Dict, Union
 
 from fastapi import BackgroundTasks, Response, status
 from fastapi.responses import FileResponse, ORJSONResponse, PlainTextResponse
@@ -69,7 +69,22 @@ class GraphQLRoute:
         # construct foundation fastapi context
         background = BackgroundTasks()
         context = {"request": request, "background": background}
-        result = await self._execute_graphql(query, variables, context)
+        self._build_context_cache(context)
+        await self.setup_context(context)
+
+        # execute the graphql query on the assigned schema
+        # if schema is callable, call it to fetch the schema
+        schema = self.schema(request) if callable(self.schema) else self.schema
+        executor = AsyncioExecutor(loop=asyncio.get_event_loop())
+        result = await schema.execute(
+            query,
+            variable_values=variables,
+            context_value=context,
+            executor=executor,
+            return_promise=True,
+        )
+
+        await self.cleanup_context(context)
 
         # parse graphql result
         response = {}
@@ -82,27 +97,7 @@ class GraphQLRoute:
             response, status_code=status.HTTP_200_OK, background=background
         )
 
-    async def _execute_graphql(self, query, variables, context):
-        # execute the graphql query on the assigned schema
-        # if schema is callable, call it to fetch the schema
-        schema = (
-            self.schema(context["request"]) if callable(self.schema) else self.schema
-        )
-
-        context.update(self._build_context_cache())
-        executor = AsyncioExecutor(loop=asyncio.get_event_loop())
-
-        result = await schema.execute(
-            query,
-            variable_values=variables,
-            context_value=context,
-            executor=executor,
-            return_promise=True,
-        )
-
-        return result
-
-    def _build_context_cache(self):
+    def _build_context_cache(self, context):
         # Allow loader and request caching through the request context and get_* methods
         loaders = {}
         clients = {}
@@ -125,8 +120,19 @@ class GraphQLRoute:
 
             return client
 
-        context = {
-            "get_loader": get_loaders,
-            "get_client": get_clients,
-        }
-        return context
+        context["get_loader"] = get_loaders
+        context["get_client"] = get_clients
+
+    async def setup_context(self, context: Dict[str, Any]):
+        """
+        Allows customization of the GraphQL context. This gets run before the executor
+        resolves the GraphQL request.
+        """
+        pass
+
+    async def cleanup_context(self, context: Dict[str, Any]):
+        """
+        Allows cleanup of any objects stored within the GraphQL context. This gets run
+        after the executor resolves the GraphQL request and generates a response.
+        """
+        pass

@@ -1,0 +1,38 @@
+version: "3"
+
+# run tests locally with `docker compose up --exit-code-from virga`
+
+services:
+  test-db:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_DB: indico
+      POSTGRES_USER: indico
+      POSTGRES_PASSWORD: development
+    networks:
+      - virga-internal
+
+  noct:
+    image: harbor.devops.indico.io/indico/noct:development.e5c575c706114a923e3223f6d5246a770f2af6a4
+    environment:
+      NOCT_BYPASS_CONFIRMATION: True
+      NOCT_BYPASS_APP_ACCESS: True
+      POSTGRES_HOST: test-db
+    networks:
+      - virga-internal
+
+  virga:
+    build: .
+    command: /virga/scripts/run_tests.sh
+    environment:
+      POSTGRES_HOST: test-db
+      POSTGRES_DB: indico
+      POSTGRES_USER: indico
+      POSTGRES_PASSWORD: development
+    volumes:
+      - ./:/virga
+    networks:
+      - virga-internal
+
+networks:
+  virga-internal:
