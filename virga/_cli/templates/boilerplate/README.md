@@ -71,6 +71,12 @@ The available extras are:
 - `database` for the database plugin, which adds `SQLAlchemy`, `asyncpg`, and `alembic`.
 - `graphql` for the GraphQL plugin, which adds `graphene`, `aiofiles`, and `aiodataloader`.
 
+### Authenticating with Harbor
+
+Projects generated with `--auth` require Harbor access to download and run the Noct service, Indico's platform-wide authentication server. To setup access:
+
+1. Ensure you have access to a Harbor account (check with your employee contact or DevOps).
+2. Login to Harbor through Docker via `docker login -u <username> harbor.devops.indico.io`.
 
 ## Authenticated routes
 
@@ -99,13 +105,6 @@ async def read_root():
 ```
 
 You can also add [global dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/global-dependencies/) if all your routes will require authentication.
-
-### Authenticating with Harbor
-
-Projects generated with `--auth` require Harbor access to download and run the Noct service, Indico's platform-wide authentication server. To setup access:
-
-1. Ensure you have access to a Harbor account (check with your employee contact or DevOps).
-2. Login to Harbor through Docker via `docker login -u <username> harbor.devops.indico.io`.
 
 ### Creating a user
 
