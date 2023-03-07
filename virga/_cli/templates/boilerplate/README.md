@@ -1,15 +1,5 @@
 # Virga
 
-
-## Authenticating with GCloud
-
-Projects generated with `--auth` require GCR access to download and run the Noct service, Indico's platform-wide authentication server. To setup GCR access on your machine:
-
-1. Download the `gcr` service account key file provided by an Indico admin (check with your employee contact or DevOps).
-2. Download the Google Cloud SDK (<https://cloud.google.com/sdk/docs/install>).
-3. Authenticate with the provided service account key: `gcloud auth activate-service-account --key-file=/path/to/key.json`.
-4. Configure Docker to run with GCR: `gcloud auth configure-docker`.
-
 ## Generating an app
 
 Virga applications, and Virga itself, are [Poetry](https://python-poetry.org/) projects; they use Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/).
@@ -107,6 +97,13 @@ async def read_root():
 ```
 
 You can also add [global dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/global-dependencies/) if all your routes will require authentication.
+
+### Authenticating with Harbor
+
+Projects generated with `--auth` require Harbor access to download and run the Noct service, Indico's platform-wide authentication server. To setup access:
+
+1. Ensure you have access to a Harbor account (check with your employee contact or DevOps).
+2. Login to Harbor through Docker via `docker login -u <username> harbor.devops.indico.io`.
 
 ### Creating a user
 

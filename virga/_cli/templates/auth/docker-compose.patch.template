@@ -2,7 +2,7 @@
 +++ docker-compose.yaml
 @@ -9,13 +9,13 @@
 -  # noct:
--  #   image: gcr.io/new-indico/noct:development
+-  #   image: harbor.devops.indico.io/indico/noct:development.e5c575c706114a923e3223f6d5246a770f2af6a4
 -  #   env_file: api/dev-services.env
 -  #   environment:
 -  #     NOCT_UI_FRONTEND_URL: https://$app_name.indico.local
@@ -15,7 +15,7 @@
 -  #   depends_on:
 -  #     - services-db
 +  noct:
-+    image: gcr.io/new-indico/noct:development
++    image: harbor.devops.indico.io/indico/noct:development.e5c575c706114a923e3223f6d5246a770f2af6a4
 +    env_file: api/dev-services.env
 +    environment:
 +      NOCT_UI_FRONTEND_URL: https://$app_name.indico.local
