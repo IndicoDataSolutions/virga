@@ -1,5 +1,7 @@
 # Virga
 
+![virga status](https://img.shields.io/drone/build/IndicoDataSolutions/virga?label=tests&server=https%3A%2F%2Fdrone.devops.indico.io&style=flat-square)
+
 ## Generating an app
 
 Virga applications, and Virga itself, are [Poetry](https://python-poetry.org/) projects; they use Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/).
