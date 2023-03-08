@@ -15,8 +15,8 @@ async def test_missing_database(monkeypatch):
         make_async_engine(None)
 
     with pytest.raises(AssertionError, match="database"):
-        await SessionedGraphQLRoute(schema=None, database_url="mock")._execute_graphql(
-            None, None, None
+        await SessionedGraphQLRoute(schema=None, database_url="mock").setup_context(
+            None
         )
 
 

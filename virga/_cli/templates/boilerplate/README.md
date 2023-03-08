@@ -1,14 +1,6 @@
 # Virga
 
-
-## Authenticating with GCloud
-
-Projects generated with `--auth` require GCR access to download and run the Noct service, Indico's platform-wide authentication server. To setup GCR access on your machine:
-
-1. Download the `gcr` service account key file provided by an Indico admin (check with your employee contact or DevOps).
-2. Download the Google Cloud SDK (<https://cloud.google.com/sdk/docs/install>).
-3. Authenticate with the provided service account key: `gcloud auth activate-service-account --key-file=/path/to/key.json`.
-4. Configure Docker to run with GCR: `gcloud auth configure-docker`.
+![virga status](https://img.shields.io/drone/build/IndicoDataSolutions/virga?label=tests&server=https%3A%2F%2Fdrone.devops.indico.io&style=flat-square)
 
 ## Generating an app
 
@@ -79,6 +71,12 @@ The available extras are:
 - `database` for the database plugin, which adds `SQLAlchemy`, `asyncpg`, and `alembic`.
 - `graphql` for the GraphQL plugin, which adds `graphene`, `aiofiles`, and `aiodataloader`.
 
+### Authenticating with Harbor
+
+Projects generated with `--auth` require Harbor access to download and run the Noct service, Indico's platform-wide authentication server. To setup access:
+
+1. Ensure you have access to a Harbor account (check with your employee contact or DevOps).
+2. Login to Harbor through Docker via `docker login -u <username> harbor.devops.indico.io`.
 
 ## Authenticated routes
 

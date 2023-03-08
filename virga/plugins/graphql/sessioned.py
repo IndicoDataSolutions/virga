@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 from fastapi import Request, Response
 
 from virga.plugins.database import start_async_session
@@ -35,7 +37,7 @@ class SessionedGraphQLRoute(GraphQLRoute):
 
         return response
 
-    async def _execute_graphql(self, query, variables, context):
+    async def setup_context(self, context: Dict[str, Any]):
         # if authentication, set context user and token
         if self.check_auth:
             context["user"] = self.user
@@ -45,10 +47,7 @@ class SessionedGraphQLRoute(GraphQLRoute):
         if self.database_url:
             context["db_session"] = start_async_session(self.database_url)
 
-        result = await super()._execute_graphql(query, variables, context)
-
+    async def cleanup_context(self, context: Dict[str, Any]):
         if self.database_url:
             # ensure the db session is closed after graphql execution
             await context["db_session"].close()
-
-        return result
