@@ -1,15 +1,16 @@
 import asyncio
 import os
-import random
-import string
-import uuid
 
 import pytest
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base
 
 from virga.plugins.database import make_async_engine
-from virga.plugins.testing.noct import expired_token, mock_tokens, mock_user
+from virga.plugins.testing.noct import (  # noqa: F401
+    expired_token,
+    mock_tokens,
+    mock_user,
+)
 
 user = os.getenv("POSTGRES_USER")
 passwd = os.getenv("POSTGRES_PASSWORD")

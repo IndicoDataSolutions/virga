@@ -8,7 +8,8 @@ from ..utils import (
     get_path,
     in_directory,
     resolve_template,
-    run_command,
+    # `run_command` isn't called explicitly but required to monkeypatch during testing
+    run_command,  # noqa: F401
     run_patch,
 )
 from .base import Generator
