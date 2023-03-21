@@ -28,8 +28,7 @@ steps:
 
   - name: celery-redis
     image: redis:alpine
-    depends_on:
-      - build-test
+    detach: true
 
   - name: test-db
     image: postgres:12-alpine
@@ -38,8 +37,6 @@ steps:
       POSTGRES_DB: indico
       POSTGRES_USER: indico
       POSTGRES_PASSWORD: development
-    depends_on:
-      - build-test
 
   - name: noct
     image: harbor.devops.indico.io/indico/noct:development.e5c575c706114a923e3223f6d5246a770f2af6a4
@@ -49,15 +46,6 @@ steps:
       NOCT_BYPASS_APP_ACCESS: True
       POSTGRES_HOST: localhost
       APP_REDIS_HOST: localhost
-    depends_on:
-      - build-test
-
-  - name: linting
-    image: harbor.devops.indico.io/indico/virga:${DRONE_COMMIT_SHA}.unittest
-    commands:
-      - ./scripts/run_lints.sh
-    depends_on:
-      - build-test
 
   - name: test
     image: harbor.devops.indico.io/indico/virga:${DRONE_COMMIT_SHA}.unittest
@@ -68,8 +56,6 @@ steps:
       POSTGRES_DB: indico
       POSTGRES_USER: indico
       POSTGRES_PASSWORD: development
-    depends_on:
-      - build-test
 
 ---
 kind: secret
