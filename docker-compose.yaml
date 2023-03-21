@@ -1,8 +1,13 @@
 version: "3"
 
-# run tests locally with `docker compose up --exit-code-from virga`
+# run tests locally with `docker compose up --build --exit-code-from virga`
 
 services:
+  celery-redis:
+    image: redis:alpine
+    networks:
+      - virga-internal
+
   test-db:
     image: postgres:12-alpine
     environment:

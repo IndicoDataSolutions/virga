@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import aiohttp
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from graphene import Mutation, ObjectType, Schema, String
@@ -135,6 +136,7 @@ def test_gql_auth_write(mock_tokens):
     )
 
 
+@pytest.mark.filterwarnings("ignore:The object")
 def test_gql_auth_refresh(monkeypatch, expired_token, mock_tokens, event_loop):
     _, refresh_token, _, _ = mock_tokens
 

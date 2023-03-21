@@ -23,6 +23,9 @@ SQLAlchemy = {version = "^1.4.35", optional = true}
 alembic = {version = "^1.5.5", optional = true}
 asyncpg = {version = "^0.25.0", optional = true}
 
+pytest = {version = ">=3.0.0", optional = true}
+requests = {version="^2.27.1", optional = true}
+
 mypy = {version = "^0.942", optional = true}
 black = {version = "^22.3.0", optional = true}
 
@@ -32,6 +35,8 @@ cli = ["click", "patch"]
 auth = ["python-jose", "aiohttp"]
 graphql = ["graphene", "aiofiles", "aiodataloader"]
 database = ["SQLAlchemy", "alembic", "asyncpg"]
+testing = ["pytest", "requests"]
+
 linting = ["mypy", "black"]
 
 

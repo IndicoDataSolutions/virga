@@ -26,6 +26,11 @@ steps:
     environment:
       DOCKER_BUILDKIT: 1
 
+  - name: celery-redis
+    image: redis:alpine
+    depends_on:
+      - build-test
+
   - name: test-db
     image: postgres:12-alpine
     detach: true
@@ -43,6 +48,7 @@ steps:
       NOCT_BYPASS_CONFIRMATION: True
       NOCT_BYPASS_APP_ACCESS: True
       POSTGRES_HOST: localhost
+      APP_REDIS_HOST: localhost
     depends_on:
       - build-test
 
