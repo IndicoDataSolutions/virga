@@ -99,8 +99,8 @@ class GraphQLRoute:
 
     def _build_context_cache(self, context):
         # Allow loader and request caching through the request context and get_* methods
-        loaders = {}
-        clients = {}
+        loaders: Dict[Callable, Any] = {}
+        clients: Dict[Callable, Any] = {}
 
         def get_loaders(loader_type, *args: Any, **kwargs: Any):
             loader = loaders.get(loader_type)

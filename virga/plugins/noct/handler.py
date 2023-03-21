@@ -27,6 +27,9 @@ if _NOCT_COOKIE_DOMAIN.startswith("."):
 
 
 async def _refresh_token(request: Request, refresh_token: Optional[str]):
+    if not refresh_token:
+        raise LoginRequiredException()
+
     refresh_token = read_secure_cookie("refresh_token", refresh_token)
 
     # if we need to fetch a refresh token, do so with an aiohttp client.
@@ -83,7 +86,9 @@ def _get_token_data(token):
 def _parse_current_user(
     token: Optional[str] = None, cookie: Optional[str] = None
 ) -> User:
-    token = token or read_secure_cookie("auth_token", cookie)
+    token = token
+    if not token and cookie:
+        token = read_secure_cookie("auth_token", cookie)
 
     if not token:
         raise LoginRequiredException()

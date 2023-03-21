@@ -22,6 +22,14 @@ repos:
     hooks:
       - id: black
         language_version: python3.10
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.1.1
+    hooks:
+      - id: mypy
+        exclude: ^tests
+        require_serial: true
+        args: ["--explicit-package-bases", "--check-untyped-defs"]
+        additional_dependencies: ["types-requests"]
   - repo: https://github.com/matthorgan/pre-commit-conventional-commits
     rev: 20fb9631be1385998138432592d0b6d4dfa38fc9
     hooks:
