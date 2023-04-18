@@ -63,7 +63,7 @@ async def _refresh_token(request: Request, refresh_token: Optional[str]):
         return payload["auth_token"], payload["cookie_domain"]
 
 
-def _get_token_data(token):
+def _get_token_data(token: Optional[str]):
     scopes = set([f"indico:{s}" for s in (["base", "app_access"])])
     try:
         payload = jwt.decode(
@@ -86,11 +86,9 @@ def _get_token_data(token):
 def _parse_current_user(
     token: Optional[str] = None, cookie: Optional[str] = None
 ) -> User:
-    token = token
-    if not token and cookie:
-        token = read_secure_cookie("auth_token", cookie)
-
-    if not token:
+    try:
+        token = token or read_secure_cookie("auth_token", str(cookie))
+    except Exception:
         raise LoginRequiredException()
 
     token_data = _get_token_data(token=token)
