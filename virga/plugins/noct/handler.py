@@ -27,6 +27,9 @@ if _NOCT_COOKIE_DOMAIN.startswith("."):
 
 
 async def _refresh_token(request: Request, refresh_token: Optional[str]):
+    if not refresh_token:
+        raise LoginRequiredException()
+
     refresh_token = read_secure_cookie("refresh_token", refresh_token)
 
     # if we need to fetch a refresh token, do so with an aiohttp client.
@@ -60,7 +63,7 @@ async def _refresh_token(request: Request, refresh_token: Optional[str]):
         return payload["auth_token"], payload["cookie_domain"]
 
 
-def _get_token_data(token):
+def _get_token_data(token: Optional[str]):
     scopes = set([f"indico:{s}" for s in (["base", "app_access"])])
     try:
         payload = jwt.decode(
@@ -83,9 +86,9 @@ def _get_token_data(token):
 def _parse_current_user(
     token: Optional[str] = None, cookie: Optional[str] = None
 ) -> User:
-    token = token or read_secure_cookie("auth_token", cookie)
-
-    if not token:
+    try:
+        token = token or read_secure_cookie("auth_token", str(cookie))
+    except Exception:
         raise LoginRequiredException()
 
     token_data = _get_token_data(token=token)

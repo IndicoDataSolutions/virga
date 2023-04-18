@@ -3,6 +3,7 @@ import re
 import shutil
 import string
 import tempfile
+from typing import Optional
 
 import click
 
@@ -66,7 +67,7 @@ def virga():
 @click.option("--webui/--no-webui", default=False, help="Adds basic web app template.")
 @click.argument("app_path", type=click.Path(writable=True, resolve_path=True))
 @click.pass_context
-def new(ctx: click.Context, app_path, name: str = None, **kwargs):
+def new(ctx: click.Context, app_path, name: Optional[str] = None, **kwargs):
     """
     Create a new project using provided template options.
 
