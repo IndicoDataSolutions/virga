@@ -1,0 +1,5 @@
+--- Dockerfile.template
++++ Dockerfile.template
+@@ -48,1 +48,1 @@
+-        # postgresql-client \
++        postgresql-client \

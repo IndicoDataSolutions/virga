@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from fileinput import FileInput
 from string import Template
 from subprocess import PIPE, CalledProcessError, run
-from typing import Union
+from typing import Union, Optional
 
 import click
 import patch
@@ -112,15 +112,18 @@ def copy_template(src: Path, dest: Path, **variables) -> str:
     return resolve_template(dest, **variables)
 
 
-def apply_patch(patchfile: str):
+def apply_patch(patchfile: str, root: Optional[str] = None):
     """
     Loads, applies, then deletes the given unified patch file, throwing an error
-    if something goes wrong.
+    if something goes wrong. Specifying a root applies the patch relative to
+    that directory, meaning sources and destinations in the patch file are also
+    relative to that directory. Patches are applied relative to the current
+    working directory by default.
     """
     try:
         pset = patch.fromfile(patchfile)
 
-        if not pset or not pset.apply():
+        if not pset or not pset.apply(root=root):
             raise Exception("Malformed patch. This is a bug :(")
     except Exception:
         raise
@@ -131,7 +134,9 @@ def apply_patch(patchfile: str):
 def run_patch(src: str, dest: str):
     """
     Copies the provided patch file to the destination, then applies the patch
-    using `apply_patch`.
+    using `apply_patch`. The patch is always applied relative to the parent directory
+    of the destination, so patches must also specify their sources/destination relative
+    to the parent of destination.
     """
     shutil.copy2(src, dest)
-    apply_patch(dest)
+    apply_patch(dest, root=os.path.dirname(dest))

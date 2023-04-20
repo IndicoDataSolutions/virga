@@ -1,0 +1,12 @@
+--- prestart.sh
++++ prestart.sh
+@@ -4,3 +4,3 @@
+-# while ! pg_isready -h "${POSTGRES_HOST:-localhost}" -U "${POSTGRES_USER}" -p 5432; do
+-#     sleep 1;
+-# done
++while ! pg_isready -h "${POSTGRES_HOST:-localhost}" -U "${POSTGRES_USER}" -p 5432; do
++    sleep 1;
++done
+@@ -9,1 +9,1 @@
+-# alembic upgrade head
++alembic upgrade head

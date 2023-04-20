@@ -6,7 +6,6 @@ authors = []
 
 [tool.poetry.dependencies]
 python = "^3.7"
-gunicorn = {extras = ["gevent"], version = "^20.1.0"}
 uvicorn = {extras = ["standard"], version = "^0.17.6"}
 
 [tool.poetry.dev-dependencies]
