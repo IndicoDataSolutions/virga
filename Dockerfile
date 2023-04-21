@@ -1,4 +1,4 @@
-FROM python:3.7-slim-buster
+FROM python:3.8-slim
 
 ENV APP_NAME=virga POETRY_HOME=/etc/poetry
 ENV PATH = "${PATH}:/etc/poetry/bin"
@@ -6,9 +6,13 @@ ENV PATH = "${PATH}:/etc/poetry/bin"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update && \
     apt-get install --no-install-recommends -y build-essential curl vim git && \
-    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    # node
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash && \
     apt install --no-install-recommends -y nodejs && \
     npm install -g yarn && \
+    # helm
+    curl -fsSL \
+        https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
