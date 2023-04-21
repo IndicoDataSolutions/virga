@@ -1,0 +1,8 @@
+--- templates/api-configs.yaml
++++ templates/api-configs.yaml
+@@ -7,1 +7,1 @@
+-{{- /*
++
+@@ -14,1 +14,1 @@
+-*/}}
++

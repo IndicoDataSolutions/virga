@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ui-nginx-conf
+  namespace: {{- if .Values.defaultNamespace }} {{ .Values.defaultNamespace | default "default" }}{{- else }} default{{- end }}
+data:
+  nginx.conf: |
+    worker_processes auto;
+    events {
+        worker_connections  1024;
+    }
+
+    http {
+        resolver {{ .Values.dnsResolver | default "kube-dns" }}.kube-system.svc.cluster.local ipv6=off valid=30;
+        include mime.types;
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 10240;
+        gzip_proxied expired no-cache no-store private auth;
+        gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml;
+        gzip_disable "MSIE [1-6]\.";
+
+        client_max_body_size 400m;
+
+        ssl_protocols TLSv1.2;  # drop SSLv3 (POODLE vulnerability)
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_timeout 10m;
+        ssl_prefer_server_ciphers on;
+        ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-ECDSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK';
+        fastcgi_intercept_errors on;
+
+        limit_req_zone $binary_remote_addr zone=perip:10m rate=200r/s;
+        limit_req_zone $server_name zone=perserver:10m rate=200r/s;
+
+        server_tokens off;
+        add_header X-Content-Type-Options nosniff;
+        add_header X-Frame-Options DENY;
+        add_header Feature-Policy "geolocation none;midi none;notifications none;push none;sync-xhr none;microphone none;camera none;magnetometer none;gyroscope none;speaker self;vibrate none;fullscreen self;payment none;";
+        add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload;";
+
+        server {
+            listen 80 default_server;
+            return 301 https://$host$request_uri;
+        }
+
+        server {
+            listen              443 ssl default_server;
+
+            ssl_certificate     /etc/ssl/tls.crt;
+            ssl_certificate_key /etc/ssl/tls.key;
+
+            set $defaultNamespaceString "{{ .Values.defaultNamespace | default "default" }}";
+
+            {{- /*
+            The CSP Header must be set to allow fetch connections to the domain of the
+            external cluster, if one is set.
+            */}}
+            {{- $cspurl := default "" .Values.auth -}}
+            {{- if $cspurl }}
+            {{- $cspurl := mustRegexFind ".*://[^/]*" .Values.auth.config.url | indent 1 -}}
+            {{- end }}
+
+            add_header Content-Security-Policy "default-src 'self' 'unsafe-eval' 'unsafe-inline'{{ $cspurl }} https://sentry.io/ https://www.google.com https://www.googletagmanager.com  https://www.google-analytics.com https://*.gstatic.com https://api.mixpanel.com https://*.cloudfront.net https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com/ https://cdnjs.cloudflare.com/ https://cdn.jsdelivr.net/ https://js.stripe.com/ https://api.keen.io/ https://*.appcues.com https://*.appcues.net wss://*.appcues.net wss://*.appcues.com; img-src * 'self' res.cloudinary.com twemoji.maxcdn.com data:; worker-src blob:";
+            add_header X-Content-Type-Options nosniff;
+            add_header X-Frame-Options DENY;
+            add_header Feature-Policy "geolocation none;midi none;notifications none;push none;sync-xhr none;microphone none;camera none;magnetometer none;gyroscope none;speaker self;vibrate none;fullscreen self;payment none;";
+            add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload;";
+
+
+            location = /app-config.js {
+                root /no-cache;
+                add_header Cache-Control no-cache;
+                expires 0;
+                try_files /app-config.js =404;
+                add_header X-Frame-Options DENY;
+                add_header X-Content-Type-Options nosniff;
+                add_header X-Frame-Options DENY;
+                add_header Feature-Policy "geolocation none;midi none;notifications none;push none;sync-xhr none;microphone none;camera none;magnetometer none;gyroscope none;speaker self;vibrate none;fullscreen self;payment none;";
+                add_header Content-Security-Policy  "default-src 'self'";
+                add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload;";
+            }
+
+            location /api {
+                rewrite ^/api/(.*) /$1 break;
+
+                proxy_set_header HOST $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_pass "http://{{ .Values.app_name }}-api.${defaultNamespaceString}.svc.cluster.local:{{ .Values.api.config.port }}";
+            }
+
+            location / {
+                limit_req zone=perip burst=15 nodelay;
+                limit_req zone=perserver burst=30;
+
+                rewrite ^static/(.*) /$1 break;
+
+                root /{{ .Values.app_name }}_ui/build;
+                try_files $uri /index.html;
+                error_page 404 =200 /index.html;
+            }
+        }
+    }

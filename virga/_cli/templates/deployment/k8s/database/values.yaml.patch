@@ -1,0 +1,14 @@
+--- values.yaml
++++ values.yaml
+@@ -9,1 +9,1 @@
+-  # postgres: "postgres:12.7-alpine"
++  postgres: "postgres:12.7-alpine"
+@@ -40,4 +40,4 @@
+-# postgres:
+-#   config:
+-#     user: "indico"
+-#     password: "password"
++postgres:
++  config:
++    user: "indico"
++    password: "password"

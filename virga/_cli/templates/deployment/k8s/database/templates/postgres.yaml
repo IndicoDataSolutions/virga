@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-{{ .Values.app_name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-{{ .Values.app_name }}
+  template:
+    metadata:
+      labels:
+        app: postgres-{{ .Values.app_name }}
+        {{- if .Values.postgres.labels }}
+        {{ .Values.postgres.labels | toYaml }}
+        {{- end }}
+      {{- if .Values.postgres.annotations }}
+      annotations:
+        {{- if .Values.postgres.annotations }}
+        {{ .Values.postgres.labels | toYaml }}
+        {{- end }}
+      {{- end }}
+    spec:
+      {{- if .Values.dockerRegistrySecret }}
+      imagePullSecrets:
+        - name: {{ .Values.dockerRegistrySecret }}
+      {{- end }}
+      containers:
+        - name: postgres-{{ .Values.app_name }}
+          image: {{ .Values.dockerRegistry}}{{ .Values.images.postgres }}
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+              name: postgres-port
+          envFrom:
+            - configMapRef:
+                name: api-configs
+            - secretRef:
+                name: api-secrets
+          livenessProbe:
+            tcpSocket:
+              port: postgres-port
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgresdb
+              subPath: postgres-{{ .Values.app_name }}-data
+      volumes:
+        - name: postgresdb
+          persistentVolumeClaim:
+            claimName: read-write
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: postgres-{{ .Values.app_name }}
+spec:
+  selector:
+    app: postgres-{{ .Values.app_name }}
+  ports:
+  - port: 5432
+    protocol: TCP
+    targetPort: postgres-port

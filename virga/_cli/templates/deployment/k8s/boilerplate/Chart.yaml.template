@@ -1,0 +1,6 @@
+apiVersion: v2
+name: $app_name
+description: A standalone Helm chart for $app_name
+appVersion: 0.1.0
+version: 0.1.0
+type: application
