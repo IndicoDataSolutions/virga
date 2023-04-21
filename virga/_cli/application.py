@@ -13,6 +13,8 @@ from .generators import (
     NoctAuthGenerator,
     StructureGenerator,
     WebUIGenerator,
+    K8DeploymentGenerator,
+    StandaloneDeploymentGenerator,
 )
 
 
@@ -146,10 +148,10 @@ def new(ctx: click.Context, app_path, name: Optional[str] = None, **kwargs):
                 DatabaseGenerator.generate(ctx, app_name, project_dir)
 
             # kubernetes customization
-            # if kwargs["kubernetes"]:
-            #     K8DeploymentGenerator.generate(ctx, app_name, project_dir)
-            # else:
-            #     StandaloneDeploymentGenerator.generate(ctx, app_name, project_dir)
+            if kwargs["kubernetes"]:
+                K8DeploymentGenerator.generate(ctx, app_name, project_dir, **kwargs)
+            else:
+                StandaloneDeploymentGenerator.generate(ctx, app_name, project_dir)
 
             # move the full project to the desired location
             shutil.move(project_dir, app_path)
@@ -158,7 +160,6 @@ def new(ctx: click.Context, app_path, name: Optional[str] = None, **kwargs):
                 "Virga application generation complete!\n", bold=True, fg="green"
             )
         except Exception as err:
-            shutil.move(project_dir, app_path)
             click.echo(
                 "\n=========\n\n"
                 + click.style(
