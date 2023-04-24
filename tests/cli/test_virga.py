@@ -80,4 +80,4 @@ def test_virga_new_good_opts(opts, run_command_patch):
 
         # kube is default
         if "--standalone" not in opts:
-            subprocess.run(["helm", "template", "new-project", "charts"], check=True)
+            subprocess.run(["helm", "template", "new-project/charts"], check=True)

@@ -39,9 +39,9 @@ class StructureGenerator(Generator):
 
                 resolve_template("pyproject.toml", app_name=app_name)
                 run_command("poetry", "install")
-                # run_command(
-                #     "poetry",
-                #     "add",
-                #     "git+https://github.com/IndicoDataSolutions/virga.git#main",
-                #     *sorted(extras),
-                # )
+                run_command(
+                    "poetry",
+                    "add",
+                    "git+https://github.com/IndicoDataSolutions/virga.git#main",
+                    *sorted(extras),
+                )
