@@ -127,7 +127,7 @@ def new(ctx: click.Context, app_path, name: Optional[str] = None, **kwargs):
                     f"-E{k}"
                     for k, v in kwargs.items()
                     ## these flags don't correlate to py extras
-                    if v and k not in ["--webui", "--kubernetes", "--standalone"]
+                    if v and k not in ["webui", "kubernetes", "standalone"]
                 ],
             )
 
