@@ -95,7 +95,7 @@ data:
 
                 rewrite ^static/(.*) /$1 break;
 
-                root /{{ .Values.app_name }}_ui/build;
+                root /{{ .Values.app_name }}-ui/build;
                 try_files $uri /index.html;
                 error_page 404 =200 /index.html;
             }

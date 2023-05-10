@@ -1,31 +1,27 @@
-## DEVELOPMENT
-FROM node:14-alpine as development
+# dev / builder
+FROM node:14-alpine as builder
 
-# configure env vars for runtime
-ENV APP_NAME=$app_name-webui \
-    WEBUI_PORT=8080
-
-# install system dependencies
+## install system dependencies
+WORKDIR /$app_name-ui
 RUN apk update && \
-    apk add --no-cache curl vim postgresql-client bash && \
-    deluser --remove-home node
+    apk add --no-cache \
+        curl \
+        bash \
+        vim \
+        build-base \
+        ca-certificates
 
 # copy and install app dependencies
-COPY ./package.json ./yarn.lock /$app_name-webui/
-WORKDIR /$app_name-webui
+COPY ./public /$app_name-ui/public
+COPY ./package.json ./yarn.lock ./.npmrc /$app_name-ui/
 RUN yarn install
 
-# copy everything over
-COPY . /$app_name-webui
+COPY ./src /$app_name-ui/src
 
-# start the development server
-CMD [ "yarn", "start" ]
-
-
-## PRODUCTION
-# build the static UI files for serving via nginx
-FROM development as production
 RUN yarn build
 
-FROM gcr.io/new-indico/nginx:1.15.10
-COPY --from=production /$app_name-webui/build /$app_name-webui/build
+
+# app-edge
+FROM nginx:1.24.0-alpine
+
+COPY --from=builder /$app_name-ui/build /$app_name-ui/build

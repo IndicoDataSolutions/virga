@@ -33,12 +33,11 @@ services:
   # webui:
   #   build:
   #     context: webui
-  #     target: development
+  #     target: builder
+  #   command: yarn start
   #   volumes:
-  #     - ./webui:/$app_name-webui
-  #     - /$app_name-webui/node_modules
-  #   expose:
-  #     - "8080"
+  #     - ./webui:/$app_name-ui
+  #     - /$app_name-ui/node_modules
   #   init: true
 
   caddy:
