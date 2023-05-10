@@ -12,3 +12,40 @@
 +  config:
 +    user: "indico"
 +    password: "password"
+@@ -45,18 +45,18 @@
+-# storage:
+-#   class:
+-#     name: indico-sc
+-#     # custom: true
+-#     # provisioner:
+-#     # parameters:
+-#     #   securityGroupIds:
+-#     #   subnetId:
+-#   existingPVC: read-write
+-#   # existingPVC: false
+-#   # capacity: 50Gi
+-#   # pvcSpec:
+-#   #   csi:
+-#   #     driver:
+-#   #     volumeAttributes:
+-#   #        dnsname:
+-#   #        mountname:
+-#   #     volumeHandle:
++storage:
++  class:
++    name: indico-sc
++    # custom: true
++    # provisioner:
++    # parameters:
++    #   securityGroupIds:
++    #   subnetId:
++  existingPVC: read-write
++  # existingPVC: false
++  # capacity: 50Gi
++  # pvcSpec:
++  #   csi:
++  #     driver:
++  #     volumeAttributes:
++  #        dnsname:
++  #        mountname:
++  #     volumeHandle:

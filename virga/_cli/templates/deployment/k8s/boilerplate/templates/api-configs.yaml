@@ -16,5 +16,5 @@ data:
   # postgres
   POSTGRES_HOST: "{{ .Values.postgres.config.host }}"
   POSTGRES_USER: "{{ .Values.postgres.config.user }}"
-  POSTGRES_DB: "{{ .Values.postgres.config.db }}"
+  POSTGRES_DB: "{{ .Values.postgres.config.db | default .Values.app_name }}"
 */}}

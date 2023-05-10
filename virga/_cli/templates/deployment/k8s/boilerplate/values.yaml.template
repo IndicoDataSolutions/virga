@@ -42,6 +42,25 @@ api:
 #     user: "indico"
 #     password: "password"
 
+# storage:
+#   class:
+#     name: indico-sc
+#     # custom: true
+#     # provisioner:
+#     # parameters:
+#     #   securityGroupIds:
+#     #   subnetId:
+#   existingPVC: read-write
+#   # existingPVC: false
+#   # capacity: 50Gi
+#   # pvcSpec:
+#   #   csi:
+#   #     driver:
+#   #     volumeAttributes:
+#   #        dnsname:
+#   #        mountname:
+#   #     volumeHandle:
+
 # tls cert and key pair
 # tls:
 #   key: |-

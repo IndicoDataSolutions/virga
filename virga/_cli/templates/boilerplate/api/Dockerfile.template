@@ -40,7 +40,7 @@ ENV PATH="/venv/bin:${PATH}"
 ENV APP_NAME=$app_name-api
 ENV APP_MODULE="$app_name.app:app"
 ENV APP_LOG="/var/log/$app_name-api.log"
-ARG PORT=5000
+ENV PORT=5000
 
 # install system dependencies and poetry
 RUN apt-get update && \

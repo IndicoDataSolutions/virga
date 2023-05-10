@@ -20,7 +20,7 @@
 +  # config:
 +  #   inactivityTimeout: false
 +  #   loginOption: "EMAIL"
-@@ -46,7 +46,7 @@
+@@ -65,7 +65,7 @@
 -# tls:
 -#   key: |-
 -#     -----BEGIN PRIVATE KEY-----

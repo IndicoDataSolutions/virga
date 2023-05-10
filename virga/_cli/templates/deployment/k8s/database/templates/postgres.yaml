@@ -47,7 +47,7 @@ spec:
       volumes:
         - name: postgresdb
           persistentVolumeClaim:
-            claimName: read-write
+            claimName: {{ .Values.storage.existingPVC | default (printf "%s-pvc" .Values.app_name) }}
 
 ---
 kind: Service
