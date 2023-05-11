@@ -28,7 +28,6 @@ class StructureGenerator(Generator):
 
         with in_directory(project_dir):
             resolve_template("docker-compose.yaml.template", app_name=app_name)
-            resolve_template("Caddyfile.template", app_name=app_name)
 
             with in_directory("api"):
                 shutil.move("boilerplate", app_name)

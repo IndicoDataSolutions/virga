@@ -13,7 +13,7 @@ RUN apk update && \
 
 # copy and install app dependencies
 COPY ./public /$app_name-ui/public
-COPY ./package.json ./yarn.lock ./.npmrc /$app_name-ui/
+COPY ./package.json ./yarn.lock /$app_name-ui/
 RUN yarn install
 
 COPY ./src /$app_name-ui/src

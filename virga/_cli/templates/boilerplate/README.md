@@ -40,6 +40,7 @@ To make testing easier, you might find it valuable to add `APP_NAME.indico.local
 
   - Find the running app container IP by running `docker inspect APP_NAME_caddy_1 | grep "IPAddress" | tail -1 | awk -F[\"\"] '{print $4}'`
   - Add `IP_ADDRESS APP_NAME.indico.local` to your hosts file.
+  - Change `localhost` to `APP_NAME.indico.local` at the top of your generated `Caddyfile`.
 
 If you do so, then `docker compose up`, you should be able to access the UI at `https://APP_NAME.indico.local` and the API at `https://APP_NAME.indico.local/api`. If Noct is enabled, you should also be able to verify it is running by going to `https://APP_NAME.indico.local/auth/api/ping`.
 
