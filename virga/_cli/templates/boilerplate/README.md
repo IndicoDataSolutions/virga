@@ -12,6 +12,7 @@ In order to create an app with a UI, you must also install [Yarn](https://yarnpk
 
   ```sh
   curl -sSL https://install.python-poetry.org | python3 -
+  # if you're going to use --webui
   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
   sudo apt-get install -y nodejs
   npm install --global yarn
@@ -31,9 +32,9 @@ In order to create an app with a UI, you must also install [Yarn](https://yarnpk
 
 ### 3. Development and Testing
 
-When you generate a Virga project, you'll have an `api` subdirectory and (optionally) a `webui` subdirectory. They represent the backend and frontend of a self-container sidecar application. As such, it's likely that you will want to test integration to make sure each end responds and requests correctly to the other.
+When you generate a Virga project, you'll have an `api` subdirectory and (optionally) a `webui` subdirectory. They represent the backend and frontend of a self-contained sidecar application. As such, it's likely that you will want to test integration to make sure each end responds and requests correctly to the other.
 
-The `docker-compose` files that are generated with a project are setup specifically to enable easier integration testing. When you spin up the root `docker-compose` file, the front-end and back-end will each spin up a server in separate development containers, with hot reloading enabled on both, connected by a third container running Caddy 2. Caddy 2 is an HTTP server that will listen to incoming requests and proxy them to the UI and API containers, with the API mounted on `/api` and the UI being `/`.
+The `docker-compose.yaml` file that is generated with a project is setup specifically to enable easier integration testing. When you spin up the services, the frontend and backend will each spin up a separate development server with hot reloading enabled on both. They'll be connected by a third container running Caddy 2. Caddy 2 is an HTTP web server (like nginx) that will listen to incoming requests and proxy them to the UI and API containers, with the API mounted on `/api` and the UI being `/` of `https://localhost`.
 
 To make testing easier, you might find it valuable to add `APP_NAME.indico.local` to your local hosts file (`/etc/hosts` on most Linux systems):
 
@@ -46,13 +47,13 @@ If you're using Noct and would like to connect your local environment to an exte
 
 ### 4. Deployment
 
-When creating a Virga application, you have the choice to generate either a standalone deployment or Kubernetes deployment via either `--kubernetes` or `--standalone`:
+When creating a Virga application, you have the choice to generate either a standalone deployment or Kubernetes deployment, via either the `--kubernetes` or `--standalone` flags.
 
 #### Kubernetes [the default]
 
-Virga will generate your project assuming a Kubernetes production environment. This means that, in addition to your API (and optional UI), Virga will generate a customizable Helm chart in a top level directory called `charts`. The charts it generates will depend on what other generation flags you specified via the command line, but will always include a `values.yaml` file that highlights your customization options.
+Virga will generate your project assuming a Kubernetes production environment. This means that, in addition to your API (and optional UI), Virga will generate a customizable Helm chart in a top level directory called `charts`. The chart it generates will depend on what other generation flags you specified via the command line, but will always include a `values.yaml` file that highlights your customization options.
 
-In Kubernetes mode the API assumes that load-balancing happens at the cluster level via something like deployment replicas. As such, the Dockerfile will spin up a single [Uvicorn](https://www.uvicorn.org/) process to react and respond to requests.
+In Kubernetes mode, the API assumes that load-balancing happens at the cluster level via something like deployment replicas. As such, the Dockerfile will spin up a single [Uvicorn](https://www.uvicorn.org/) process to react to and respond to requests.
 
 The nginx configuration file will be provided through a Kubernetes volume, allowing more flexible and deployment-specific configuration (like a dynamic `app-config.js`).
 
@@ -66,9 +67,9 @@ In Standalone mode, the API assumes it must take full responsibility for load-ba
 
 ## Plugin dependencies
 
-As of 1.2, Virga makes an attempt to have generated projects require as few dependencies as possible, to avoid unnecessarily large footprints. This means that the dependencies that the `noct`, `database`, and `graphql` plugins require have been moved to optional extras, and are conditionally added to your project during generation based on the configuration options provided during generation.
+As of 1.2, Virga makes an attempt to have generated projects require as few dependencies as possible, to avoid unnecessarily large footprints. This means that the dependencies that the `noct`, `database`, and `graphql` plugins require have been moved to optional extras, and are conditionally added to your project during generation based on the configuration flags provided.
 
-If you generate a project without explicitly using an option, and then try to use its corresponding plugin, your application will fail with a message indicating you're missing the required extra(s). To resolve that issue, edit your API's `pyproject.toml` to include the extra(s) you need:
+If you generate a project without explicitly using an extra, and then try to use its corresponding plugin, your application will fail with a message indicating you're missing the required extra(s). To resolve that issue, edit your API's `pyproject.toml` to include the extra(s) you need:
 
 ```toml
 # before
@@ -90,7 +91,7 @@ The available extras are:
 - `auth` for the Noct plugin, which adds `python-jose` and `aiohttp`.
 - `database` for the database plugin, which adds `SQLAlchemy`, `asyncpg`, and `alembic`.
 - `graphql` for the GraphQL plugin, which adds `graphene`, `aiofiles`, and `aiodataloader`.
-- `testing` for the testing plugin. This isn't a generation flag, but provides some useful [pytest](https://docs.pytest.org/en/6.2.x/) utilities and fixtures (such as mock users and tokens for authentication-requiring routes).
+- `testing` for the testing plugin, which adds `pytest`, `pytest-asyncio`, and `requests`. This isn't a generation flag, but provides some useful [pytest](https://docs.pytest.org/en/6.2.x/) utilities and fixtures (such as mock users and tokens for authentication-requiring routes).
 
 ### Authenticating with Harbor
 
@@ -166,7 +167,7 @@ app.add_route("/graphql", GraphQLRoute(schema=Schema(query=..., mutation=..., su
 
 The base `GraphQLRoute` provided by Virga does not implement any method for checking authentication or supplying a database connection to downstream resolvers. If your API requires this, use a `SessionedGraphQLRoute` instead.
 
-`SessionedGraphQLRoute` accepts two kwargs, `database_url` and `authenticated`. When `authenticted` is True, the route will check the request authentication cookies, exactly like `get_current_user`, and if valid will attach `user` and `token` fields to the GQL context passed to resolvers. - When `database_url` is set, it will be used to start an async db session that will be attached to the GQL context via the `db_session` field.
+`SessionedGraphQLRoute` accepts two kwargs: `database_url` and `authenticated`. When `authenticted` is True, the route will check the request's authentication cookies, exactly like `get_current_user`, and if valid will attach `user` and `token` fields to the GQL context. When `database_url` is set, an async db session will be attached to the GQL context via the `db_session` field.
 
 For example:
 
