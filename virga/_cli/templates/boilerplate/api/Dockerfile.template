@@ -1,35 +1,61 @@
-FROM python:3.7-slim-buster
+# syntax=docker/dockerfile:1
 
-COPY --from=tiangolo/uvicorn-gunicorn:python3.7 /start-reload.sh /start-reload.sh
-COPY --from=tiangolo/uvicorn-gunicorn:python3.7 /start.sh /start.sh
-COPY --from=tiangolo/uvicorn-gunicorn:python3.7 /gunicorn_conf.py /gunicorn_conf.py
+
+## POETRY VENV BUILDER
+FROM python:3.10-slim as venv-builder
+
+ARG POETRY_INSTALL_ARGS
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH="/venv/bin:/root/.local/bin:${PATH}"
+
+WORKDIR /venv
+RUN apt-get update && \
+    apt-get install --yes --no-install-recommends --no-install-suggests \
+        build-essential \
+        git \
+        curl && \
+    pip3 install --upgrade pip && \
+    curl -sSL https://install.python-poetry.org | python3 - && \
+    python3 -m venv /venv
+
+COPY pyproject.toml poetry.lock /venv/
+
+RUN poetry export -f requirements.txt --output requirements.txt --without-hashes \
+        ${POETRY_INSTALL_ARGS} && \
+    pip3 install -r requirements.txt --no-deps && \
+    pip3 cache purge
+
+
+## APP
+FROM python:3.10-slim-buster
+
+COPY --from=tiangolo/uvicorn-gunicorn:python3.10 /start-reload.sh /start-reload.sh
 
 # configure env vars for runtime
-ARG API_PORT=5000
-ENV APP_NAME=$app_name-api \
-    APP_MODULE="$app_name.app:app" \
-    ACCESS_LOG="/var/log/$app_name-api.log" \
-    ERROR_LOG="${ACCESS_LOG}" \
-    PRE_START_PATH="/$app_name-api/scripts/prestart.sh" \
-    PORT=${API_PORT} \
-    POETRY_HOME=/etc/poetry
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONIOENCODING="utf-8"
+ENV PYTHONPATH=/$app_name-api
+ENV PATH="/venv/bin:${PATH}"
+
+ENV APP_NAME=$app_name-api
+ENV APP_MODULE="$app_name.app:app"
+ENV APP_LOG="/var/log/$app_name-api.log"
+ENV PORT=5000
 
 # install system dependencies and poetry
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get install --yes --no-install-recommends --no-install-suggests \
+        # postgresql-client \
         curl \
-        vim \
-        postgresql-client \
-        git \
-        libevent-dev && \
-    curl -sSL https://install.python-poetry.org | python3 - && \
-    poetry config virtualenvs.create false
+        vim
+
+# copy venv from builder
+COPY --from=venv-builder /venv /venv
 
 # copy everything and install app dependencies
-COPY . /$app_name-api
 WORKDIR /$app_name-api
-RUN poetry install --remove-untracked --no-interaction
+COPY . /$app_name-api
 
 # launch the service
-EXPOSE $API_PORT
-CMD [ "/$app_name-api/scripts/entrypoint.sh" ]
+ENTRYPOINT [ "/$app_name-api/scripts/entrypoint.sh" ]
+CMD [ $entrypoint_cmd ]

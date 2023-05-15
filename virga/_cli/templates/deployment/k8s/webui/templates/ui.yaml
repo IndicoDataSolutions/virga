@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app_name }}-ui
+  namespace: {{- if .Values.defaultNamespace }} {{ .Values.defaultNamespace | default "default" }}{{- else }} default{{- end }}
+  labels:
+    app: {{ .Values.app_name }}-ui
+    {{- if .Values.webui.labels }}
+    {{ .Values.webui.labels | toYaml }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.app_name }}-ui
+  replicas: {{ kindIs "float64" .Values.webui.replicas | ternary .Values.webui.replicas 1 }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app_name }}-ui
+        {{- if .Values.webui.labels }}
+        {{ .Values.webui.labels | toYaml }}
+        {{- end }}
+      {{- if .Values.webui.annotations }}
+      annotations:
+        {{- if .Values.webui.annotations }}
+        {{ .Values.webui.labels | toYaml }}
+        {{- end }}
+      {{- end }}
+    spec:
+      {{- if .Values.dockerRegistrySecret }}
+      imagePullSecrets:
+        - name: {{ .Values.dockerRegistrySecret }}
+      {{- end }}
+      containers:
+        - name: {{ .Values.app_name }}-ui
+          image: {{ .Values.dockerRegistry }}{{ .Values.images.webui }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - sh
+                - -c
+                - sleep 5 && /usr/sbin/nginx -s quit
+          ports:
+            - name: http
+              containerPort: 80
+            - name: https
+              containerPort: 443
+          volumeMounts:
+            - name: ui-ssl-cert
+              mountPath: /etc/ssl/
+            - name: ui-app-config
+              mountPath: /no-cache/app-config.js
+              subPath: app-config.js
+            - name: ui-nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          livenessProbe:
+            tcpSocket:
+              port: 443
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            tcpSocket:
+              port: 443
+            periodSeconds: 5
+      volumes:
+        - name: ui-ssl-cert
+          secret:
+            secretName: ui-ssl-cert
+        - name: ui-app-config
+          configMap:
+            name: ui-app-config
+        - name: ui-nginx-conf
+          configMap:
+            name: ui-nginx-conf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.app_name }}-ui
+  namespace: {{- if .Values.defaultNamespace }} {{ .Values.defaultNamespace | default "default" }}{{- else }} default{{- end }}
+spec:
+  selector:
+    app: {{ .Values.app_name }}-ui
+  type: LoadBalancer
+  externalTrafficPolicy: {{ .Values.webui.externalTrafficPolicy | default "Local" }}
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https

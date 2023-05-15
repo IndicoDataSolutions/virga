@@ -1,6 +1,7 @@
 import os
 from itertools import combinations
 from unittest.mock import MagicMock, patch
+import subprocess
 
 import pytest
 from click.testing import CliRunner
@@ -46,7 +47,7 @@ def test_virga_new(run_command_patch):
         )
 
 
-cli_args = sorted(["--auth", "--graphql", "--webui", "--database"])
+cli_args = sorted(["--auth", "--graphql", "--webui", "--database", "--standalone"])
 
 
 @pytest.mark.parametrize(
@@ -65,7 +66,11 @@ def test_virga_new_good_opts(opts, run_command_patch):
         assert result.exit_code == 0
         assert result.output.find("Virga application generation complete!") > -1
 
-        expected_extras = [f"-E{o[2:]}" for o in opts if o != "webui"]
+        expected_extras = [
+            f"-E{o[2:]}"
+            for o in opts
+            if o not in ["--webui", "--standalone", "--kubernetes"]
+        ]
         run_command_patch.assert_any_call("poetry", "install")
         run_command_patch.assert_any_call(
             "poetry",
@@ -76,3 +81,7 @@ def test_virga_new_good_opts(opts, run_command_patch):
 
         if "--webui" in opts:
             run_command_patch.assert_any_call("yarn", "install")
+
+        # kube is default
+        if "--standalone" not in opts:
+            subprocess.run(["helm", "template", "new-project/charts"], check=True)

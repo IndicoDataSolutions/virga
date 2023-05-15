@@ -1,0 +1,39 @@
+{{- if not .Values.storage.existingPVC }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.app_name }}-rwx-store
+  namespace: {{- if .Values.defaultNamespace }} {{ .Values.defaultNamespace | default "default" }}{{- else }} default{{- end }}
+spec:
+  storageClassName: {{ .Values.storage.class.name | quote }}
+  capacity:
+    storage: {{ .Values.storage.capacity }}
+  accessModes:
+    - ReadWriteMany
+{{ .Values.storage.pvcSpec | toYaml | indent 2}}
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.app_name }}-pvc
+  namespace: {{- if .Values.defaultNamespace }} {{ .Values.defaultNamespace | default "default" }}{{- else }} default{{- end }}
+spec:
+  storageClassName: {{ .Values.storage.class.name | quote }}
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.storage.capacity }}
+{{- end }}
+
+{{- if .Values.storage.class.enabled }}
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: {{ .Values.storage.class.name | quote }}
+provisioner: {{ .Values.storage.class.provisioner }}
+parameters:
+{{ .Values.storage.class.parameters | toYaml | trim | indent 2 }}
+{{- end }}

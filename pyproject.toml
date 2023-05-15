@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "virga"
-version = "1.3.2"
+version = "1.4.0"
 description = "Templated adaptable sidecar app generation."
 authors = ["Elias Gabriel <elias.gabriel@indicodata.ai>"]
 

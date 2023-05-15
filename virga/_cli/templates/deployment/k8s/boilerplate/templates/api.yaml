@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app_name }}-api
+  namespace: {{- if .Values.defaultNamespace }} {{ .Values.defaultNamespace | default "default" }}{{- else }} default{{- end }}
+  labels:
+    app: {{ .Values.app_name }}-api
+    {{- if .Values.api.labels }}
+    {{ .Values.api.labels | toYaml }}
+    {{- end }}
+spec:
+  replicas: {{ kindIs "float64" .Values.api.replicas | ternary .Values.api.replicas 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app_name }}-api
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app_name }}-api
+        {{- if .Values.api.labels }}
+        {{ .Values.api.labels | toYaml }}
+        {{- end }}
+      {{- if .Values.api.annotations }}
+      annotations:
+        {{- if .Values.api.annotations }}
+        {{ .Values.api.annotations | toYaml }}
+        {{- end }}
+      {{- end }}
+    spec:
+      {{- if .Values.dockerRegistrySecret }}
+      imagePullSecrets:
+        - name: {{ .Values.dockerRegistrySecret }}
+      {{- end }}
+      containers:
+        - name: {{ .Values.app_name }}-api
+          image: {{ .Values.dockerRegistry }}{{ .Values.images.api }}
+          envFrom:
+            - configMapRef:
+                name: api-configs
+            - secretRef:
+                name: api-secrets
+          ports:
+            - containerPort: {{ .Values.api.config.port }}
+              name: {{ .Values.app_name }}-api
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.api.config.port }}
+            initialDelaySeconds: 120
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/ping
+              port: {{ .Values.api.config.port }}
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: api-secrets
+          secret:
+            secretName: api-secrets
+        - name: api-configs
+          configMap:
+            name: api-configs
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.app_name }}-api
+  namespace: {{- if .Values.defaultNamespace }} {{ .Values.defaultNamespace | default "default" }}{{- else }} default{{- end }}
+spec:
+  selector:
+    app: {{ .Values.app_name }}-api
+  ports:
+  - port: {{ .Values.api.config.port }}
+    protocol: TCP
+    targetPort: {{ .Values.app_name }}-api

@@ -1,0 +1,19 @@
+--- values.yaml
++++ values.yaml
+@@ -31,8 +31,8 @@
+-# auth:
+-#   config:
+-#     # the external noct url with which to authenticate. host must be a FQDN.
+-#     url: "https://your-ipa-cluster/auth"
+-#     # atmosphere secrets must match those configured on the external noct server
+-#     auth_cookie_domains: ""
+-#     atmosphere_cookie_secret: ""
+-#     atmosphere_token_secret: ""
++auth:
++  config:
++    # the external noct url with which to authenticate. host must be a FQDN.
++    url: "https://your-ipa-cluster/auth"
++    # atmosphere secrets must match those configured on the external noct server
++    auth_cookie_domains: ""
++    atmosphere_cookie_secret: ""
++    atmosphere_token_secret: ""

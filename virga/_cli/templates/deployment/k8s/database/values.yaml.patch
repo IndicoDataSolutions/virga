@@ -1,0 +1,51 @@
+--- values.yaml
++++ values.yaml
+@@ -9,1 +9,1 @@
+-  # postgres: "postgres:12.7-alpine"
++  postgres: "postgres:12.7-alpine"
+@@ -40,4 +40,4 @@
+-# postgres:
+-#   config:
+-#     user: "indico"
+-#     password: "password"
++postgres:
++  config:
++    user: "indico"
++    password: "password"
+@@ -45,18 +45,18 @@
+-# storage:
+-#   class:
+-#     name: indico-sc
+-#     # custom: true
+-#     # provisioner:
+-#     # parameters:
+-#     #   securityGroupIds:
+-#     #   subnetId:
+-#   existingPVC: read-write
+-#   # existingPVC: false
+-#   # capacity: 50Gi
+-#   # pvcSpec:
+-#   #   csi:
+-#   #     driver:
+-#   #     volumeAttributes:
+-#   #        dnsname:
+-#   #        mountname:
+-#   #     volumeHandle:
++storage:
++  class:
++    name: indico-sc
++    # custom: true
++    # provisioner:
++    # parameters:
++    #   securityGroupIds:
++    #   subnetId:
++  existingPVC: read-write
++  # existingPVC: false
++  # capacity: 50Gi
++  # pvcSpec:
++  #   csi:
++  #     driver:
++  #     volumeAttributes:
++  #        dnsname:
++  #        mountname:
++  #     volumeHandle:

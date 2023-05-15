@@ -1,0 +1,71 @@
+app_name: $app_name
+defaultNamespace: "default"
+
+dockerRegistry: "docker.io/"
+# dockerRegistrySecret: "<image pull secret>"
+
+images:
+  api: "<client docker image>"
+  # postgres: "postgres:12.7-alpine"
+  # webui: "<webui docker image>"
+
+api:
+  replicas: 1
+  # https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/#syntax-and-character-set
+  annotations:
+  # https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set
+  labels:
+    inditype: service
+  config:
+    port: 5000
+
+# webui:
+#   replicas: 1
+#   annotations:
+#   # https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+#   externalTrafficPolicy: "Local"
+#   # config:
+#   #   inactivityTimeout: false
+#   #   loginOption: "EMAIL"
+
+# auth:
+#   config:
+#     # the external noct url with which to authenticate. host must be a FQDN.
+#     url: "https://your-ipa-cluster/auth"
+#     # atmosphere secrets must match those configured on the external noct server
+#     auth_cookie_domains: ""
+#     atmosphere_cookie_secret: ""
+#     atmosphere_token_secret: ""
+
+# postgres:
+#   config:
+#     user: "indico"
+#     password: "password"
+
+# storage:
+#   class:
+#     name: indico-sc
+#     # custom: true
+#     # provisioner:
+#     # parameters:
+#     #   securityGroupIds:
+#     #   subnetId:
+#   existingPVC: read-write
+#   # existingPVC: false
+#   # capacity: 50Gi
+#   # pvcSpec:
+#   #   csi:
+#   #     driver:
+#   #     volumeAttributes:
+#   #        dnsname:
+#   #        mountname:
+#   #     volumeHandle:
+
+# tls cert and key pair
+# tls:
+#   key: |-
+#     -----BEGIN PRIVATE KEY-----
+#     -----END PRIVATE KEY-----
+#   cert: |-
+#     -----BEGIN CERTIFICATE-----
+#     -----END CERTIFICATE-----

@@ -1,0 +1,12 @@
+--- Dockerfile.template
++++ Dockerfile.template
+@@ -31,1 +31,4 @@
+-
++
++# copy auto-tuning scripts for gunicorn entrypoint
++COPY --from=tiangolo/uvicorn-gunicorn:python3.10 /start.sh /start.sh
++COPY --from=tiangolo/uvicorn-gunicorn:python3.10 /gunicorn_conf.py /gunicorn_conf.py
+@@ -49,1 +52,2 @@
+-        curl \
++        libevent-dev \
++        curl \

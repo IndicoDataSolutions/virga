@@ -13,6 +13,8 @@ from .generators import (
     NoctAuthGenerator,
     StructureGenerator,
     WebUIGenerator,
+    K8DeploymentGenerator,
+    StandaloneDeploymentGenerator,
 )
 
 
@@ -45,26 +47,39 @@ def virga():
 @virga.command()
 @click.option(
     "--name",
-    help="The name of the application to generate. This will be used for both the "
+    help="The name of the application to generate.\n\nThis will be used for both the "
     "Python module and development URL subdomain. If not supplied, this will be parsed"
     " from the provided APP_PATH.",
 )
 @click.option(
-    "--auth/--no-auth",
-    default=False,
+    "--auth",
+    is_flag=True,
     help="Adds connection middleware to support Noct authentication.",
 )
 @click.option(
-    "--graphql/--no-graphql",
-    default=False,
+    "--graphql",
+    is_flag=True,
     help="Adds a basic GraphQL support through Graphene.",
 )
 @click.option(
-    "--database/--no-database",
-    default=False,
+    "--database",
+    is_flag=True,
     help="Adds Alembic and SQLALchemy support through postgresql and asyncpg.",
 )
-@click.option("--webui/--no-webui", default=False, help="Adds basic web app template.")
+@click.option(
+    "--webui",
+    is_flag=True,
+    help="Adds a basic UI template based on React and Stratosphere.\n\nIn addition"
+    " to the React application itself, this flag will also generate an nginx-based"
+    " Dockerfile for local development and to serve as an app ingress when deployed.",
+)
+@click.option(
+    "--kubernetes/--standalone",
+    default=True,
+    help="Determines the type of project to generate.\n\nA K8 project will output a"
+    " basic and configurable Helm chart. A standalone app will produce an API"
+    " Dockerfile that runs Gunicorn as a subprocess-based load balancer.",
+)
 @click.argument("app_path", type=click.Path(writable=True, resolve_path=True))
 @click.pass_context
 def new(ctx: click.Context, app_path, name: Optional[str] = None, **kwargs):
@@ -108,7 +123,12 @@ def new(ctx: click.Context, app_path, name: Optional[str] = None, **kwargs):
                 ctx,
                 app_name,
                 project_dir,
-                extras=[f"-E{k}" for k, v in kwargs.items() if v and k != "--webui"],
+                extras=[
+                    f"-E{k}"
+                    for k, v in kwargs.items()
+                    ## these flags don't correlate to py extras
+                    if v and k not in ["webui", "kubernetes", "standalone"]
+                ],
             )
 
             # webapp generation
@@ -126,6 +146,12 @@ def new(ctx: click.Context, app_path, name: Optional[str] = None, **kwargs):
             # database setup
             if kwargs["database"]:
                 DatabaseGenerator.generate(ctx, app_name, project_dir)
+
+            # kubernetes customization
+            if kwargs["kubernetes"]:
+                K8DeploymentGenerator.generate(ctx, app_name, project_dir, **kwargs)
+            else:
+                StandaloneDeploymentGenerator.generate(ctx, app_name, project_dir)
 
             # move the full project to the desired location
             shutil.move(project_dir, app_path)

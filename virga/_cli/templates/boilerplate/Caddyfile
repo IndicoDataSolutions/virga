@@ -1,4 +1,4 @@
-$app_name.indico.local
+localhost
 
 # api
 handle_path /api/* {

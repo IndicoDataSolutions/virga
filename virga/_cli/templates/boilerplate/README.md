@@ -12,6 +12,7 @@ In order to create an app with a UI, you must also install [Yarn](https://yarnpk
 
   ```sh
   curl -sSL https://install.python-poetry.org | python3 -
+  # if you're going to use --webui
   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
   sudo apt-get install -y nodejs
   npm install --global yarn
@@ -31,24 +32,45 @@ In order to create an app with a UI, you must also install [Yarn](https://yarnpk
 
 ### 3. Development and Testing
 
-When you generate a Virga project, you'll have an `api` subdirectory and (optionally) a `webui` subdirectory. They represent the backend and frontend of a self-container sidecar application. As such, it's likely that you will want to test integration to make sure each end responds and requests correctly to the other.
+When you generate a Virga project, you'll have an `api` subdirectory and (optionally) a `webui` subdirectory. They represent the backend and frontend of a self-contained sidecar application. As such, it's likely that you will want to test integration to make sure each end responds and requests correctly to the other.
 
-The `docker-compose` files that are generated with a project are setup specifically to enable easier integration testing. **The API Dockerfile is production-ready, but all other Docker-related files are not meant for production use.** When you spin up the root `docker-compose` file, the front-end and back-end will each spin up a server in separate development containers, with hot reloading enabled on both, connected by a third container running Caddy 2. Caddy 2 is an HTTP server that will listen to incoming requests and proxy them to the UI and API containers, with the API mounted on `/api` and the UI being `/`.
+The `docker-compose.yaml` file that is generated with a project is setup specifically to enable easier integration testing. When you spin up the services, the frontend and backend will each spin up a separate development server with hot reloading enabled on both. They'll be connected by a third container running Caddy 2. Caddy 2 is an HTTP web server (like nginx) that will listen to incoming requests and proxy them to the UI and API containers, with the API mounted on `/api` and the UI being `/` of `https://localhost`.
 
-To make sure you can access the Caddy container from your machine, you will need to add `APP_NAME.indico.local` to your local hosts file (`/etc/hosts` on most Linux systems):
+To make testing easier, you might find it valuable to add `APP_NAME.indico.local` to your local hosts file (`/etc/hosts` on most Linux systems):
 
   - Find the running app container IP by running `docker inspect APP_NAME_caddy_1 | grep "IPAddress" | tail -1 | awk -F[\"\"] '{print $4}'`
   - Add `IP_ADDRESS APP_NAME.indico.local` to your hosts file.
+  - Change `localhost` to `APP_NAME.indico.local` at the top of your generated `Caddyfile`.
 
-Then you can `docker-compose up` from the root directory.
+If you do so, then `docker compose up`, you should be able to access the UI at `https://APP_NAME.indico.local` and the API at `https://APP_NAME.indico.local/api`. If Noct is enabled, you should also be able to verify it is running by going to `https://APP_NAME.indico.local/auth/api/ping`.
 
-You should be able to access the UI at `https://APP_NAME.indico.local` and the API at `https://APP_NAME.indico.local/api`. If Noct is enabled, you should also be able to verify it is running by going to `https://APP_NAME.indico.local/auth/api/ping`.
+If you're using Noct and would like to connect your local environment to an external cluster's authentication, you _will_ have to follow the steps above to update your `/etc/hosts` file. Noct requires that the domain of authentication requests match the domain of the Noct instance, so if you're trying to connect to `customer-dev.indico.domains`, make your local host something like `myapp.customer-dev.indico.domains`.
+
+### 4. Deployment
+
+When creating a Virga application, you have the choice to generate either a standalone deployment or Kubernetes deployment, via either the `--kubernetes` or `--standalone` flags.
+
+#### Kubernetes [the default]
+
+Virga will generate your project assuming a Kubernetes production environment. This means that, in addition to your API (and optional UI), Virga will generate a customizable Helm chart in a top level directory called `charts`. The chart it generates will depend on what other generation flags you specified via the command line, but will always include a `values.yaml` file that highlights your customization options.
+
+In Kubernetes mode, the API assumes that load-balancing happens at the cluster level via something like deployment replicas. As such, the Dockerfile will spin up a single [Uvicorn](https://www.uvicorn.org/) process to react to and respond to requests.
+
+The nginx configuration file will be provided through a Kubernetes volume, allowing more flexible and deployment-specific configuration (like a dynamic `app-config.js`).
+
+Of course, the templates Virga generates are necessarily very generalized. If they're not doing something you need (or are too verbose), you're free to modify them to meet your specific application needs.
+
+#### Standalone
+
+Virga assumes that the project you're creating will be deployed as an independent application outside a managing infrastructure like Kubernetes. No `charts` directory will be generated.
+
+In Standalone mode, the API assumes it must take full responsibility for load-balancing. As such, the Dockerfile will spin up several [Gunicorn](https://gunicorn.org/) workers to handle concurrent requests. The Gunicorn configuration is statically provided by FastAPI's creator, and is available [here](https://github.com/tiangolo/uvicorn-gunicorn-docker/blob/0.7.0/docker-images/gunicorn_conf.py).
 
 ## Plugin dependencies
 
-As of 1.2, Virga makes an attempt to have generated projects require as few dependencies as possible, to avoid unnecessarily large footprints. This means that the dependencies that the `noct`, `database`, and `graphql` plugins require have been moved to optional extras, and are conditionally added to your project during generation based on the configuration options provided during generation.
+As of 1.2, Virga makes an attempt to have generated projects require as few dependencies as possible, to avoid unnecessarily large footprints. This means that the dependencies that the `noct`, `database`, and `graphql` plugins require have been moved to optional extras, and are conditionally added to your project during generation based on the configuration flags provided.
 
-If you generate a project without explicitly using an option, and then try to use its corresponding plugin, your application will fail with a message indicating you're missing the required extra(s). To resolve that issue, edit your API's `pyproject.toml` to include the extra(s) you need:
+If you generate a project without explicitly using an extra, and then try to use its corresponding plugin, your application will fail with a message indicating you're missing the required extra(s). To resolve that issue, edit your API's `pyproject.toml` to include the extra(s) you need:
 
 ```toml
 # before
@@ -70,6 +92,7 @@ The available extras are:
 - `auth` for the Noct plugin, which adds `python-jose` and `aiohttp`.
 - `database` for the database plugin, which adds `SQLAlchemy`, `asyncpg`, and `alembic`.
 - `graphql` for the GraphQL plugin, which adds `graphene`, `aiofiles`, and `aiodataloader`.
+- `testing` for the testing plugin, which adds `pytest`, `pytest-asyncio`, and `requests`. This isn't a generation flag, but provides some useful [pytest](https://docs.pytest.org/en/6.2.x/) utilities and fixtures (such as mock users and tokens for authentication-requiring routes).
 
 ### Authenticating with Harbor
 
@@ -133,11 +156,19 @@ to any route's definition will automatically open and close an asynchronous data
 
 Virga's `--database` option provides a baseline structure for managing database schema and migrations through Alembic. Detailed instructions about generating and running database migrations are available on its [documentation website](https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script).
 
-## GraphQL that requires the DB or authentication
+## GraphQL
+
+Virga supplies a `GraphQLRoute` that serves as the basic way of exposing Queries and Mutations through a REST endpoint. It accepts a single `Schema` argument, and can be mounted directly to your application via `.add_route`:
+
+```python
+app.add_route("/graphql", GraphQLRoute(schema=Schema(query=..., mutation=..., subscription=...)))
+```
+
+### Requiring the DB or authentication
 
 The base `GraphQLRoute` provided by Virga does not implement any method for checking authentication or supplying a database connection to downstream resolvers. If your API requires this, use a `SessionedGraphQLRoute` instead.
 
-SessionedGraphQLRoute accepts two kwargs, `database_url` and `authenticated`. When `authenticted` is True, the route will check the request authentication cookies, exactly like `get_current_user`, and if valid will attach `user` and `token` fields to the GQL context passed to resolvers. - When `database_url` is set, it will be used to start an async db session that will be attached to the GQL context via the `db_session` field.
+`SessionedGraphQLRoute` accepts two kwargs: `database_url` and `authenticated`. When `authenticted` is True, the route will check the request's authentication cookies, exactly like `get_current_user`, and if valid will attach `user` and `token` fields to the GQL context. When `database_url` is set, an async db session will be attached to the GQL context via the `db_session` field.
 
 For example:
 
@@ -145,7 +176,7 @@ For example:
 schema = Schema(query=RootQuery)
 
 # this for no authentication or database access
-# it is equivalent to using GraphQLRoute
+# it is equivalent to just using GraphQLRoute
 app.add_route("/graphql", SessionedGraphQLRoute(schema=schema))
 
 # this for authentication
@@ -160,3 +191,19 @@ app.add_route(
   SessionedGraphQLRoute(schema=schema, database_url=settings().db_url)
 )
 ```
+
+### Customizing the GraphQL context
+
+In any GraphQL application, you might need to add or control additional things within the GraphQL context. `GraphQLRoute` (and thus `SessionedGraphQLRoute`) allow you to manipulate that context before it is passed to the executor and downstream resolvers.
+
+To do so, just subclass `GraphQLRoute` (or `SessionedGraphQLRoute`) and override the `setup_context` and `cleanup_context` coroutine functions. As the name of them imply, `setup` is run before the context is passed to the Schema and `cleanup` is run afterwards.
+
+```python
+async def setup_context(self, context: Dict[str, Any]):
+    pass
+
+async def cleanup_context(self, context: Dict[str, Any]):
+    pass
+```
+
+If you override the functions of an existing subclass, like `SessionedGraphQLRoute`, ensure to call `super()` in both so the lifecycle of other potential objects is handled correctly (like opening and closing a DB connection).

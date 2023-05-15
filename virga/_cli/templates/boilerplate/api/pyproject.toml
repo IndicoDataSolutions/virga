@@ -1,12 +1,11 @@
 [tool.poetry]
 name = "$app_name"
-version = "0.0.1"
+version = "0.1.0"
 description = "A default Virga application."
 authors = []
 
 [tool.poetry.dependencies]
 python = "^3.7"
-gunicorn = {extras = ["gevent"], version = "^20.1.0"}
 uvicorn = {extras = ["standard"], version = "^0.17.6"}
 
 [tool.poetry.dev-dependencies]

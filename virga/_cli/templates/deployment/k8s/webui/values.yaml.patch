@@ -1,0 +1,37 @@
+--- values.yaml
++++ values.yaml
+@@ -10,1 +10,1 @@
+-  # webui: "<webui docker image>"
++  webui: "<webui docker image>"
+@@ -22,8 +22,8 @@
+-# webui:
+-#   replicas: 1
+-#   annotations:
+-#   # https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+-#   externalTrafficPolicy: "Local"
+-#   # config:
+-#   #   inactivityTimeout: false
+-#   #   loginOption: "EMAIL"
++webui:
++  replicas: 1
++  annotations:
++  # https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
++  externalTrafficPolicy: "Local"
++  # config:
++  #   inactivityTimeout: false
++  #   loginOption: "EMAIL"
+@@ -65,7 +65,7 @@
+-# tls:
+-#   key: |-
+-#     -----BEGIN PRIVATE KEY-----
+-#     -----END PRIVATE KEY-----
+-#   cert: |-
+-#     -----BEGIN CERTIFICATE-----
+-#     -----END CERTIFICATE-----
++tls:
++  key: |-
++    -----BEGIN PRIVATE KEY-----
++    -----END PRIVATE KEY-----
++  cert: |-
++    -----BEGIN CERTIFICATE-----
++    -----END CERTIFICATE-----

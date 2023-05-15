@@ -1,0 +1,9 @@
+--- values.yaml
++++ values.yaml
+@@ -27,3 +27,3 @@
+-  # config:
+-  #   inactivityTimeout: false
+-  #   loginOption: "EMAIL"
++  config:
++    inactivityTimeout: false
++    loginOption: "EMAIL"

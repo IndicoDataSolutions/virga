@@ -1,0 +1,11 @@
+--- templates/ui-app-config.yaml
++++ templates/ui-app-config.yaml
+@@ -10,1 +10,0 @@
+-          {{- /*
+@@ -25,1 +10,0 @@
+-          */}}
+@@ -27,3 +27,1 @@
+-              {{- /*
+-              AuthURL: "{{ .Values.auth.config.url }}",
+-              */}}
++              AuthURL: "{{ .Values.auth.config.url }}",

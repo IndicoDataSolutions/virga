@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: ui-ssl-cert
+  namespace: {{- if .Values.defaultNamespace }} {{ .Values.defaultNamespace | default "default" }}{{- else }} default{{- end }}
+data:
+  # can't rely on kubernetes to encode these with stringData because
+  # the ----MARKER---- pattern is invalid yaml
+  tls.key: "{{ b64enc .Values.tls.key }}"
+  tls.crt: "{{ b64enc .Values.tls.cert }}"

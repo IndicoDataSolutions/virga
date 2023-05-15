@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-configs
+  namespace: {{- if .Values.defaultNamespace }} {{ .Values.defaultNamespace | default "default" }}{{- else }} default{{- end }}
+data:
+{{- /*
+  # Virga authentication handling
+  NOCT_HOST: "{{ .Values.auth.config.url }}"
+  ATMOSPHERE_AUTH_COOKIE_DOMAIN: "{{ .Values.auth.config.auth_cookie_domains }}"
+  {{- if .Values.auth.config.token_algorithm }}
+  NOCT_TOKEN_ALGORITHM: "{{ .Values.auth.config.token_algorithm }}"
+  {{- end }}
+*/}}
+{{- /*
+  # postgres
+  POSTGRES_HOST: "{{ .Values.postgres.config.host }}"
+  POSTGRES_USER: "{{ .Values.postgres.config.user }}"
+  POSTGRES_DB: "{{ .Values.postgres.config.db | default .Values.app_name }}"
+*/}}

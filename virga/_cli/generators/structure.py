@@ -28,15 +28,11 @@ class StructureGenerator(Generator):
 
         with in_directory(project_dir):
             resolve_template("docker-compose.yaml.template", app_name=app_name)
-            resolve_template("Caddyfile.template", app_name=app_name)
 
             with in_directory("api"):
                 shutil.move("boilerplate", app_name)
                 resolve_template(f"{app_name}/settings.py.template", app_name=app_name)
 
-                resolve_template("Dockerfile.template", app_name=app_name)
-                resolve_template("scripts/dev-server.sh.template", app_name=app_name)
-                resolve_template("scripts/entrypoint.sh.template", app_name=app_name)
                 # 2] initialize the poetry project and install expected dependencies
                 _print_step("Initializing Poetry project...")
 
