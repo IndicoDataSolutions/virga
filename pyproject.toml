@@ -1,8 +1,11 @@
 [tool.poetry]
 name = "virga"
 version = "1.4.0"
-description = "Templated adaptable sidecar app generation."
+description = "Dynamic IPA sidecar app generation and plugins."
 authors = ["Elias Gabriel <elias.gabriel@indicodata.ai>"]
+readme = "virga/_cli/templates/boilerplate/README.md"
+include = ["CHANGELOG.md"]
+
 
 [tool.poetry.dependencies]
 python = "^3.7"
