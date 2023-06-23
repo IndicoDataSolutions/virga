@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from click import Context
+from typer import Context
 
 
 class Generator(ABC):

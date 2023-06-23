@@ -6,7 +6,7 @@ from string import Template
 from subprocess import PIPE, CalledProcessError, run
 from typing import Union, Optional
 
-import click
+from rich import print as rprint
 import patch
 
 Path = Union[str, os.PathLike]
@@ -26,7 +26,7 @@ _step = 1
 
 def _print_step(msg: str):
     global _step
-    click.secho(f"  {_step}] {msg}", fg="magenta", bold=True)
+    rprint(f"[bold magenta]  {_step}] {msg}")
     _step += 1
 
 
@@ -52,16 +52,13 @@ def run_command(command: str, *args: str):
         # if the command failed, we only care about its stderr
         if isinstance(err, CalledProcessError):
             err = err.stderr
-        errmsg = click.style(f"\n\n{err}", dim=True) if str(err) else ""
+        errmsg = f"[dim]\n\n{err}" if str(err) else ""
 
         # the subprocess failed due to an OS exception or an invalid command, so
         # print a nice message instead of throwing a runtime exception
-        click.get_current_context().fail(
-            click.style(
-                f"The command `{' '.join(cmd)}` was attempted, but failed. The"
-                " output was recaptured and is printed."
-            )
-            + errmsg
+        raise Exception(
+            f"The command `{' '.join(cmd)}` was attempted, but failed. The"
+            " output was recaptured and is printed." + errmsg
         )
 
 
@@ -124,7 +121,7 @@ def apply_patch(patchfile: str, root: Optional[str] = None):
         pset = patch.fromfile(patchfile)
 
         if not pset or not pset.apply(root=root):
-            raise Exception("Malformed patch. This is a bug :(")
+            raise Exception("Malformed patch. This is a bug :bug:")
     except Exception:
         raise
     finally:

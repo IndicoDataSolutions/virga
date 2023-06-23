@@ -1,9 +1,7 @@
 import os
 import shutil
 
-import click
 import pytest
-from click.exceptions import UsageError
 
 from virga._cli.utils import (
     copy_template,
@@ -23,21 +21,16 @@ def test_get_path(tmpdir):
     assert get_path(*os.path.split(p2)) == p1
 
 
-def mock_abort():
-    raise UsageError("MOCK ERR")
-
-
-def test_run_command(monkeypatch, tmpdir):
+def test_run_command(tmpdir):
     tempfile = tmpdir.join("file0.txt")
 
     run_command("touch", tempfile)
     assert os.path.exists(tempfile)
 
-    monkeypatch.setattr(click, "get_current_context", mock_abort)
-    with pytest.raises(UsageError):
+    with pytest.raises(Exception):
         run_command("xxxxxx")  # invalid command, OS error
 
-    with pytest.raises(UsageError):
+    with pytest.raises(Exception):
         run_command("ls" "doesnt-exists")  # failed command, runtime error
 
     run_command("rm", tempfile)

@@ -1,6 +1,6 @@
 import os
 
-import click
+from typer import Context
 
 from ..utils import (
     _print_step,
@@ -16,7 +16,7 @@ from .base import Generator
 
 class NoctAuthGenerator(Generator):
     @staticmethod
-    def generate(ctx: click.Context, app_name: str, project_dir: str, **kwargs):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs):
         """
         Patch the generated base structure to add examples for Noct authentication.
         """

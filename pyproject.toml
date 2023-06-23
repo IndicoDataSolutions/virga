@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "virga"
-version = "1.4.0"
+version = "1.4.1"
 description = "Dynamic IPA sidecar app generation and plugins."
 authors = ["Elias Gabriel <elias.gabriel@indicodata.ai>"]
 readme = "virga/_cli/templates/boilerplate/README.md"
@@ -12,8 +12,9 @@ python = "^3.7"
 fastapi = "^0.65.2"
 orjson = "^3.5.0"
 
-click = {version = "8.1.0", optional = true}
 patch = {version = "1.16", optional = true}
+typer = {version = "0.9.0", optional = true}
+rich = {version = ">=10.11.0,<14.0.0", optional = true}
 
 python-jose = {extras = ["cryptography"], version = "^3.2.0", optional = true}
 aiohttp = {extras = ["speedups"], version = "^3.8.1", optional = true}
@@ -30,7 +31,7 @@ pytest = {version = ">=3.0.0", optional = true}
 requests = {version="^2.27.1", optional = true}
 
 [tool.poetry.extras]
-cli = ["click", "patch"]
+cli = ["typer", "patch", "rich"]
 auth = ["python-jose", "aiohttp"]
 graphql = ["graphene", "aiofiles", "aiodataloader"]
 database = ["SQLAlchemy", "alembic", "asyncpg"]
@@ -45,6 +46,12 @@ requests = "^2.27.1"
 [tool.poetry.scripts]
 virga = "virga._cli.application:virga"
 
+[tool.pytest.ini_options]
+addopts = "-ra -svv"
+asyncio_mode = "auto"
+testpaths = [
+    "tests"
+]
 
 [tool.mypy]
 ignore_missing_imports = true

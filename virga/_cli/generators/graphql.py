@@ -1,6 +1,6 @@
 import shutil
 
-import click
+from typer import Context
 
 from ..utils import _print_step, _templates_dir, get_path, in_directory, run_patch
 from .base import Generator
@@ -8,7 +8,7 @@ from .base import Generator
 
 class GraphQLGenerator(Generator):
     @staticmethod
-    def generate(ctx: click.Context, app_name: str, project_dir: str, **kwargs):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs):
         """
         Patch the generated base structure to add GraphQL support.
         """

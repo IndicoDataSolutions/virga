@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 import subprocess
 
 import pytest
-from click.testing import CliRunner
+from typer.testing import CliRunner
 
 from virga._cli.application import virga
 
@@ -67,9 +67,7 @@ def test_virga_new_good_opts(opts, run_command_patch):
         assert result.output.find("Virga application generation complete!") > -1
 
         expected_extras = [
-            f"-E{o[2:]}"
-            for o in opts
-            if o not in ["--webui", "--standalone", "--kubernetes"]
+            f"-E{o[2:]}" for o in opts if o not in ["--webui", "--standalone"]
         ]
         run_command_patch.assert_any_call("poetry", "install")
         run_command_patch.assert_any_call(

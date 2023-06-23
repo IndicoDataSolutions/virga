@@ -2,6 +2,8 @@
 
 ![virga status](https://img.shields.io/drone/build/IndicoDataSolutions/virga?label=tests&server=https%3A%2F%2Fdrone.devops.indico.io&style=flat-square)
 
+Indico Data's CLI tool for generating sidecar applications. Sidecar apps are not direct parts of Indico's IPA releases, but offer additional or custom functionality for product or business operations.
+
 ## Generating an app
 
 Virga applications, and Virga itself, are [Poetry](https://python-poetry.org/) projects; they use Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/).

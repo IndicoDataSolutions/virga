@@ -1,4 +1,4 @@
-import click
+from typer import Context
 import shutil
 
 from .base import Generator
@@ -15,7 +15,7 @@ from ..utils import (
 
 class K8DeploymentGenerator(Generator):
     @staticmethod
-    def generate(ctx: click.Context, app_name: str, project_dir: str, **kwargs):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs):
         """
         Copies chart templates and applies the necessary patches to support
         a Helm-based Kubernetes deployment.
@@ -128,7 +128,7 @@ class K8DeploymentGenerator(Generator):
 
 class StandaloneDeploymentGenerator(Generator):
     @staticmethod
-    def generate(ctx: click.Context, app_name: str, project_dir: str, **kwargs):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs):
         """
         Applies patches to the generated Dockerfile and pyproject.toml files in order
         to support a standalone Gunicorn deployment.

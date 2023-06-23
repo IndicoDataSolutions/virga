@@ -1,6 +1,6 @@
 import shutil
 
-import click
+from typer import Context
 
 from ..utils import (
     _print_step,
@@ -17,7 +17,7 @@ from .base import Generator
 
 class DatabaseGenerator(Generator):
     @staticmethod
-    def generate(ctx: click.Context, app_name: str, project_dir: str, **kwargs):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs):
         """
         Copy the base Alembic and database setup to the project directory.
         """
