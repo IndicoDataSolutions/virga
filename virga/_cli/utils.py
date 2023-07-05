@@ -105,7 +105,7 @@ def copy_template(src: Path, dest: Path, **variables: str) -> str:
     Copies a source file to a destination, then resolves the templated destination
     file by passing the provided variables to `resolve_template`.
     """
-    shutil.copy2(src, dest)
+    shutil.copy2(get_path(_templates_dir, src), dest)
     return resolve_template(dest, **variables)
 
 
@@ -128,12 +128,12 @@ def apply_patch(patchfile: str, root: Optional[str] = None) -> None:
         os.remove(patchfile)
 
 
-def run_patch(src: str, dest: str) -> None:
+def copy_patch(src: str, dest: str) -> None:
     """
     Copies the provided patch file to the destination, then applies the patch
     using `apply_patch`. The patch is always applied relative to the parent directory
     of the destination, so patches must also specify their sources/destination relative
     to the parent of destination.
     """
-    shutil.copy2(src, dest)
+    shutil.copy2(get_path(_templates_dir, src), dest)
     apply_patch(dest, root=os.path.dirname(dest))

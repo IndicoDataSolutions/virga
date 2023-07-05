@@ -11,7 +11,7 @@ from ..utils import (
     resolve_template,
     # `run_command` isn't called explicitly but required to monkeypatch during testing
     run_command,  # noqa: F401
-    run_patch,
+    copy_patch,
 )
 from .base import Generator
 
@@ -39,17 +39,17 @@ class DatabaseGenerator(Generator):
                 )
 
                 _print_step("Patching generated files...")
-                run_patch(
-                    get_path(_templates_dir, "database/settings.patch"),
+                copy_patch(
+                    "database/settings.patch",
                     "settings.patch",
                 )
-                run_patch(get_path(_templates_dir, "database/app.patch"), "app.patch")
+                copy_patch("database/app.patch", "app.patch")
 
-            run_patch(
-                get_path(_templates_dir, "database/Dockerfile.patch"),
+            copy_patch(
+                "database/Dockerfile.patch",
                 "Dockerfile.patch",
             )
-            run_patch(
-                get_path(_templates_dir, "database/prestart.patch"),
+            copy_patch(
+                "database/prestart.patch",
                 "scripts/prestart.patch",
             )

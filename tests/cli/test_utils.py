@@ -63,7 +63,8 @@ def test_resolve_template(mock_template, tmp_path):
         assert f.read() == "hello world!\n"
 
 
-def test_copy_template(mock_template, tmp_path):
+def test_copy_template(mock_template, tmp_path, monkeypatch):
+    monkeypatch.setattr("virga._cli.utils._templates_dir", "")
     temp = tmp_path / "mockfile.txt"
 
     temp = copy_template(mock_template, temp, listener="outside world")

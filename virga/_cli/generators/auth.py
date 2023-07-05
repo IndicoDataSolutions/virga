@@ -5,12 +5,11 @@ from typer import Context
 
 from ..utils import (
     _print_step,
-    _templates_dir,
     apply_patch,
     copy_template,
     get_path,
     in_directory,
-    run_patch,
+    copy_patch,
 )
 from .base import Generator
 
@@ -26,14 +25,12 @@ class NoctAuthGenerator(Generator):
             _print_step("Adding Noct route dependencies...")
 
             with in_directory(get_path(project_dir, "api", app_name)):
-                run_patch(get_path(_templates_dir, "auth/app.patch"), "app.patch")
+                copy_patch("auth/app.patch", "app.patch")
 
             _print_step("Patching existing configs...")
-            run_patch(
-                get_path(_templates_dir, "auth/Caddyfile.patch"), "Caddyfile.patch"
-            )
+            copy_patch("auth/Caddyfile.patch", "Caddyfile.patch")
             copy_template(
-                get_path(_templates_dir, "auth/docker-compose.patch.template"),
+                "auth/docker-compose.patch.template",
                 "docker-compose.patch",
                 app_name=app_name,
             )
@@ -42,7 +39,7 @@ class NoctAuthGenerator(Generator):
             # change the noct route in the webui only if it was generated
             if os.path.exists("webui"):
                 copy_template(
-                    get_path(_templates_dir, "auth/app-config.patch.template"),
+                    "auth/app-config.patch.template",
                     "app-config.patch",
                     app_name=app_name,
                 )

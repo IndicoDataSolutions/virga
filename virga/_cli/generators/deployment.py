@@ -5,7 +5,7 @@ from typer import Context
 
 from .base import Generator
 from ..utils import (
-    run_patch,
+    copy_patch,
     in_directory,
     resolve_template,
     get_path,
@@ -40,49 +40,35 @@ class K8DeploymentGenerator(Generator):
                         dirs_exist_ok=True,
                     )
 
-                    run_patch(
-                        get_path(
-                            _templates_dir, "deployment/k8s/webui/values.yaml.patch"
-                        ),
+                    copy_patch(
+                        "deployment/k8s/webui/values.yaml.patch",
                         "values.yaml.patch",
                     )
 
                 # if --auth was specified
                 if kwargs["auth"]:
-                    run_patch(
-                        get_path(
-                            _templates_dir, "deployment/k8s/auth/api-configs.yaml.patch"
-                        ),
+                    copy_patch(
+                        "deployment/k8s/auth/api-configs.yaml.patch",
                         "api-configs.yaml.patch",
                     )
-                    run_patch(
-                        get_path(
-                            _templates_dir, "deployment/k8s/auth/api-secrets.yaml.patch"
-                        ),
+                    copy_patch(
+                        "deployment/k8s/auth/api-secrets.yaml.patch",
                         "api-secrets.yaml.patch",
                     )
-                    run_patch(
-                        get_path(
-                            _templates_dir, "deployment/k8s/auth/values.yaml.patch"
-                        ),
+                    copy_patch(
+                        "deployment/k8s/auth/values.yaml.patch",
                         "values.yaml.patch",
                     )
 
                     # we don't need to patch the auth sections of webui yamls if we
                     # didn't generate the project using the ui flag
                     if kwargs["webui"]:
-                        run_patch(
-                            get_path(
-                                _templates_dir,
-                                "deployment/k8s/auth/webui/ui-app-config.yaml.patch",
-                            ),
+                        copy_patch(
+                            "deployment/k8s/auth/webui/ui-app-config.yaml.patch",
                             "ui-app-config.yaml.patch",
                         )
-                        run_patch(
-                            get_path(
-                                _templates_dir,
-                                "deployment/k8s/auth/webui/values.yaml.patch",
-                            ),
+                        copy_patch(
+                            "deployment/k8s/auth/webui/values.yaml.patch",
                             "values.yaml.patch",
                         )
 
@@ -94,26 +80,18 @@ class K8DeploymentGenerator(Generator):
                         dirs_exist_ok=True,
                     )
 
-                    run_patch(
-                        get_path(
-                            _templates_dir,
-                            "deployment/k8s/database/api-configs.yaml.patch",
-                        ),
+                    copy_patch(
+                        "deployment/k8s/database/api-configs.yaml.patch",
                         "api-configs.yaml.patch",
                     )
 
-                    run_patch(
-                        get_path(
-                            _templates_dir,
-                            "deployment/k8s/database/api-secrets.yaml.patch",
-                        ),
+                    copy_patch(
+                        "deployment/k8s/database/api-secrets.yaml.patch",
                         "api-secrets.yaml.patch",
                     )
 
-                    run_patch(
-                        get_path(
-                            _templates_dir, "deployment/k8s/database/values.yaml.patch"
-                        ),
+                    copy_patch(
+                        "deployment/k8s/database/values.yaml.patch",
                         "values.yaml.patch",
                     )
 
@@ -140,8 +118,8 @@ class StandaloneDeploymentGenerator(Generator):
             run_command("poetry", "add", "gunicorn[gevent]")
 
             _print_step("Patching Dockerfile...")
-            run_patch(
-                get_path(_templates_dir, "deployment/standalone/Dockerfile.patch"),
+            copy_patch(
+                "deployment/standalone/Dockerfile.patch",
                 "Dockerfile.patch",
             )
             resolve_template(
