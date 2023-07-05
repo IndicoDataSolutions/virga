@@ -1,4 +1,5 @@
 import shutil
+from typing import Any
 
 from typer import Context
 
@@ -18,7 +19,7 @@ from .base import Generator
 
 class WebUIGenerator(Generator):
     @staticmethod
-    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs: Any) -> None:
         """
         Patch the generated base structure to add mini-strat.
         """

@@ -1,3 +1,5 @@
-from sqlalchemy.ext.declarative import declarative_base
+from typing import Type
 
-BASE = declarative_base()
+from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
+
+BASE: Type[DeclarativeMeta] = declarative_base()

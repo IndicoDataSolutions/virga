@@ -1,4 +1,4 @@
-from graphene import ObjectType, String
+from graphene import ObjectType, String, ResolveInfo
 
 
 #
@@ -7,10 +7,11 @@ from graphene import ObjectType, String
 #
 # https://docs.graphene-python.org/en/stable/execution/execute/
 #
-class ExampleQueryHello(ObjectType):
+class ExampleQueryHello(ObjectType):  # type: ignore
     hello = String(name=String(default_value="Dave"))
 
-    def resolve_hello(self, info, name):
+    @staticmethod
+    def resolve_hello(parent: None, info: ResolveInfo, name: str) -> str:
         return f"Hello {name}!"
 
 
@@ -33,17 +34,18 @@ class ExampleQueryHello(ObjectType):
 # may then be cached and persisted for the duration of the executation
 # chain (all downstream resolvers will have access to it).
 class ExampleDataLoader:
-    def __init__(self, appendage):
+    def __init__(self, appendage: str):
         self.appendage = appendage
 
-    def append_to(self, name):
+    def append_to(self, name: str) -> str:
         return f"{name} {self.appendage}"
 
 
-class ExampleQueryGoodbye(ObjectType):
+class ExampleQueryGoodbye(ObjectType):  # type: ignore
     goodbye = String(name=String(default_value="Stranger"))
 
-    def resolve_goodbye(self, info, name):
+    @staticmethod
+    def resolve_goodbye(parent: None, info: ResolveInfo, name: str) -> str:
         # an instance of ExampleDataLoader does not exist in the context,
         # so a new one will be created and cached. Calling `get_loader`
         # will yield the same literal instance.
@@ -52,7 +54,7 @@ class ExampleQueryGoodbye(ObjectType):
 
 
 #
-# To combine multiple queries or mutations, simple Python multi-inheritence
+# To combine multiple queries or mutations, simple Python multi-inheritance
 # will work. Note that GraphQL is data-centric, so different queries/mutations
 # sharing the same name is nonsensical and not supported --(Data representing
 # different things/operations should not share the same name).

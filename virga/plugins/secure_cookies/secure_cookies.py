@@ -58,7 +58,9 @@ def _create_signature_v2(secret: str, s: bytes) -> bytes:
     return utf8_bytes(hash.hexdigest())
 
 
-def _decode_signed_value_v2(name: str, value: bytes, max_age_days) -> Optional[bytes]:
+def _decode_signed_value_v2(
+    name: str, value: bytes, max_age_days: int
+) -> Optional[bytes]:
     try:
         timestamp_bytes, name_field, value_field, passed_sig = _decode_fields_v2(value)
     except Exception:
@@ -108,10 +110,15 @@ def _encode_signed_value_v2(name: str, value: bytes) -> bytes:
     return to_sign + signature
 
 
-def read_secure_cookie(name: str, value: str, max_age_days: int = 31) -> Optional[str]:
+def read_secure_cookie(
+    name: str, value: Optional[str], max_age_days: int = 31
+) -> Optional[str]:
     """
     Decodes a version 2 secure cookie encoded by Atmosphere/Tornado.
     """
+    if not value:
+        raise Exception()
+
     # Cookies may or may not be quoted per RFC 6265
     # https://tools.ietf.org/html/rfc6265#section-4.1.1
     value = _unquote_cookie(value)

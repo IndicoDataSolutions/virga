@@ -1,3 +1,5 @@
+from typing import Any, Optional
+
 import orjson
 
 # complain if database extra isn't installed
@@ -9,7 +11,7 @@ except ImportError:
     sqlalchemy = None  # type: ignore
 
 
-def make_async_engine(url: str, **kwargs) -> "AsyncEngine":
+def make_async_engine(url: str, **kwargs: Any) -> "AsyncEngine":
     """
     Create and return an asyncio database engine from the DB_INFO environment variable.
     """
@@ -40,24 +42,25 @@ def make_async_engine(url: str, **kwargs) -> "AsyncEngine":
 
 
 class _SessionMaker:
-    _sessionmaker = None
-    _engine = None
+    _sessionmaker: Optional["sessionmaker[AsyncSession]"] = None
+    _engine: Optional["AsyncEngine"] = None
 
     @classmethod
-    def new(cls, db_url, **kwargs):
+    def new(cls, db_url: str, **kwargs: Any) -> "AsyncSession":
         if not cls._sessionmaker:
             cls._engine = make_async_engine(db_url, **kwargs)
             cls._sessionmaker = sessionmaker(
-                cls._engine,
-                future=True,
-                expire_on_commit=False,
+                bind=cls._engine,
                 class_=AsyncSession,
+                expire_on_commit=False,
+                future=True,
             )
 
-        return cls._sessionmaker()
+        session: AsyncSession = cls._sessionmaker()
+        return session
 
 
-def start_async_session(db_url: str, **kwargs) -> "AsyncSession":
+def start_async_session(db_url: str, **kwargs: Any) -> "AsyncSession":
     """
     Create and return a new asyncio-backed database session. The underlying
     sqlalchemy sessionmaker and engine are created once and cached.

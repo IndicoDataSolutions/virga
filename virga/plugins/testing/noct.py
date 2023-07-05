@@ -11,8 +11,9 @@ try:
 except ImportError:
     jwt = None  # type: ignore
 
-from http.cookies import SimpleCookie
 from datetime import datetime, timedelta
+from http.cookies import SimpleCookie
+from typing import Dict, Tuple, Union
 
 from virga.plugins.noct import NOCT_URL, VALID_DOMAIN
 from virga.plugins.noct.handler import _NOCT_JWT_ALGORITHM, _NOCT_JWT_SECRET
@@ -20,7 +21,7 @@ from virga.plugins.secure_cookies import write_secure_cookie
 
 
 @pytest.fixture(scope="session")
-def mock_user():
+def mock_user() -> Dict[str, Union[str, int]]:
     """Returns a the credentipytestals and unique id of a registered Noct user."""
     password = "P@ssw0rd!"
     name = "Mock User"
@@ -37,7 +38,7 @@ def mock_user():
 
 
 @pytest.fixture(scope="session")
-def mock_tokens(mock_user):
+def mock_tokens(mock_user: Dict[str, Union[str, int]]) -> Tuple[str, str, str, str]:
     """
     Returns the valid authentication and refresh tokens for a Mock User. The first two
     tokens are encrypted and can be used for making authenticated calls, while the
@@ -57,7 +58,7 @@ def mock_tokens(mock_user):
         # https://github.com/psf/requests/issues/6344
         # if the above failed, its likely to do this, but we can pull the cookie
         # out of the header instead
-        jar: SimpleCookie = SimpleCookie(res.headers["Set-Cookie"])
+        jar: SimpleCookie[str] = SimpleCookie(res.headers["Set-Cookie"])
         from_cookie = (jar["auth_token"].value, jar["refresh_token"].value)
 
     # the first two are the encrypted versions returned by Noct
@@ -70,7 +71,7 @@ def mock_tokens(mock_user):
 
 
 @pytest.fixture(scope="session")
-def expired_token(mock_user):
+def expired_token(mock_user: Dict[str, Union[str, int]]) -> str:
     """
     Returns an encrypted but expired (by 1 minute) authentication token for a Mock User.
     """

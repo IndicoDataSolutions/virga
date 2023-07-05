@@ -31,7 +31,7 @@ app.add_middleware(
 
 
 @app.get("/ping")
-def pong():
+def pong() -> bool:
     """
     Returns HTTP 200 OK when the application is live and ready to receive requests. This
     can be used as a healthcheck endpoint in deployment configurations.
@@ -40,7 +40,7 @@ def pong():
 
 
 @app.get("/")
-async def home(settings: Settings = Depends(settings)):
+async def home(settings: Settings = Depends(settings)) -> dict[str, str]:
     return {settings.app_name: "Hello World!"}
 
 

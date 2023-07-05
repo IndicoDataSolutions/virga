@@ -1,3 +1,4 @@
+from typing import Any
 import shutil
 
 from typer import Context
@@ -17,7 +18,7 @@ from .base import Generator
 
 class DatabaseGenerator(Generator):
     @staticmethod
-    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs: Any) -> None:
         """
         Copy the base Alembic and database setup to the project directory.
         """

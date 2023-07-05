@@ -25,7 +25,7 @@ virga = typer.Typer(rich_markup_mode="markdown")
 app.add_typer(virga, name="virga")
 
 
-def _to_valid_appname(s):
+def _to_valid_appname(s: str) -> str:
     """
     Return the given string converted to a string that can be used for a clean
     filename. Remove leading and trailing spaces, numbers, and symbols; convert
@@ -42,7 +42,7 @@ def _to_valid_appname(s):
     return re.sub(r"(?u)[^\w]", "", s)
 
 
-def version_callback(ver: bool):
+def version_callback(ver: bool) -> None:
     if ver:
         print(f"[reset]{version('virga')}")
         raise typer.Exit()
@@ -57,7 +57,7 @@ def callback(
         callback=version_callback,
         help="Show the current version of Virga.",
     )
-):
+) -> None:
     """
     Indico Data's CLI tool for generating sidecar applications. Sidecar apps are not
     direct parts of Indico's IPA releases, but offer additional or custom functionality
@@ -113,7 +113,7 @@ def new(
         " Dockerfile that runs Gunicorn as a subprocess-based load balancer.",
         rich_help_panel="Generators",
     ),
-):
+) -> None:
     """
     Create a new project, customized using the provided generations options. If
     unsuccessful, projects will be cleaned up automatically to prevent being left in an

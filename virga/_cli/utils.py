@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from fileinput import FileInput
 from string import Template
 from subprocess import PIPE, CalledProcessError, run
-from typing import Union, Optional
+from typing import Union, Optional, Generator
 
 from rich import print as rprint
 import patch
@@ -24,13 +24,13 @@ _templates_dir = get_path(os.path.dirname(__file__), "templates")
 _step = 1
 
 
-def _print_step(msg: str):
+def _print_step(msg: str) -> None:
     global _step
     rprint(f"[bold magenta]  {_step}] {msg}")
     _step += 1
 
 
-def run_command(command: str, *args: str):
+def run_command(command: str, *args: str) -> None:
     """
     Run an arbitrary command with arbitrary arguments. STDOUT is preserved
     while STDERR is formatted upon unsuccessful command execution, either at
@@ -63,7 +63,7 @@ def run_command(command: str, *args: str):
 
 
 @contextmanager
-def in_directory(path):
+def in_directory(path: Path) -> Generator[None, None, None]:
     """
     A context manager used to wrap a code block within a change of directory,
     preserving the original working directory and restoring it after block completion.
@@ -77,7 +77,7 @@ def in_directory(path):
         os.chdir(curdir)
 
 
-def resolve_template(file: Path, **variables) -> str:
+def resolve_template(file: Path, **variables: str) -> str:
     """
     Resolves the provided template using the provided variables as placeholders
     and their values. If a placeholder has no found value, it is skipped.
@@ -100,7 +100,7 @@ def resolve_template(file: Path, **variables) -> str:
     return filepath
 
 
-def copy_template(src: Path, dest: Path, **variables) -> str:
+def copy_template(src: Path, dest: Path, **variables: str) -> str:
     """
     Copies a source file to a destination, then resolves the templated destination
     file by passing the provided variables to `resolve_template`.
@@ -109,7 +109,7 @@ def copy_template(src: Path, dest: Path, **variables) -> str:
     return resolve_template(dest, **variables)
 
 
-def apply_patch(patchfile: str, root: Optional[str] = None):
+def apply_patch(patchfile: str, root: Optional[str] = None) -> None:
     """
     Loads, applies, then deletes the given unified patch file, throwing an error
     if something goes wrong. Specifying a root applies the patch relative to
@@ -128,7 +128,7 @@ def apply_patch(patchfile: str, root: Optional[str] = None):
         os.remove(patchfile)
 
 
-def run_patch(src: str, dest: str):
+def run_patch(src: str, dest: str) -> None:
     """
     Copies the provided patch file to the destination, then applies the patch
     using `apply_patch`. The patch is always applied relative to the parent directory

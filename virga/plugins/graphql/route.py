@@ -10,10 +10,10 @@ from starlette.types import Receive, Scope, Send
 # complain if graphql extra isn't installed
 try:
     import graphene
-    from graphql import format_error
+    from graphql import format_error  # type: ignore
     from graphql.execution.executors.asyncio import AsyncioExecutor
 except ImportError:
-    graphene = None  # type: ignore
+    graphene = None
 
 
 GRAPHIQL = str(pathlib.Path(__file__).parent / "graphiql.html")
@@ -97,12 +97,14 @@ class GraphQLRoute:
             response, status_code=status.HTTP_200_OK, background=background
         )
 
-    def _build_context_cache(self, context):
+    def _build_context_cache(self, context: Dict[str, Any]) -> None:
         # Allow loader and request caching through the request context and get_* methods
-        loaders: Dict[Callable, Any] = {}
-        clients: Dict[Callable, Any] = {}
+        loaders: Dict[Callable[..., Any], Any] = {}
+        clients: Dict[Callable[..., Any], Any] = {}
 
-        def get_loaders(loader_type, *args: Any, **kwargs: Any):
+        def get_loaders(
+            loader_type: Callable[..., Any], *args: Any, **kwargs: Any
+        ) -> Any:
             loader = loaders.get(loader_type)
 
             if not loader:
@@ -111,7 +113,9 @@ class GraphQLRoute:
 
             return loader
 
-        def get_clients(client_type, *args: Any, **kwargs: Any):
+        def get_clients(
+            client_type: Callable[..., Any], *args: Any, **kwargs: Any
+        ) -> Any:
             client = clients.get(client_type)
 
             if not client:
@@ -123,14 +127,14 @@ class GraphQLRoute:
         context["get_loader"] = get_loaders
         context["get_client"] = get_clients
 
-    async def setup_context(self, context: Dict[str, Any]):
+    async def setup_context(self, context: Dict[str, Any]) -> None:
         """
         Allows customization of the GraphQL context. This gets run before the executor
         resolves the GraphQL request.
         """
         pass
 
-    async def cleanup_context(self, context: Dict[str, Any]):
+    async def cleanup_context(self, context: Dict[str, Any]) -> None:
         """
         Allows cleanup of any objects stored within the GraphQL context. This gets run
         after the executor resolves the GraphQL request and generates a response.

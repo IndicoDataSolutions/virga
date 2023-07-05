@@ -1,3 +1,4 @@
+from typing import Any
 import os
 
 from typer import Context
@@ -16,7 +17,7 @@ from .base import Generator
 
 class NoctAuthGenerator(Generator):
     @staticmethod
-    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs: Any) -> None:
         """
         Patch the generated base structure to add examples for Noct authentication.
         """

@@ -1,3 +1,5 @@
+from typing import List, Any
+
 import shutil
 
 from typer import Context
@@ -15,7 +17,13 @@ from .base import Generator
 
 class StructureGenerator(Generator):
     @staticmethod
-    def generate(ctx: Context, app_name: str, project_dir: str, extras=None, **kwargs):
+    def generate(
+        ctx: Context,
+        app_name: str,
+        project_dir: str,
+        extras: List[str] = [],
+        **kwargs: Any,
+    ) -> None:
         """
         Generate project base files given the the provided APP_NAME.
         """

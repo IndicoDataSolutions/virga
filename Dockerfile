@@ -5,10 +5,13 @@ ENV PATH = "${PATH}:/etc/poetry/bin"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y build-essential curl vim git && \
+    apt-get install -yf --no-install-suggests --no-install-recommends \
+        build-essential curl vim git && \
     # node
     curl -fsSL https://deb.nodesource.com/setup_16.x | bash && \
     apt install --no-install-recommends -y nodejs && \
+    apt-get install -yf --no-install-suggests --no-install-recommends \
+        nodejs npm && \
     npm install -g yarn && \
     # helm
     curl -fsSL \
