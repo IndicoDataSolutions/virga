@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "virga"
-version = "1.4.1"
+version = "1.5.0"
 description = "Dynamic IPA sidecar app generation and plugins."
 authors = ["Elias Gabriel <elias.gabriel@indicodata.ai>"]
 readme = "virga/_cli/templates/boilerplate/README.md"

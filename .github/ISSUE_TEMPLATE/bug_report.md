@@ -1,9 +1,9 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: File a bug report about the CLI or a plugin.
 title: ''
 labels: bug
-assignees: ''
+assignees: 'thearchitector'
 
 ---
 

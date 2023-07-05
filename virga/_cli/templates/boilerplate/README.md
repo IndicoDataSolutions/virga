@@ -10,7 +10,7 @@ Virga applications, and Virga itself, are [Poetry](https://python-poetry.org/) p
 
 In order to create an app with a UI, you must also install [Yarn](https://yarnpkg.com/getting-started/install).
 
-### 1. Install Poetry and Yarn (assumes Python >= 3.7):
+### 1. Install Poetry and Yarn (assumes Python >= 3.8):
 
   ```sh
   curl -sSL https://install.python-poetry.org | python3 -
@@ -29,6 +29,8 @@ In order to create an app with a UI, you must also install [Yarn](https://yarnpk
   ```
 
   You can create a new project by running `virga new <NAME> [FLAGS]`. This command will generate a new project with the given flags. General command usage and descriptions of available flags are available with `virga new --help`.
+
+  Virga supports Python 3.8+.
 
   See [plugin dependencies](#Plugin-dependencies) for some caveats.
 
