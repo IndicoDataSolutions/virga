@@ -25,6 +25,6 @@ WORKDIR /virga
 # python dependencies (Poetry)
 RUN curl -sSL https://install.python-poetry.org | python3 - && \
     poetry config virtualenvs.create false && \
-    poetry install --extras "cli auth database graphql testing"
+    poetry install --all-extras
 
 CMD [ "bash" ]

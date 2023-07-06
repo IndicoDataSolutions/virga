@@ -22,7 +22,7 @@ from virga.plugins.secure_cookies import write_secure_cookie
 
 @pytest.fixture(scope="session")
 def mock_user() -> Dict[str, Union[str, int]]:
-    """Returns a the credentipytestals and unique id of a registered Noct user."""
+    """Returns a the credentials and unique id of a registered Noct user."""
     password = "P@ssw0rd!"
     name = "Mock User"
     email = "mockuser@indicodata.ai"
