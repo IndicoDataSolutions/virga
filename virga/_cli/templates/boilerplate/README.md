@@ -211,3 +211,9 @@ async def cleanup_context(self, context: Dict[str, Any]):
 ```
 
 If you override the functions of an existing subclass, like `SessionedGraphQLRoute`, ensure to call `super()` in both so the lifecycle of other potential objects is handled correctly (like opening and closing a DB connection).
+
+## Testing
+
+Virga provides a testing plugin, meant for use with pytest, that exposes a few useful mocks and fixtures. That list includes:
+
+- `testing.noct`: Sets up and provides a mock user and relevant tokens for testing authenticated route access via the `mock_user`, `mock_tokens`, and `expired_token` fixtures. These are all session-scoped (for now, PRs welcome).

@@ -1,30 +1,15 @@
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-      - id: check-yaml
-        exclude: deployment/
-        args: ["--allow-multiple-documents"]
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
-  # - repo: https://github.com/pycqa/isort
-  #   rev: 5.12.0
-  #   hooks:
-  #     - id: isort
-  #       name: isort (python)
-  #       args: ["--profile", "black", "--filter-files", "--project", "virga"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.277
+    rev: v0.1.1
     hooks:
       - id: ruff
         args: ["--fix", "--exit-non-zero-on-fix"]
-  # - repo: https://github.com/psf/black
-  #   rev: 23.1.0
-  #   hooks:
-  #     - id: black
-  #       language_version: python3.10
+  - repo: https://github.com/psf/black
+    rev: 23.10.0
+    hooks:
+      - id: black
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.4.1
+    rev: v1.6.1
     hooks:
       - id: mypy
         exclude: ^tests
@@ -40,6 +25,14 @@ repos:
           "types-python-jose",
           "types-requests",
         ]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-yaml
+        exclude: deployment/
+        args: ["--allow-multiple-documents"]
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
   - repo: https://github.com/matthorgan/pre-commit-conventional-commits
     rev: 20fb9631be1385998138432592d0b6d4dfa38fc9
     hooks:

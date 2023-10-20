@@ -1,3 +1,5 @@
+from typing import Dict
+
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -40,7 +42,7 @@ def pong() -> bool:
 
 
 @app.get("/")
-async def home(settings: Settings = Depends(settings)) -> dict[str, str]:
+async def home(settings: Settings = Depends(settings)) -> Dict[str, str]:
     return {settings.app_name: "Hello World!"}
 
 
