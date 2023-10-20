@@ -128,12 +128,13 @@ def apply_patch(patchfile: str, root: Optional[str] = None) -> None:
         os.remove(patchfile)
 
 
-def copy_patch(src: str, dest: str) -> None:
+def copy_patch(src: str, dest: str = "") -> None:
     """
     Copies the provided patch file to the destination, then applies the patch
     using `apply_patch`. The patch is always applied relative to the parent directory
     of the destination, so patches must also specify their sources/destination relative
     to the parent of destination.
     """
+    dest = dest or os.path.basename(src)
     shutil.copy2(get_path(_templates_dir, src), dest)
     apply_patch(dest, root=os.path.dirname(dest))

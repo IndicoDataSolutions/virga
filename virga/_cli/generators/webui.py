@@ -38,7 +38,7 @@ class WebUIGenerator(Generator):
             )
             apply_patch("docker-compose.patch")
 
-            copy_patch("webui/Caddyfile.patch", "Caddyfile.patch")
+            copy_patch("webui/Caddyfile.patch")
 
             with in_directory("webui"):
                 resolve_template("package.json.template", app_name=app_name)

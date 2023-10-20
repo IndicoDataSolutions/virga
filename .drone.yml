@@ -18,7 +18,7 @@ steps:
       password:
         from_secret: harbor_password
       registry: harbor.devops.indico.io
-      repo: harbor.devops.indico.io/indico/virga
+      repo: harbor.devops.indico.io/indico/virga_testsuite
       tags:
         - ${DRONE_COMMIT_SHA}.unittest
       squash: true
@@ -48,7 +48,7 @@ steps:
       APP_REDIS_HOST: localhost
 
   - name: test
-    image: harbor.devops.indico.io/indico/virga:${DRONE_COMMIT_SHA}.unittest
+    image: harbor.devops.indico.io/indico/virga_testsuite:${DRONE_COMMIT_SHA}.unittest
     commands:
       - ./scripts/run_tests.sh
     environment:

@@ -39,17 +39,8 @@ class DatabaseGenerator(Generator):
                 )
 
                 _print_step("Patching generated files...")
-                copy_patch(
-                    "database/settings.patch",
-                    "settings.patch",
-                )
-                copy_patch("database/app.patch", "app.patch")
+                copy_patch("database/settings.patch")
+                copy_patch("database/app.patch")
 
-            copy_patch(
-                "database/Dockerfile.patch",
-                "Dockerfile.patch",
-            )
-            copy_patch(
-                "database/prestart.patch",
-                "scripts/prestart.patch",
-            )
+            copy_patch("database/Dockerfile.patch")
+            copy_patch("database/prestart.patch", dest="scripts/prestart.patch")

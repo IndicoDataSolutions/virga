@@ -28,7 +28,8 @@ services:
 
   virga:
     build: .
-    command: /virga/scripts/run_tests.sh
+    # command: /virga/scripts/run_tests.sh
+    command: sleep inf
     environment:
       POSTGRES_HOST: test-db
       POSTGRES_DB: indico

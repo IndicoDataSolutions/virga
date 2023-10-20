@@ -25,10 +25,10 @@ class NoctAuthGenerator(Generator):
             _print_step("Adding Noct route dependencies...")
 
             with in_directory(get_path(project_dir, "api", app_name)):
-                copy_patch("auth/app.patch", "app.patch")
+                copy_patch("auth/app.patch")
 
             _print_step("Patching existing configs...")
-            copy_patch("auth/Caddyfile.patch", "Caddyfile.patch")
+            copy_patch("auth/Caddyfile.patch")
             copy_template(
                 "auth/docker-compose.patch.template",
                 "docker-compose.patch",

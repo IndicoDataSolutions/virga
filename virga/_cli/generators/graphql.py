@@ -23,4 +23,4 @@ class GraphQLGenerator(Generator):
 
                 _print_step("Patching existing code...")
 
-                copy_patch("graphql/app.patch", "app.patch")
+                copy_patch("graphql/app.patch")
