@@ -22,6 +22,6 @@ RUN yarn build
 
 
 # app-edge
-FROM nginx:1.24.0-alpine
+FROM nginx:1.25.3-alpine
 
 COPY --from=builder /$app_name-ui/build /$app_name-ui/build
