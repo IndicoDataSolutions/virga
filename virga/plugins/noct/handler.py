@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Any, cast
 
 import orjson
 from fastapi import Cookie, Request, Response, status
@@ -7,6 +7,7 @@ from fastapi import Cookie, Request, Response, status
 from virga.plugins.secure_cookies import read_secure_cookie, write_secure_cookie
 
 from .errors import ExpiredTokenException, LoginRequiredException
+from .typing import NoctCookie
 from .user import User
 
 try:
@@ -26,7 +27,9 @@ if _NOCT_COOKIE_DOMAIN.startswith("."):
     _NOCT_COOKIE_DOMAIN = _NOCT_COOKIE_DOMAIN[1:]
 
 
-async def _refresh_token(request: Request, refresh_token: Optional[str]):
+async def _refresh_token(
+    request: Request, refresh_token: Optional[str]
+) -> Tuple[str, str]:
     if not refresh_token:
         raise LoginRequiredException()
 
@@ -43,7 +46,7 @@ async def _refresh_token(request: Request, refresh_token: Optional[str]):
 
         # clients require graceful cleanup, so define a shutdown handler
         # to add to our fastapi app that will run before app termination
-        async def _close():
+        async def _close() -> None:
             await _aiohttpclient.close()
 
         # store the async client in the app state, and add the event handler
@@ -63,7 +66,7 @@ async def _refresh_token(request: Request, refresh_token: Optional[str]):
         return payload["auth_token"], payload["cookie_domain"]
 
 
-def _get_token_data(token: Optional[str]):
+def _get_token_data(token: str) -> Dict[str, Any]:
     scopes = set([f"indico:{s}" for s in (["base", "app_access"])])
     try:
         payload = jwt.decode(
@@ -77,9 +80,9 @@ def _get_token_data(token: Optional[str]):
             raise LoginRequiredException()
 
         return payload
-    except jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError:  # type: ignore
         raise ExpiredTokenException()
-    except jwt.JWTError:
+    except jwt.JWTError:  # type: ignore
         raise LoginRequiredException()
 
 
@@ -87,11 +90,11 @@ def _parse_current_user(
     token: Optional[str] = None, cookie: Optional[str] = None
 ) -> User:
     try:
-        token = token or read_secure_cookie("auth_token", str(cookie))
+        token = token or read_secure_cookie("auth_token", cookie)
     except Exception:
         raise LoginRequiredException()
 
-    token_data = _get_token_data(token=token)
+    token_data = _get_token_data(token=cast(str, token))
     user_id = token_data.get("user_id")
     if not user_id:
         raise LoginRequiredException()
@@ -103,7 +106,7 @@ async def read_user(
     request: Request,
     auth_token: Optional[str] = None,
     refresh_token: Optional[str] = None,
-) -> Tuple[User, str, Optional[Dict[str, Union[str, bool]]]]:
+) -> Tuple[User, str, Optional[NoctCookie]]:
     """
     Handle and process a Noct session JWT stored in an atmosphere secure cookie.
     If the token is expired, the passed refresh token will be used to fetch a new one.
@@ -125,7 +128,8 @@ async def read_user(
 
     try:
         # ensure we have valid credentials
-        return _parse_current_user(cookie=auth_token), str(auth_token), None
+        user = _parse_current_user(cookie=auth_token)
+        return user, cast(str, auth_token), None
     except ExpiredTokenException:
         # fetch a new token from Noct
         new_token, domain = await _refresh_token(request, refresh_token)
@@ -161,6 +165,12 @@ async def get_current_user(
         request, auth_token=auth_token, refresh_token=refresh_token
     )
     if cookie:
-        response.set_cookie(**cookie)  # type: ignore
+        response.set_cookie(
+            cookie["key"],
+            value=cookie["value"],
+            domain=cookie["domain"],
+            secure=cookie["secure"],
+            httponly=cookie["httponly"],
+        )
 
     return user

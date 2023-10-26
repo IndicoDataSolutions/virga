@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List, Any
 
 from pydantic import BaseModel
 
@@ -9,9 +9,10 @@ class User(BaseModel):
     id: str
     email: str
     name: Optional[str] = None
-    scopes: Optional[list] = None
+    scopes: Optional[List[str]] = None
 
-    def __init__(self, **data):
+    def __init__(self, **data: Any):
+        """Parse the noct payload into user properties."""
         fields = {}
 
         for k, v in data.items():

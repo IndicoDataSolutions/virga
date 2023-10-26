@@ -6,6 +6,8 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base
 
 from virga.plugins.database import make_async_engine
+
+# the unit tests themselves serve as tests of the `testing` plugin
 from virga.plugins.testing.noct import (  # noqa: F401
     expired_token,
     mock_tokens,

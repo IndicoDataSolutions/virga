@@ -1,14 +1,16 @@
+from typing import Any
+
 import shutil
 
-import click
+from typer import Context
 
-from ..utils import _print_step, _templates_dir, get_path, in_directory, run_patch
+from ..utils import _print_step, _templates_dir, get_path, in_directory, copy_patch
 from .base import Generator
 
 
 class GraphQLGenerator(Generator):
     @staticmethod
-    def generate(ctx: click.Context, app_name: str, project_dir: str, **kwargs):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs: Any) -> None:
         """
         Patch the generated base structure to add GraphQL support.
         """
@@ -21,4 +23,4 @@ class GraphQLGenerator(Generator):
 
                 _print_step("Patching existing code...")
 
-                run_patch(get_path(_templates_dir, "graphql/app.patch"), "app.patch")
+                copy_patch("graphql/app.patch")

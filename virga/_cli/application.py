@@ -3,9 +3,11 @@ import re
 import shutil
 import string
 import tempfile
-from typing import Optional
+from pathlib import Path
+from importlib.metadata import version
 
-import click
+import typer
+from rich import print
 
 from .generators import (
     DatabaseGenerator,
@@ -18,7 +20,12 @@ from .generators import (
 )
 
 
-def _to_valid_appname(s):
+app = typer.Typer()
+virga = typer.Typer(rich_markup_mode="markdown")
+app.add_typer(virga, name="virga")
+
+
+def _to_valid_appname(s: str) -> str:
     """
     Return the given string converted to a string that can be used for a clean
     filename. Remove leading and trailing spaces, numbers, and symbols; convert
@@ -35,77 +42,89 @@ def _to_valid_appname(s):
     return re.sub(r"(?u)[^\w]", "", s)
 
 
-@click.group()
-@click.version_option()
-def virga():
+def version_callback(ver: bool) -> None:
+    if ver:
+        print(f"[reset]{version('virga')}")
+        raise typer.Exit()
+
+
+@virga.callback()
+def callback(
+    ver: bool = typer.Option(
+        False,
+        "--version",
+        is_eager=True,
+        callback=version_callback,
+        help="Show the current version of Virga.",
+    )
+) -> None:
     """
-    Indico's CLI tool for generating templated sidecar applications.
+    Indico Data's CLI tool for generating sidecar applications. Sidecar apps are not
+    direct parts of Indico's IPA releases, but offer additional or custom functionality
+    for product or business operations.
     """
     pass
 
 
 @virga.command()
-@click.option(
-    "--name",
-    help="The name of the application to generate.\n\nThis will be used for both the "
-    "Python module and development URL subdomain. If not supplied, this will be parsed"
-    " from the provided APP_PATH.",
-)
-@click.option(
-    "--auth",
-    is_flag=True,
-    help="Adds connection middleware to support Noct authentication.",
-)
-@click.option(
-    "--graphql",
-    is_flag=True,
-    help="Adds a basic GraphQL support through Graphene.",
-)
-@click.option(
-    "--database",
-    is_flag=True,
-    help="Adds Alembic and SQLALchemy support through postgresql and asyncpg.",
-)
-@click.option(
-    "--webui",
-    is_flag=True,
-    help="Adds a basic UI template based on React and Stratosphere.\n\nIn addition"
-    " to the React application itself, this flag will also generate an nginx-based"
-    " Dockerfile for local development and to serve as an app ingress when deployed.",
-)
-@click.option(
-    "--kubernetes/--standalone",
-    default=True,
-    help="Determines the type of project to generate.\n\nA K8 project will output a"
-    " basic and configurable Helm chart. A standalone app will produce an API"
-    " Dockerfile that runs Gunicorn as a subprocess-based load balancer.",
-)
-@click.argument("app_path", type=click.Path(writable=True, resolve_path=True))
-@click.pass_context
-def new(ctx: click.Context, app_path, name: Optional[str] = None, **kwargs):
+def new(
+    ctx: typer.Context,
+    app_path: Path = typer.Argument(..., writable=True, resolve_path=True),
+    name: str = typer.Option(
+        "",
+        help="The name of the application to generate.\n\nThis will be used for both"
+        " the Python module and development URL subdomain. If not supplied, one is"
+        " derived from the given desired project path according to the rules specified"
+        " in PEP-8.",
+    ),
+    auth: bool = typer.Option(
+        False,
+        "--auth",
+        help="Adds connection middleware to support login integration with an IPA"
+        " cluster. This enables shared users between the app and an existing cluster.",
+        rich_help_panel="Generators",
+    ),
+    graphql: bool = typer.Option(
+        False,
+        "--graphql",
+        help="Adds a basic GraphQL route using Graphene via the graphql extra.",
+        rich_help_panel="Generators",
+    ),
+    database: bool = typer.Option(
+        False,
+        "--database",
+        help="Adds Alembic and SQLALchemy support using postgresql and asyncpg via the"
+        " database extra.",
+        rich_help_panel="Generators",
+    ),
+    webui: bool = typer.Option(
+        False,
+        "--webui",
+        help="Adds a basic UI template based on React and Stratosphere.\n\nIn addition"
+        " to the React application itself, this flag will also generate an nginx-based"
+        " Dockerfile for development and to serve as an app ingress when deployed.",
+        rich_help_panel="Generators",
+    ),
+    kubernetes: bool = typer.Option(
+        True,
+        "--kubernetes/--standalone",
+        help="Determines the type of project to generate.\n\nA K8 project will output a"
+        " basic and configurable Helm chart. A standalone app will produce an API"
+        " Dockerfile that runs Gunicorn as a subprocess-based load balancer.",
+        rich_help_panel="Generators",
+    ),
+) -> None:
     """
-    Create a new project using provided template options.
-
-    If no name is supplied, one is derived from the given desired project path
-    according to the rules specified in PEP-8. For example:
-
-      - `virga new fruit/banana` generates a new Python module called 'banana' in the
-      directory 'fruit/banana'.
-
-      - `virga new fruit/tropical --name mango` generates a new Python module called
-      mango in the directory 'fruit/tropical'.
-
-    Rules: https://www.python.org/dev/peps/pep-0008/#package-and-module-names
-    """
+    Create a new project, customized using the provided generations options. If
+    unsuccessful, projects will be cleaned up automatically to prevent being left in an
+    incomplete state. If a `--name` is not specified, one is derived from the desired
+    given project path according to the [rules specified in PEP-8](https://www.python.org/dev/peps/pep-0008/#package-and-module-names).
+    """  # noqa: E501
     # sanitize the requested app name to ensure no overwrites
     if os.path.exists(app_path):
-        raise click.BadParameter(
-            click.style(
-                f"'{app_path}' already exists. To create a new project, supply a path "
-                "to a non-existent directory.",
-                fg="red",
-                bold=True,
-            )
+        raise typer.BadParameter(
+            f"'{app_path}' already exists. To create a new project, supply a path to a"
+            " non-existent directory."
         )
 
     app_name = name or _to_valid_appname(os.path.basename(app_path))
@@ -124,49 +143,56 @@ def new(ctx: click.Context, app_path, name: Optional[str] = None, **kwargs):
                 app_name,
                 project_dir,
                 extras=[
-                    f"-E{k}"
-                    for k, v in kwargs.items()
-                    ## these flags don't correlate to py extras
-                    if v and k not in ["webui", "kubernetes", "standalone"]
+                    f"-E{extra}"
+                    for extra, enabled in (
+                        ("auth", auth),
+                        ("graphql", graphql),
+                        ("database", database),
+                    )
+                    if enabled
                 ],
             )
 
             # webapp generation
-            if kwargs["webui"]:
+            if webui:
                 WebUIGenerator.generate(ctx, app_name, project_dir)
 
             # noct integration
-            if kwargs["auth"]:
+            if auth:
                 NoctAuthGenerator.generate(ctx, app_name, project_dir)
 
             # graphql integration
-            if kwargs["graphql"]:
+            if graphql:
                 GraphQLGenerator.generate(ctx, app_name, project_dir)
 
             # database setup
-            if kwargs["database"]:
+            if database:
                 DatabaseGenerator.generate(ctx, app_name, project_dir)
 
             # kubernetes customization
-            if kwargs["kubernetes"]:
-                K8DeploymentGenerator.generate(ctx, app_name, project_dir, **kwargs)
+            if kubernetes:
+                K8DeploymentGenerator.generate(
+                    ctx,
+                    app_name,
+                    project_dir,
+                    webui=webui,
+                    auth=auth,
+                    database=database,
+                )
             else:
                 StandaloneDeploymentGenerator.generate(ctx, app_name, project_dir)
 
             # move the full project to the desired location
             shutil.move(project_dir, app_path)
-            click.echo("\n=========\n")
-            click.secho(
-                "Virga application generation complete!\n", bold=True, fg="green"
+            print("\n[dim]=========\n")
+            print(
+                "[bold green]Virga application generation complete! :confetti_ball:\n"
             )
         except Exception as err:
-            click.echo(
-                "\n=========\n\n"
-                + click.style(
-                    "Virga application generation failed :(",
-                    underline=True,
-                    bold=True,
-                    fg="red",
-                )
-                + click.style(f"\n\n{err}\n", fg="red")
+            print("\n[dim]=========\n")
+            print(
+                "[bold red underline]Virga application generation failed"
+                "[not u] :confounded:"
             )
+            print(f"[red]\n{err}\n")
+            raise typer.Exit(code=1)

@@ -1,6 +1,8 @@
+from typing import List, Any
+
 import shutil
 
-import click
+from typer import Context
 
 from ..utils import (
     _print_step,
@@ -16,8 +18,12 @@ from .base import Generator
 class StructureGenerator(Generator):
     @staticmethod
     def generate(
-        ctx: click.Context, app_name: str, project_dir: str, extras=None, **kwargs
-    ):
+        ctx: Context,
+        app_name: str,
+        project_dir: str,
+        extras: List[str] = [],
+        **kwargs: Any,
+    ) -> None:
         """
         Generate project base files given the the provided APP_NAME.
         """

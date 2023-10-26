@@ -2,13 +2,15 @@
 
 ![virga status](https://img.shields.io/drone/build/IndicoDataSolutions/virga?label=tests&server=https%3A%2F%2Fdrone.devops.indico.io&style=flat-square)
 
+Indico Data's CLI tool for generating sidecar applications. Sidecar apps are not direct parts of Indico's IPA releases, but offer additional or custom functionality for product or business operations.
+
 ## Generating an app
 
 Virga applications, and Virga itself, are [Poetry](https://python-poetry.org/) projects; they use Poetry as a python dependency and virtual environment manager. To install Poetry, follow the [instructions on its documentation site](https://python-poetry.org/docs/).
 
 In order to create an app with a UI, you must also install [Yarn](https://yarnpkg.com/getting-started/install).
 
-### 1. Install Poetry and Yarn (assumes Python >= 3.7):
+### 1. Install Poetry and Yarn (assumes Python >= 3.8):
 
   ```sh
   curl -sSL https://install.python-poetry.org | python3 -
@@ -27,6 +29,8 @@ In order to create an app with a UI, you must also install [Yarn](https://yarnpk
   ```
 
   You can create a new project by running `virga new <NAME> [FLAGS]`. This command will generate a new project with the given flags. General command usage and descriptions of available flags are available with `virga new --help`.
+
+  Virga supports Python 3.8+.
 
   See [plugin dependencies](#Plugin-dependencies) for some caveats.
 
@@ -207,3 +211,9 @@ async def cleanup_context(self, context: Dict[str, Any]):
 ```
 
 If you override the functions of an existing subclass, like `SessionedGraphQLRoute`, ensure to call `super()` in both so the lifecycle of other potential objects is handled correctly (like opening and closing a DB connection).
+
+## Testing
+
+Virga provides a testing plugin, meant for use with pytest, that exposes a few useful mocks and fixtures. That list includes:
+
+- `testing.noct`: Sets up and provides a mock user and relevant tokens for testing authenticated route access via the `mock_user`, `mock_tokens`, and `expired_token` fixtures. These are all session-scoped (for now, PRs welcome).

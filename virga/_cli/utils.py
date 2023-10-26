@@ -4,9 +4,9 @@ from contextlib import contextmanager
 from fileinput import FileInput
 from string import Template
 from subprocess import PIPE, CalledProcessError, run
-from typing import Union, Optional
+from typing import Union, Optional, Generator
 
-import click
+from rich import print as rprint
 import patch
 
 Path = Union[str, os.PathLike]
@@ -24,13 +24,13 @@ _templates_dir = get_path(os.path.dirname(__file__), "templates")
 _step = 1
 
 
-def _print_step(msg: str):
+def _print_step(msg: str) -> None:
     global _step
-    click.secho(f"  {_step}] {msg}", fg="magenta", bold=True)
+    rprint(f"[bold magenta]  {_step}] {msg}")
     _step += 1
 
 
-def run_command(command: str, *args: str):
+def run_command(command: str, *args: str) -> None:
     """
     Run an arbitrary command with arbitrary arguments. STDOUT is preserved
     while STDERR is formatted upon unsuccessful command execution, either at
@@ -52,21 +52,18 @@ def run_command(command: str, *args: str):
         # if the command failed, we only care about its stderr
         if isinstance(err, CalledProcessError):
             err = err.stderr
-        errmsg = click.style(f"\n\n{err}", dim=True) if str(err) else ""
+        errmsg = f"[dim]\n\n{err}" if str(err) else ""
 
         # the subprocess failed due to an OS exception or an invalid command, so
         # print a nice message instead of throwing a runtime exception
-        click.get_current_context().fail(
-            click.style(
-                f"The command `{' '.join(cmd)}` was attempted, but failed. The"
-                " output was recaptured and is printed."
-            )
-            + errmsg
+        raise Exception(
+            f"The command `{' '.join(cmd)}` was attempted, but failed. The"
+            " output was recaptured and is printed." + errmsg
         )
 
 
 @contextmanager
-def in_directory(path):
+def in_directory(path: Path) -> Generator[None, None, None]:
     """
     A context manager used to wrap a code block within a change of directory,
     preserving the original working directory and restoring it after block completion.
@@ -80,7 +77,7 @@ def in_directory(path):
         os.chdir(curdir)
 
 
-def resolve_template(file: Path, **variables) -> str:
+def resolve_template(file: Path, **variables: str) -> str:
     """
     Resolves the provided template using the provided variables as placeholders
     and their values. If a placeholder has no found value, it is skipped.
@@ -103,16 +100,16 @@ def resolve_template(file: Path, **variables) -> str:
     return filepath
 
 
-def copy_template(src: Path, dest: Path, **variables) -> str:
+def copy_template(src: Path, dest: Path, **variables: str) -> str:
     """
     Copies a source file to a destination, then resolves the templated destination
     file by passing the provided variables to `resolve_template`.
     """
-    shutil.copy2(src, dest)
+    shutil.copy2(get_path(_templates_dir, src), dest)
     return resolve_template(dest, **variables)
 
 
-def apply_patch(patchfile: str, root: Optional[str] = None):
+def apply_patch(patchfile: str, root: Optional[str] = None) -> None:
     """
     Loads, applies, then deletes the given unified patch file, throwing an error
     if something goes wrong. Specifying a root applies the patch relative to
@@ -124,19 +121,20 @@ def apply_patch(patchfile: str, root: Optional[str] = None):
         pset = patch.fromfile(patchfile)
 
         if not pset or not pset.apply(root=root):
-            raise Exception("Malformed patch. This is a bug :(")
+            raise Exception("Malformed patch. This is a bug :bug:")
     except Exception:
         raise
     finally:
         os.remove(patchfile)
 
 
-def run_patch(src: str, dest: str):
+def copy_patch(src: str, dest: str = "") -> None:
     """
     Copies the provided patch file to the destination, then applies the patch
     using `apply_patch`. The patch is always applied relative to the parent directory
     of the destination, so patches must also specify their sources/destination relative
     to the parent of destination.
     """
-    shutil.copy2(src, dest)
+    dest = dest or os.path.basename(src)
+    shutil.copy2(get_path(_templates_dir, src), dest)
     apply_patch(dest, root=os.path.dirname(dest))

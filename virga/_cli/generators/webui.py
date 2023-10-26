@@ -1,6 +1,7 @@
 import shutil
+from typing import Any
 
-import click
+from typer import Context
 
 from ..utils import (
     _print_step,
@@ -11,14 +12,14 @@ from ..utils import (
     in_directory,
     resolve_template,
     run_command,
-    run_patch,
+    copy_patch,
 )
 from .base import Generator
 
 
 class WebUIGenerator(Generator):
     @staticmethod
-    def generate(ctx: click.Context, app_name: str, project_dir: str, **kwargs):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs: Any) -> None:
         """
         Patch the generated base structure to add mini-strat.
         """
@@ -31,15 +32,13 @@ class WebUIGenerator(Generator):
             # apply patches for docker-compose and nginx
             _print_step("Patching existing configs...")
             copy_template(
-                get_path(_templates_dir, "webui/docker-compose.patch.template"),
+                "webui/docker-compose.patch.template",
                 "docker-compose.patch",
                 app_name=app_name,
             )
             apply_patch("docker-compose.patch")
 
-            run_patch(
-                get_path(_templates_dir, "webui/Caddyfile.patch"), "Caddyfile.patch"
-            )
+            copy_patch("webui/Caddyfile.patch")
 
             with in_directory("webui"):
                 resolve_template("package.json.template", app_name=app_name)

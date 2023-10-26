@@ -1,18 +1,23 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from fastapi import Request, Response
 
 from virga.plugins.database import start_async_session
 from virga.plugins.noct import LoginRequiredException, read_user
 
-from .route import GraphQLRoute
+from .route import GraphQLRoute, graphene  # type: ignore[attr-defined]
 
 
 class SessionedGraphQLRoute(GraphQLRoute):
-    def __init__(self, schema, authenticated=False, database_url=None):
+    def __init__(
+        self,
+        schema: "graphene.Schema",
+        authenticated: bool = False,
+        database_url: Optional[str] = None,
+    ):
         super().__init__(schema=schema)
-        self.check_auth = authenticated
-        self.database_url = database_url
+        self.check_auth: bool = authenticated
+        self.database_url: Optional[str] = database_url
 
     async def _handle_request(self, request: Request) -> Response:
         # if the route should check authentication
@@ -29,15 +34,21 @@ class SessionedGraphQLRoute(GraphQLRoute):
             )
 
         # handle graphql request as per normal
-        response = await super()._handle_request(request)
+        response: Response = await super()._handle_request(request)
 
         if self.check_auth and self.cookie:
             # set cookie if dirty
-            response.set_cookie(**self.cookie)
+            response.set_cookie(
+                self.cookie["key"],
+                value=self.cookie["value"],
+                domain=self.cookie["domain"],
+                secure=self.cookie["secure"],
+                httponly=self.cookie["httponly"],
+            )
 
         return response
 
-    async def setup_context(self, context: Dict[str, Any]):
+    async def setup_context(self, context: Dict[str, Any]) -> None:
         # if authentication, set context user and token
         if self.check_auth:
             context["user"] = self.user
@@ -47,7 +58,7 @@ class SessionedGraphQLRoute(GraphQLRoute):
         if self.database_url:
             context["db_session"] = start_async_session(self.database_url)
 
-    async def cleanup_context(self, context: Dict[str, Any]):
+    async def cleanup_context(self, context: Dict[str, Any]) -> None:
         if self.database_url:
             # ensure the db session is closed after graphql execution
             await context["db_session"].close()

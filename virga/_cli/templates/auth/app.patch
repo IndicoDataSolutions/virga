@@ -1,9 +1,9 @@
 --- app.py
 +++ app.py
-@@ -6,1 +6,1 @@
+@@ -8,1 +8,1 @@
 -# from virga.plugins.noct import User, get_current_user
 +from virga.plugins.noct import User, get_current_user
-@@ -47,4 +47,4 @@
+@@ -49,4 +49,4 @@
 -# # Makes use of Noct middleware to fetch the current authenticated user.
 -# @app.get("/user")
 -# async def user_home(current_user: User = Depends(get_current_user)):

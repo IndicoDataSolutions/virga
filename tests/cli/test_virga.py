@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 import subprocess
 
 import pytest
-from click.testing import CliRunner
+from typer.testing import CliRunner
 
 from virga._cli.application import virga
 
@@ -15,7 +15,8 @@ def run_command_patch():
     with patch("virga._cli.generators.structure.run_command", mock):
         with patch("virga._cli.generators.webui.run_command", mock):
             with patch("virga._cli.generators.database.run_command", mock):
-                yield mock
+                with patch("virga._cli.generators.deployment.run_command", mock):
+                    yield mock
 
 
 def test_virga_new_exists():
@@ -25,7 +26,7 @@ def test_virga_new_exists():
         os.mkdir("full-directory")
         open("full-directory/file.txt", "a").close()
         result = runner.invoke(virga, ["new", "full-directory"])
-        assert result.exit_code == 2
+        assert result.exit_code == 2, result.output
         assert result.output.find("already exists") > -1
 
 
@@ -34,7 +35,7 @@ def test_virga_new(run_command_patch):
 
     with runner.isolated_filesystem():
         result = runner.invoke(virga, ["new", "new-project"])
-        assert result.exit_code == 0
+        assert result.exit_code == 0, result.output
         assert result.output.find("Virga application generation complete!") > -1
 
         assert os.path.isdir("new-project")
@@ -63,13 +64,11 @@ def test_virga_new_good_opts(opts, run_command_patch):
 
     with runner.isolated_filesystem():
         result = runner.invoke(virga, ["new", "new-project", *opts])
-        assert result.exit_code == 0
+        assert result.exit_code == 0, result.output
         assert result.output.find("Virga application generation complete!") > -1
 
         expected_extras = [
-            f"-E{o[2:]}"
-            for o in opts
-            if o not in ["--webui", "--standalone", "--kubernetes"]
+            f"-E{o[2:]}" for o in opts if o not in ["--webui", "--standalone"]
         ]
         run_command_patch.assert_any_call("poetry", "install")
         run_command_patch.assert_any_call(
@@ -84,4 +83,9 @@ def test_virga_new_good_opts(opts, run_command_patch):
 
         # kube is default
         if "--standalone" not in opts:
-            subprocess.run(["helm", "template", "new-project/charts"], check=True)
+            proc = subprocess.run(
+                ["helm", "template", "new-project/charts"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+            )
+            assert proc.returncode == 0, proc.stdout

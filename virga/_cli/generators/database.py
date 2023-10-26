@@ -1,6 +1,7 @@
+from typing import Any
 import shutil
 
-import click
+from typer import Context
 
 from ..utils import (
     _print_step,
@@ -10,14 +11,14 @@ from ..utils import (
     resolve_template,
     # `run_command` isn't called explicitly but required to monkeypatch during testing
     run_command,  # noqa: F401
-    run_patch,
+    copy_patch,
 )
 from .base import Generator
 
 
 class DatabaseGenerator(Generator):
     @staticmethod
-    def generate(ctx: click.Context, app_name: str, project_dir: str, **kwargs):
+    def generate(ctx: Context, app_name: str, project_dir: str, **kwargs: Any) -> None:
         """
         Copy the base Alembic and database setup to the project directory.
         """
@@ -38,17 +39,8 @@ class DatabaseGenerator(Generator):
                 )
 
                 _print_step("Patching generated files...")
-                run_patch(
-                    get_path(_templates_dir, "database/settings.patch"),
-                    "settings.patch",
-                )
-                run_patch(get_path(_templates_dir, "database/app.patch"), "app.patch")
+                copy_patch("database/settings.patch")
+                copy_patch("database/app.patch")
 
-            run_patch(
-                get_path(_templates_dir, "database/Dockerfile.patch"),
-                "Dockerfile.patch",
-            )
-            run_patch(
-                get_path(_templates_dir, "database/prestart.patch"),
-                "scripts/prestart.patch",
-            )
+            copy_patch("database/Dockerfile.patch")
+            copy_patch("database/prestart.patch", dest="scripts/prestart.patch")
