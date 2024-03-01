@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.13.0a4-slim
 
 ENV APP_NAME=virga POETRY_HOME=/etc/poetry
 ENV PATH = "${PATH}:/etc/poetry/bin"
